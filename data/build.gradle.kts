@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     alias(libs.plugins.jetbrains.kotlin.jvm)
+    alias(libs.plugins.kapt)
 }
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -14,6 +15,8 @@ kotlin {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 
     implementation(libs.javax.inject)
     implementation(libs.kotlinx.coroutines.core)

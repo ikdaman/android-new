@@ -16,7 +16,9 @@ import project.side.presentation.viewmodel.TestViewModel
 import project.side.ui.screen.TestScreen
 import project.side.ui.theme.IkdamanTheme
 import kotlin.getValue
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel : TestViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {

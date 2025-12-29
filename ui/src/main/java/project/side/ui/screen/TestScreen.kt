@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import project.side.presentation.viewmodel.TestViewModel
 
 @Composable
-fun TestScreen(testViewModel: TestViewModel) {
+fun TestScreen(testViewModel: TestViewModel?) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = {testViewModel.checkNickname("예원")}) {
+        Button(onClick = { testViewModel?.checkNickname("예원") }) {
             Text(text = "클릭")
         }
     }

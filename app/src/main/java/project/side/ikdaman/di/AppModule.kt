@@ -12,10 +12,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class Module {
+object AppModule {
     @Provides
     @Singleton
-    fun provideTestRepository(testDataSource: TestDataSource) =
+    fun provideTestRepository(testDataSource: TestDataSource): TestRepository =
         TestRepositoryImpl(testDataSource)
 
     @Provides
