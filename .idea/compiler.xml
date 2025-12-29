@@ -3,11 +3,4 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="11" />
   </component>
-  <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="ikdaman.data" options="-proc:none" />
-      <module name="ikdaman.data.main" options="-proc:none" />
-      <module name="ikdaman.data.test" options="-proc:none" />
-    </option>
-  </component>
 </project>
