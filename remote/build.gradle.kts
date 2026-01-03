@@ -8,9 +8,6 @@ plugins {
 
 android {
     namespace = "project.side.remote"
-//    compileSdk {
-//        version = release(36)
-//    }
 
     defaultConfig {
         compileSdk = 36
@@ -23,6 +20,11 @@ android {
         properties.load(project.rootProject.file("key.properties").inputStream())
 
         buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_URL")}\"")
+        buildConfigField(
+            "String",
+            "GOOGLE_CLIENT_ID",
+            "\"${properties.getProperty("GOOGLE_CLIENT_ID")}\""
+        )
     }
     buildFeatures {
         buildConfig = true
@@ -71,4 +73,11 @@ dependencies {
 
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
+
+    // social login
+    api(libs.kakao.login)
+    api(libs.naver.login)
+    implementation(libs.google.credentials)
+    implementation(libs.google.credentials.auth)
+    implementation(libs.google.id)
 }
