@@ -21,7 +21,7 @@ class AuthDataStoreSourceImpl @Inject constructor(
         val NICKNAME_KEY = stringPreferencesKey("nickname")
     }
 
-    val nickname: Flow<String?> = authDataStore.data.map { prefs ->
+    private val nickname: Flow<String?> = authDataStore.data.map { prefs ->
         prefs[NICKNAME_KEY]
     }
 
