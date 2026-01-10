@@ -17,12 +17,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object LocalModule {
 
-    private val Context.AuthDatStore: DataStore<Preferences> by preferencesDataStore(name = "auth_pref")
+    private val Context.AuthDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_pref")
 
     @Provides
     @Singleton
     fun provideAuthDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-        return context.AuthDatStore
+        return context.AuthDataStore
     }
 
     @Provides
