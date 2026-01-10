@@ -67,11 +67,19 @@ class AuthRepositoryImpl @Inject constructor(
         socialResult: SocialLoginResult
     ) {
         if (socialResult.isSuccess) {
-            val provider = socialResult.provider!!
+            val provider = socialResult.provider
+            val accessToken = socialResult.socialAccessToken
+            val providerId = socialResult.providerId
+
+            if (provider == null || accessToken == null || providerId == null) {
+                emit(LoginState.Error("로그인 정보가 올바르지 않습니다."))
+                return
+            }
+
             val loginResult = authDataSource.login(
-                socialResult.socialAccessToken!!,
+                accessToken,
                 provider,
-                socialResult.providerId!!
+                providerId
             )
             if (loginResult is DataApiResult.Success) {
                 val data = loginResult.data
