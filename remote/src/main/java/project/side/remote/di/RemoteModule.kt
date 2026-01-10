@@ -2,16 +2,18 @@ package project.side.remote.di
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import project.side.data.datasource.AuthDataSource
 import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
+import project.side.remote.api.AuthService
 import project.side.remote.api.TestApiService
+import project.side.remote.datasource.AuthDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -52,4 +54,12 @@ object RemoteModule {
     @Singleton
     fun provideTestDataSource(testApiService: TestApiService): TestDataSource =
         TestDataSourceImpl(testApiService)
+
+    @Provides
+    @Singleton
+    fun provideAuthService(retrofit: Retrofit): AuthService = retrofit.create(AuthService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAuthDataSource(authService: AuthService): AuthDataSource = AuthDataSourceImpl(authService)
 }

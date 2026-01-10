@@ -20,6 +20,17 @@ kotlinxCoroutines = "1.10.2"
 moshi = "1.15.2"
 javaxInject = "1"
 
+kakao-login = "2.23.1"
+naver-login = "5.10.0"
+google-login = "1.5.0"
+googleid = "1.1.1"
+
+datastorePreferences = "1.1.4"
+
+hiltNavigationCompose = "1.2.0"
+
+coreSplashscreen = "1.2.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -41,6 +52,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
@@ -53,6 +65,20 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+
+# social login
+kakao-login = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao-login" }
+naver-login = { group = "com.navercorp.nid", name = "oauth", version.ref = "naver-login" }
+google-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "google-login" }
+google-credentials-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "google-login" }
+google-id = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
+
+# datastore
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferences" }
+
+# splash screen
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

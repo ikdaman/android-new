@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Ikdaman" parent="android:Theme.Material.Light.NoActionBar"/>
+
+    <!-- Splash Screen Override -->
+    <style name="Theme.Ikdaman.Splash" parent="Theme.SplashScreen">
+        <!-- 배경 투명 -->
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <!-- 아이콘 제거 -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_empty</item>
+        <item name="windowSplashScreenIconBackgroundColor">@android:color/white</item>
+        <!-- 애니메이션 지속시간 최소화 -->
+        <item name="windowSplashScreenAnimationDuration">0</item>
+        <!-- 유지 시간 최소화 -->
+        <item name="postSplashScreenTheme">@style/Theme.Ikdaman</item>
+    </style>
+</resources>

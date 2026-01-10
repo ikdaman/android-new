@@ -47,6 +47,7 @@ kotlin {
 
 dependencies {
     implementation(project(":presentation"))
+    implementation(project(":domain"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -70,4 +71,7 @@ dependencies {
     // hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    implementation(libs.androidx.core.splashscreen)
 }

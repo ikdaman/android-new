@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,9 +9,9 @@ plugins {
 
 android {
     namespace = "project.side.ikdaman"
-//    compileSdk {
-//        version = release(36)
-//    }
+
+    val properties = Properties()
+    properties.load(project.rootProject.file("key.properties").inputStream())
 
     defaultConfig {
         compileSdk = 36
@@ -20,6 +22,27 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+
+        val kakaoAppKey = properties.getProperty("KAKAO_APP_KEY")
+        buildConfigField("String", "KAKAO_APP_KEY", "\"$kakaoAppKey\"")
+        manifestPlaceholders["KAKAO_APP_KEY"] = kakaoAppKey
+
+        buildConfigField("String", "NAVER_CLIENT_ID", "\"${properties.getProperty("NAVER_CLIENT_ID")}\"")
+        buildConfigField("String", "NAVER_CLIENT_SECRET", "\"${properties.getProperty("NAVER_CLIENT_SECRET")}\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = project.rootProject.file("release.keystore")
+            storePassword = properties.getProperty("KEYSTORE_PASSWORD")
+            keyAlias = properties.getProperty("KEY_ALIAS")
+            keyPassword = properties.getProperty("KEY_PASSWORD")
+        }
     }
 
     buildTypes {
