@@ -90,6 +90,8 @@ class AuthRepositoryImpl @Inject constructor(
                     data.nickname
                 )
                 emit(LoginState.Success)
+            } else {
+                emit(LoginState.Error("로그인 실패"))
             }
         } else {
             emit(LoginState.Error(socialResult.errorMessage ?: "Unknown Error"))
