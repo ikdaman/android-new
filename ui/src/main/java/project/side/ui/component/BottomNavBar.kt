@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import project.side.ui.HISTORY_ROUTE
 import project.side.ui.HOME_ROUTE
@@ -30,7 +30,7 @@ import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.Typography
 
 @Composable
-fun BottomNavBar(navController: NavHostController) {
+fun BottomNavBar(navController: NavController, navigateIfLoggedIn: (() -> Unit) -> Unit = {}) {
     Column {
         HorizontalDivider(color = Color(0xFFF5F5F5), thickness = 1.dp)
         Row(
@@ -70,8 +70,10 @@ fun BottomNavBar(navController: NavHostController) {
                 modifier = Modifier
                     .weight(1f)
                     .clickable {
-                        navController.navigate(HISTORY_ROUTE) {
-                            popUpTo(0)
+                        navigateIfLoggedIn {
+                            navController.navigate(HISTORY_ROUTE) {
+                                popUpTo(0)
+                            }
                         }
                     },
                 resId = R.drawable.ic_history,

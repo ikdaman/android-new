@@ -6,9 +6,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import project.side.data.datasource.AuthDataSource
+import project.side.data.datasource.AuthDataStoreSource
 import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
 import project.side.remote.api.AuthService
@@ -17,7 +19,24 @@ import project.side.remote.datasource.AuthDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DefaultOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DefaultRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthRetrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -30,6 +49,7 @@ object RemoteModule {
 
     @Provides
     @Singleton
+    @DefaultOkHttpClient
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(
             HttpLoggingInterceptor().apply {
@@ -39,7 +59,30 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+    @AuthOkHttpClient
+    fun provideAuthOkHttpClient(authDataStoreSource: AuthDataStoreSource): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+            )
+            .addInterceptor { chain ->
+                val authorization = runBlocking {
+                    authDataStoreSource.getAuthorization()
+                }
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer $authorization")
+                    .build()
+                chain.proceed(request)
+            }
+//            .authenticator()
+            .build()
+
+    @Provides
+    @Singleton
+    @DefaultRetrofit
+    fun provideRetrofit(moshi: Moshi, @DefaultOkHttpClient okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(BuildConfig.BASE_URL)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
@@ -47,7 +90,16 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideTestApiService(retrofit: Retrofit): TestApiService =
+    @AuthRetrofit
+    fun provideAuthRetrofit(moshi: Moshi, @AuthOkHttpClient okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(BuildConfig.BASE_URL)
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .build()
+
+    @Provides
+    @Singleton
+    fun provideTestApiService(@DefaultRetrofit retrofit: Retrofit): TestApiService =
         retrofit.create(TestApiService::class.java)
 
     @Provides
@@ -57,9 +109,11 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideAuthService(retrofit: Retrofit): AuthService = retrofit.create(AuthService::class.java)
+    fun provideAuthService(@DefaultRetrofit retrofit: Retrofit): AuthService =
+        retrofit.create(AuthService::class.java)
 
     @Provides
     @Singleton
-    fun provideAuthDataSource(authService: AuthService): AuthDataSource = AuthDataSourceImpl(authService)
+    fun provideAuthDataSource(authService: AuthService): AuthDataSource =
+        AuthDataSourceImpl(authService)
 }

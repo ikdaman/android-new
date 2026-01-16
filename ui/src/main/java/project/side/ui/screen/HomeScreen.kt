@@ -32,7 +32,6 @@ import project.side.ui.theme.Typography
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navigateToLogin: () -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
 ) {
