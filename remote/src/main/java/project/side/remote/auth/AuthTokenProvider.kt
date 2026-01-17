@@ -1,8 +1,6 @@
 package project.side.remote.auth
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import project.side.data.datasource.AuthDataStoreSource
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,7 +16,6 @@ class AuthTokenProvider @Inject constructor(
 ) {
     @Volatile
     private var cachedToken: String? = null
-    private val mutex = Mutex()
 
     /**
      * Gets the current authorization token synchronously.
@@ -55,10 +52,14 @@ class AuthTokenProvider @Inject constructor(
      * - Call this method in your AuthRepository after successfully saving auth info
      * - This ensures the network layer has the latest token without needing to reload
      * - Example: After authDataStoreSource.saveAuthInfo(), call authTokenProvider.updateToken()
+     * 
+     * Note: This method uses runBlocking to maintain consistent synchronization with getToken().
+     * The blocking is acceptable here since token updates happen infrequently (only on login/refresh).
      */
     suspend fun updateToken() {
-        mutex.withLock {
-            cachedToken = authDataStoreSource.getAuthorization()
+        val newToken = authDataStoreSource.getAuthorization()
+        synchronized(this) {
+            cachedToken = newToken
         }
     }
 
