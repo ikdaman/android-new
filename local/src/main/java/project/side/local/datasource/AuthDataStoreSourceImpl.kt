@@ -27,7 +27,7 @@ class AuthDataStoreSourceImpl @Inject constructor(
 
     suspend fun getProvider(): String? = authDataStore.data.first()[PROVIDER_KEY]
 
-    suspend fun getAuthorization(): String? = authDataStore.data.first()[AUTHORIZATION_KEY]
+    override suspend fun getAuthorization(): String? = authDataStore.data.first()[AUTHORIZATION_KEY]
 
     suspend fun getRefreshToken(): String? = authDataStore.data.first()[REFRESH_TOKEN_KEY]
 
@@ -63,5 +63,11 @@ class AuthDataStoreSourceImpl @Inject constructor(
 
     override suspend fun clear() {
         authDataStore.edit { it.clear() }
+    }
+
+    override fun isLoggedIn(): Flow<Boolean> {
+        return authDataStore.data.map { prefs ->
+            !prefs[AUTHORIZATION_KEY].isNullOrBlank()
+        }
     }
 }
