@@ -53,8 +53,8 @@ class AuthTokenProvider @Inject constructor(
      * - This ensures the network layer has the latest token without needing to reload
      * - Example: After authDataStoreSource.saveAuthInfo(), call authTokenProvider.updateToken()
      * 
-     * Note: This method uses runBlocking to maintain consistent synchronization with getToken().
-     * The blocking is acceptable here since token updates happen infrequently (only on login/refresh).
+     * Note: Fetches the token before entering the synchronized block to avoid
+     * potential deadlocks when mixing coroutines with synchronized blocks.
      */
     suspend fun updateToken() {
         val newToken = authDataStoreSource.getAuthorization()
