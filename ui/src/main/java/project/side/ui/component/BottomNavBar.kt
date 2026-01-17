@@ -92,7 +92,7 @@ fun BottomNavItem(modifier: Modifier, resId: Int, label: String) {
         Image(
             modifier = Modifier.size(30.dp),
             painter = painterResource(resId),
-            contentDescription = null
+            contentDescription = label
         )
         Text(text = label, textAlign = TextAlign.Center, style = Typography.labelMedium)
     }
