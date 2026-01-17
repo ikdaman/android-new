@@ -18,9 +18,7 @@ import javax.inject.Singleton
  * mechanism is available.
  */
 @Singleton
-class TokenAuthenticator @Inject constructor(
-    private val authTokenProvider: AuthTokenProvider
-) : Authenticator {
+class TokenAuthenticator @Inject constructor() : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
         // Don't retry authentication failures for now since we don't have
