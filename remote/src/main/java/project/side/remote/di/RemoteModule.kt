@@ -6,15 +6,15 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import project.side.data.datasource.AuthDataSource
-import project.side.data.datasource.AuthDataStoreSource
 import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
 import project.side.remote.api.AuthService
 import project.side.remote.api.TestApiService
+import project.side.remote.auth.AuthInterceptor
+import project.side.remote.auth.TokenAuthenticator
 import project.side.remote.datasource.AuthDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
 import retrofit2.Retrofit
@@ -60,23 +60,18 @@ object RemoteModule {
     @Provides
     @Singleton
     @AuthOkHttpClient
-    fun provideAuthOkHttpClient(authDataStoreSource: AuthDataStoreSource): OkHttpClient =
+    fun provideAuthOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
+    ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 }
             )
-            .addInterceptor { chain ->
-                val authorization = runBlocking {
-                    authDataStoreSource.getAuthorization()
-                }
-                val request = chain.request().newBuilder()
-                    .addHeader("Authorization", "Bearer $authorization")
-                    .build()
-                chain.proceed(request)
-            }
-//            .authenticator()
+            .addInterceptor(authInterceptor)
+            .authenticator(tokenAuthenticator)
             .build()
 
     @Provides
