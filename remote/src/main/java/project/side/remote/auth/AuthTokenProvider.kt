@@ -23,12 +23,19 @@ class AuthTokenProvider @Inject constructor(
      * This method is thread-safe and can be called from OkHttp's network threads.
      */
     fun getToken(): String? {
-        return cachedToken ?: loadTokenSync()
+        // Double-checked locking to prevent race condition
+        cachedToken?.let { return it }
+        
+        synchronized(this) {
+            cachedToken?.let { return it }
+            return loadTokenSync()
+        }
     }
 
     /**
      * Loads the token synchronously from the data store.
-     * This is only called when the cache is empty.
+     * This is only called when the cache is empty and should only be called
+     * from within a synchronized block.
      */
     private fun loadTokenSync(): String? {
         return runBlocking {
@@ -40,15 +47,29 @@ class AuthTokenProvider @Inject constructor(
 
     /**
      * Updates the cached token. Should be called after login or token refresh.
+     * 
+     * Integration guidance:
+     * - Call this method in your AuthRepository after successfully saving auth info
+     * - This ensures the network layer has the latest token without needing to reload
+     * - Example: After authDataStoreSource.saveAuthInfo(), call authTokenProvider.updateToken()
      */
     suspend fun updateToken() {
-        cachedToken = authDataStoreSource.getAuthorization()
+        synchronized(this) {
+            cachedToken = authDataStoreSource.getAuthorization()
+        }
     }
 
     /**
      * Clears the cached token. Should be called on logout.
+     * 
+     * Integration guidance:
+     * - Call this method when the user logs out
+     * - This ensures subsequent requests won't use a stale token
+     * - Example: After authDataStoreSource.clear(), call authTokenProvider.clearToken()
      */
     fun clearToken() {
-        cachedToken = null
+        synchronized(this) {
+            cachedToken = null
+        }
     }
 }

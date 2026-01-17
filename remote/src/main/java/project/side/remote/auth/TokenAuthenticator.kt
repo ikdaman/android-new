@@ -8,9 +8,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * OkHttp Authenticator that adds Bearer token authentication to requests.
- * This is the recommended approach for handling authentication in OkHttp,
- * as opposed to using interceptors which can block network threads.
+ * OkHttp Authenticator that handles authentication failures (401 responses).
+ * 
+ * Currently, this authenticator returns null to prevent retry attempts since
+ * there is no token refresh mechanism implemented. This is the correct behavior
+ * to avoid infinite retry loops with the same token.
+ * 
+ * Future enhancement: Implement token refresh logic here when a refresh token
+ * mechanism is available.
  */
 @Singleton
 class TokenAuthenticator @Inject constructor(
@@ -18,19 +23,9 @@ class TokenAuthenticator @Inject constructor(
 ) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
-        // If this is already a retry with the same token, don't retry again
-        val currentToken = authTokenProvider.getToken()
-        
-        if (response.request.header("Authorization") == "Bearer $currentToken") {
-            // Token is the same as before, no point in retrying
-            return null
-        }
-
-        // Get fresh token and retry
-        val token = currentToken ?: return null
-        
-        return response.request.newBuilder()
-            .header("Authorization", "Bearer $token")
-            .build()
+        // Don't retry authentication failures for now since we don't have
+        // a token refresh mechanism. This prevents infinite retry loops.
+        // The user will need to log in again to get a fresh token.
+        return null
     }
 }
