@@ -37,7 +37,11 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(LOGIN_ROUTE) {
                         LoginScreen(loginUseCase, logoutUseCase) {
-                            navController.navigate(MAIN_ROUTE)
+                            navController.navigate(MAIN_ROUTE) {
+                                popUpTo(LOGIN_ROUTE) {
+                                    inclusive = true
+                                }
+                            }
                         }
                     }
                 }
