@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,14 +17,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,25 +30,32 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import project.side.presentation.model.HistoryBookState
+import project.side.presentation.model.HistoryViewType
+import project.side.presentation.viewmodel.HistoryViewModel
 import project.side.ui.R
 import project.side.ui.component.TitleBar
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.Typography
 
-enum class HistoryViewType {
-    DATASET, LIST;
+@Composable
+fun HistoryScreen(viewModel: HistoryViewModel) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    fun toggle(): HistoryViewType {
-        return when (this) {
-            DATASET -> LIST
-            LIST -> DATASET
-        }
-    }
+    HistoryScreenUI(uiState = uiState, onViewTypeChanged = viewModel::onViewTypeChanged)
 }
 
 @Composable
-fun HistoryScreen() {
-    var viewType by remember { mutableStateOf(HistoryViewType.LIST) }
+fun HistoryScreenUI(
+    uiState: HistoryBookState = HistoryBookState(),
+    onViewTypeChanged: () -> Unit = {}
+) {
+    if (uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -73,7 +78,7 @@ fun HistoryScreen() {
                     .padding(end = 16.dp)
                     .size(20.dp)
                     .clickable {
-                        viewType = viewType.toggle()
+                        onViewTypeChanged()
                     },
                 painter = painterResource(R.drawable.dataset_view),
                 contentDescription = null
@@ -87,7 +92,7 @@ fun HistoryScreen() {
             )
         }
 
-        when (viewType) {
+        when (uiState.viewType) {
             HistoryViewType.DATASET -> {
                 LazyVerticalGrid(
                     modifier = Modifier
@@ -202,6 +207,6 @@ fun HistoryDataSetBookItem() {
 @Composable
 fun HistoryScreenPreview() {
     IkdamanTheme {
-        HistoryScreen()
+        HistoryScreenUI()
     }
 }

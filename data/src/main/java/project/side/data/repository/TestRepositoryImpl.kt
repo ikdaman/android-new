@@ -9,12 +9,12 @@ import javax.inject.Inject
 
 class TestRepositoryImpl @Inject constructor(
     private val testDataSource: TestDataSource
-): TestRepository {
+) : TestRepository {
     override fun checkNickname(nickname: String) = flow {
         emit(DataResource.Loading())
         val result = testDataSource.checkNickname(nickname)
         emit(DataResource.Success(result.toDomain()))
     }.catch { e ->
-        emit(DataResource.Error(e))
+        emit(DataResource.Error(e.message))
     }
 }
