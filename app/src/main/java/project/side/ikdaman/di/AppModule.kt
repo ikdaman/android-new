@@ -4,10 +4,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import project.side.data.datasource.AladinBookSearchSource
 import project.side.data.datasource.AuthDataStoreSource
 import project.side.data.datasource.TestDataSource
+import project.side.data.repository.AladinRepositoryImpl
 import project.side.data.repository.TestRepositoryImpl
 import project.side.data.repository.UserRepositoryImpl
+import project.side.domain.repository.AladinRepository
 import project.side.domain.repository.TestRepository
 import project.side.domain.repository.UserRepository
 import project.side.domain.usecase.GetLoginStateUseCase
@@ -21,6 +24,12 @@ object AppModule {
     @Singleton
     fun provideTestRepository(testDataSource: TestDataSource): TestRepository =
         TestRepositoryImpl(testDataSource)
+
+    @Provides
+    @Singleton
+    fun provideAladinRepository(aladinBookSearchSource: AladinBookSearchSource): AladinRepository =
+        AladinRepositoryImpl(aladinBookSearchSource)
+
 
     @Provides
     @Singleton

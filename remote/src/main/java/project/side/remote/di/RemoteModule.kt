@@ -8,13 +8,16 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import project.side.data.datasource.AladinBookSearchSource
 import project.side.data.datasource.AuthDataSource
 import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
+import project.side.remote.api.AladinBookService
 import project.side.remote.api.AuthService
 import project.side.remote.api.TestApiService
 import project.side.remote.auth.AuthInterceptor
 import project.side.remote.auth.TokenAuthenticator
+import project.side.remote.datasource.AladinBookSearchSourceImpl
 import project.side.remote.datasource.AuthDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
 import retrofit2.Retrofit
@@ -111,4 +114,14 @@ object RemoteModule {
     @Singleton
     fun provideAuthDataSource(authService: AuthService): AuthDataSource =
         AuthDataSourceImpl(authService)
+
+    @Provides
+    @Singleton
+    fun provideAladinBookService(@DefaultRetrofit retrofit: Retrofit): AladinBookService =
+        retrofit.create(AladinBookService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAladinBookSearchSource(service: AladinBookService) : AladinBookSearchSource =
+        AladinBookSearchSourceImpl(service)
 }

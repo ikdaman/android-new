@@ -24,8 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import project.side.domain.model.DomainResult
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
+import project.side.presentation.model.LoginUIState
 import project.side.presentation.viewmodel.LoginViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -34,7 +36,7 @@ fun LoginScreen(
     loginUseCase: LoginUseCase? = null,
     logoutUseCase: LogoutUseCase? = null,
     viewModel: LoginViewModel? = hiltViewModel(),
-    uiState: LoginViewModel.UIState? = viewModel?.uiState?.collectAsState()?.value,
+    uiState: LoginUIState? = viewModel?.uiState?.collectAsState()?.value,
     navigateToHome: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -99,10 +101,10 @@ fun LoginScreen(
 
         LaunchedEffect(uiState) {
             var message = ""
-            if (uiState is LoginViewModel.UIState.Error) {
+            if (uiState is LoginUIState.Error) {
                 message = uiState.message
             }
-            if (uiState is LoginViewModel.UIState.Success) {
+            if (uiState is LoginUIState.Success) {
                 navigateToHome()
             }
             if (message.isNotEmpty()) {

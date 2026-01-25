@@ -25,6 +25,9 @@ android {
             "GOOGLE_CLIENT_ID",
             "\"${properties.getProperty("GOOGLE_CLIENT_ID")}\""
         )
+
+        val ttbKey = properties.getProperty("TTB_KEY")
+        buildConfigField("String", "TTB_KEY", "\"$ttbKey\"")
     }
     buildFeatures {
         buildConfig = true
