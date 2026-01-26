@@ -75,11 +75,11 @@ fun HistoryScreenUI(
             Spacer(modifier = Modifier.weight(1f))
             Image(
                 modifier = Modifier
-                    .padding(end = 16.dp)
                     .size(20.dp)
                     .clickable {
                         onViewTypeChanged()
-                    },
+                    }
+                    .padding(end = 16.dp),
                 painter = painterResource(
                     if (uiState.viewType == HistoryViewType.DATASET) {
                         R.drawable.list_view
