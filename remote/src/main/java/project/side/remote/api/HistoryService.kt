@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface HistoryService {
     @GET("mybooks/history")
-    fun getHistoryBooks(
+    suspend fun getHistoryBooks(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
         @Query("sort") sort: String

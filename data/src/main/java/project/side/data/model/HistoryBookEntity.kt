@@ -8,7 +8,7 @@ data class HistoryBookEntity(
     val nowPage: Int,
     val books: List<HistoryBookInfoEntity>
 ) {
-    fun toDomain(): HistoryBook= HistoryBook(
+    fun toDomain(): HistoryBook = HistoryBook(
         totalPages = totalPages,
         nowPage = nowPage,
         books = books.map {
@@ -23,7 +23,7 @@ data class HistoryBookEntity(
     )
 }
 
-data class HistoryBookInfoEntity (
+data class HistoryBookInfoEntity(
     val mybookId: Int,
     val title: String,
     val coverImage: String,

@@ -55,107 +55,108 @@ fun HistoryScreenUI(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 20.dp)
-    ) {
-        TitleBar("히스토리")
-        Row(
+    } else {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .height(20.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 20.dp)
         ) {
-            Text("최신 순 (5권)", style = Typography.bodyMedium.copy(fontSize = 16.sp))
-            Spacer(modifier = Modifier.weight(1f))
-            Image(
+            TitleBar("히스토리")
+            Row(
                 modifier = Modifier
-                    .size(20.dp)
-                    .clickable {
-                        onViewTypeChanged()
-                    }
-                    .padding(end = 16.dp),
-                painter = painterResource(
-                    if (uiState.viewType == HistoryViewType.DATASET) {
-                        R.drawable.list_view
-                    } else {
-                        R.drawable.dataset_view
-                    }
-                ),
-                contentDescription = null
-            )
-            Image(
-                modifier = Modifier
-                    .size(20.dp)
-                    .clickable { },
-                painter = painterResource(R.drawable.search),
-                contentDescription = null
-            )
-        }
-
-        when (uiState.viewType) {
-            HistoryViewType.DATASET -> {
-                LazyVerticalGrid(
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+                    .height(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("최신 순 (5권)", style = Typography.bodyMedium.copy(fontSize = 16.sp))
+                Spacer(modifier = Modifier.weight(1f))
+                Image(
                     modifier = Modifier
-                        .background(Color(0xFFEDEDED))
-                        .padding(12.dp),
-                    columns = GridCells.Fixed(3),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(20) {
-                        HistoryDataSetBookItem()
-                    }
-                }
+                        .padding(end = 16.dp)
+                        .size(20.dp)
+                        .clickable {
+                            onViewTypeChanged()
+                        },
+                    painter = painterResource(
+                        if (uiState.viewType == HistoryViewType.DATASET) {
+                            R.drawable.list_view
+                        } else {
+                            R.drawable.dataset_view
+                        }
+                    ),
+                    contentDescription = null
+                )
+                Image(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { },
+                    painter = painterResource(R.drawable.search),
+                    contentDescription = null
+                )
             }
 
-            HistoryViewType.LIST -> {
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(20.dp)
-                                .background(Color.Black),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                modifier = Modifier.weight(1f),
-                                text = "START",
-                                style = Typography.bodyMedium.copy(color = Color.White),
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                modifier = Modifier.weight(1f),
-                                text = "FINISH",
-                                style = Typography.bodyMedium.copy(color = Color.White),
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                modifier = Modifier.weight(2f),
-                                text = "BOOK NAME",
-                                style = Typography.bodyMedium.copy(color = Color.White),
-                                textAlign = TextAlign.Center
+            when (uiState.viewType) {
+                HistoryViewType.DATASET -> {
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .background(Color(0xFFEDEDED))
+                            .padding(12.dp),
+                        columns = GridCells.Fixed(3),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(20) {
+                            HistoryDataSetBookItem()
+                        }
+                    }
+                }
+
+                HistoryViewType.LIST -> {
+                    LazyColumn(modifier = Modifier.weight(1f)) {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(20.dp)
+                                    .background(Color.Black),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = "START",
+                                    style = Typography.bodyMedium.copy(color = Color.White),
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = "FINISH",
+                                    style = Typography.bodyMedium.copy(color = Color.White),
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    modifier = Modifier.weight(2f),
+                                    text = "BOOK NAME",
+                                    style = Typography.bodyMedium.copy(color = Color.White),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                        items(20) {
+                            HistoryListBookItem()
+                            HorizontalDivider(
+                                color = Color.Black,
+                                thickness = 1.dp,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
-                    items(20) {
-                        HistoryListBookItem()
-                        HorizontalDivider(
-                            color = Color.Black,
-                            thickness = 1.dp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
                 }
             }
         }
     }
+
 }
 
 @Composable

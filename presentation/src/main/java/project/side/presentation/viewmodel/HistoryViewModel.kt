@@ -35,7 +35,7 @@ class HistoryViewModel @Inject constructor(
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             totalPages = it.data.totalPages,
-                            nowPages = it.data.nowPage,
+                            nowPage = it.data.nowPage,
                             books = if (isLoadMore) _uiState.value.books + it.data.books else it.data.books,
                         )
                     }
