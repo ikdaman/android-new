@@ -1,0 +1,23 @@
+package project.side.presentation.model
+
+import project.side.domain.model.HistoryBookInfo
+
+data class HistoryBookState(
+    val isLoading: Boolean = false, // TODO true로 변경 필요
+    val viewType: HistoryViewType = HistoryViewType.LIST,
+    val totalPages: Int = 1,
+    val nowPage: Int = 1,
+    val books: List<HistoryBookInfo> = emptyList(),
+    val errorMessage: String? = null
+)
+
+enum class HistoryViewType {
+    DATASET, LIST;
+
+    fun toggle(): HistoryViewType {
+        return when (this) {
+            DATASET -> LIST
+            LIST -> DATASET
+        }
+    }
+}
