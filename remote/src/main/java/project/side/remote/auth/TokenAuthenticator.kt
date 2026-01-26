@@ -13,6 +13,7 @@ import javax.inject.Inject
 
 class TokenAuthenticator @Inject constructor(
     private val authDataStoreSource: AuthDataStoreSource,
+    private val authTokenProvider: AuthTokenProvider,
     private val userService: UserService
 ) : Authenticator {
 
@@ -23,17 +24,16 @@ class TokenAuthenticator @Inject constructor(
 
         if (response.code == 401) {
             val refreshToken = runBlocking { authDataStoreSource.getRefreshToken() }
-            if (refreshToken.isNullOrBlank()) {
-                runBlocking { authDataStoreSource.clear() }
-                runBlocking { AuthEvent.notify(DataAuthEvent.LOGIN_REQUIRED) }
+            val authorization = runBlocking { authDataStoreSource.getAuthorization() }
+            if (refreshToken.isNullOrBlank() || authorization.isNullOrBlank()) {
+                clearToken()
                 return null
             }
 
             val result = try {
-                runBlocking { userService.reissue(refreshToken) }
+                runBlocking { userService.reissue("Bearer $authorization", refreshToken) }
             } catch (e: Exception) {
-                runBlocking { authDataStoreSource.clear() }
-                runBlocking { AuthEvent.notify(DataAuthEvent.LOGIN_REQUIRED) }
+                clearToken()
                 return null
             }
 
@@ -47,16 +47,24 @@ class TokenAuthenticator @Inject constructor(
                             authorization = newAuthorization,
                             refreshToken = newRefreshToken
                         )
+                        authTokenProvider.updateToken()
                     }
                     return response.request.newBuilder()
-                        .header("Authorization", newAuthorization)
+                        .header("Authorization", "Bearer $newAuthorization")
                         .build()
                 }
             }
 
-            runBlocking { authDataStoreSource.clear() }
-            runBlocking { AuthEvent.notify(DataAuthEvent.LOGIN_REQUIRED) }
+            clearToken()
         }
         return null
+    }
+
+    private fun clearToken() {
+        runBlocking {
+            authDataStoreSource.clear()
+            authTokenProvider.clearToken()
+        }
+        runBlocking { AuthEvent.notify(DataAuthEvent.LOGIN_REQUIRED) }
     }
 }
