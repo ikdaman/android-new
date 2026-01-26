@@ -21,7 +21,7 @@ class HistoryDataSourceImpl @Inject constructor(
                     DataApiResult.Success(it.toData())
                 } ?: DataApiResult.Error("히스토리 목록을 불러올 수 없습니다.")
             } else {
-                DataApiResult.Error("오류 발생")
+                DataApiResult.Error("오류 발생: ${response.code()} - ${response.message()}")
             }
         } catch (e: Exception) {
             DataApiResult.Error("네트워크 오류 : ${e.message}")
