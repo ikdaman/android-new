@@ -80,7 +80,13 @@ fun HistoryScreenUI(
                     .clickable {
                         onViewTypeChanged()
                     },
-                painter = painterResource(R.drawable.dataset_view),
+                painter = painterResource(
+                    if (uiState.viewType == HistoryViewType.DATASET) {
+                        R.drawable.list_view
+                    } else {
+                        R.drawable.dataset_view
+                    }
+                ),
                 contentDescription = null
             )
             Image(
