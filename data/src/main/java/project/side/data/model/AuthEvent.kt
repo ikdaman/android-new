@@ -4,11 +4,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 object AuthEvent {
-    private val _events = MutableSharedFlow<DataAuthEvent>()
+    private val _events = MutableSharedFlow<DataAuthEvent>(
+        replay = 1,
+        extraBufferCapacity = 1
+    )
     val events = _events.asSharedFlow()
 
     suspend fun notify(event: DataAuthEvent) {
-        _events.emit(event)
+        _events.tryEmit(event)
     }
 }
 
