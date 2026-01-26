@@ -29,9 +29,9 @@ class AuthDataStoreSourceImpl @Inject constructor(
 
     override suspend fun getAuthorization(): String? = authDataStore.data.first()[AUTHORIZATION_KEY]
 
-    suspend fun getRefreshToken(): String? = authDataStore.data.first()[REFRESH_TOKEN_KEY]
+    override suspend fun getRefreshToken(): String? = authDataStore.data.first()[REFRESH_TOKEN_KEY]
 
-    suspend fun saveToken(
+    override suspend fun saveToken(
         authorization: String,
         refreshToken: String
     ) {

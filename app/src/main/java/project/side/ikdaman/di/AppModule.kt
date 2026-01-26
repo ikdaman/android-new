@@ -6,10 +6,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import project.side.data.datasource.AuthDataStoreSource
 import project.side.data.datasource.TestDataSource
+import project.side.data.repository.AuthEventRepositoryImpl
 import project.side.data.repository.TestRepositoryImpl
 import project.side.data.repository.UserRepositoryImpl
+import project.side.domain.repository.AuthEventRepository
 import project.side.domain.repository.TestRepository
 import project.side.domain.repository.UserRepository
+import project.side.domain.usecase.GetAuthEventUseCase
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.TestUseCase
 import javax.inject.Singleton
@@ -35,4 +38,13 @@ object AppModule {
     @Singleton
     fun provideGetLoginStateUseCase(userRepository: UserRepository) =
         GetLoginStateUseCase(userRepository)
+
+    @Provides
+    @Singleton
+    fun provideAuthEventRepository(): AuthEventRepository = AuthEventRepositoryImpl()
+
+    @Provides
+    @Singleton
+    fun provideAuthEventUseCase(authEventRepository: AuthEventRepository): GetAuthEventUseCase =
+        GetAuthEventUseCase(authEventRepository)
 }

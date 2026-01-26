@@ -11,5 +11,10 @@ interface AuthDataStoreSource {
     )
     suspend fun clear()
     suspend fun getAuthorization(): String?
+    suspend fun getRefreshToken(): String?
+    suspend fun saveToken(
+        authorization: String,
+        refreshToken: String
+    )
     fun isLoggedIn(): Flow<Boolean>
 }
