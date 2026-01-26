@@ -117,6 +117,6 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideRefreshService(@AuthRetrofit retrofit: Retrofit): UserService =
+    fun provideRefreshService(@DefaultRetrofit retrofit: Retrofit): UserService =
         retrofit.create(UserService::class.java)
 }
