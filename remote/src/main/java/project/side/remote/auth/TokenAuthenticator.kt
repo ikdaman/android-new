@@ -29,7 +29,13 @@ class TokenAuthenticator @Inject constructor(
                 return null
             }
 
-            val result = runBlocking { userService.reissue(refreshToken) }
+            val result = try {
+                runBlocking { userService.reissue(refreshToken) }
+            } catch (e: Exception) {
+                runBlocking { authDataStoreSource.clear() }
+                runBlocking { AuthEvent.notify(DataAuthEvent.LOGIN_REQUIRED) }
+                return null
+            }
 
             if (result.isSuccessful) {
                 val newAuthorization = result.headers()["Authorization"]
