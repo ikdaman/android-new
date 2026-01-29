@@ -1,6 +1,7 @@
 package project.side.remote.api
 
 
+import project.side.data.model.BookSearchResponse
 import project.side.remote.BuildConfig
 import retrofit2.http.GET
 import retrofit2.http.Query

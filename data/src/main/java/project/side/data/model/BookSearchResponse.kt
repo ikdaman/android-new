@@ -18,6 +18,8 @@ data class BookSearchItem(
     val isbn: String?,
     val isbn13: String?,
     val itemId: Long,
+    val description: String,
+    val pubDate: String,
     val subInfo: BookSubInfoResponse? = null
 )
 
@@ -36,6 +38,8 @@ fun BookSearchResponse.toDomain() = BookSearchResult(
             isbn = it.isbn13 ?: it.isbn ?: "",
             itemId = it.itemId,
             link = it.link,
+            description = it.description,
+            pubDate = it.pubDate,
             subInfo = it.subInfo.toDomain()
         )
     }

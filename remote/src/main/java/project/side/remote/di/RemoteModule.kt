@@ -117,8 +117,12 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideAladinBookService(@DefaultRetrofit retrofit: Retrofit): AladinBookService =
-        retrofit.create(AladinBookService::class.java)
+    fun provideAladinBookService(moshi: Moshi): AladinBookService =
+        Retrofit.Builder()
+            .baseUrl("https://www.aladin.co.kr/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(AladinBookService::class.java)
 
     @Provides
     @Singleton

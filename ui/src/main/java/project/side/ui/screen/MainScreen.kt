@@ -14,6 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import project.side.presentation.viewmodel.MainViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import project.side.presentation.viewmodel.SearchBookViewModel
 import project.side.ui.ADD_BOOK_ROUTE
 import project.side.ui.BOOK_INFO_ROUTE
 import project.side.ui.HISTORY_ROUTE
@@ -24,7 +26,11 @@ import project.side.ui.component.BottomNavBar
 import project.side.ui.util.navigateIfLoggedIn
 
 @Composable
-fun MainScreen(appNavController: NavController, mainViewModel: MainViewModel) {
+fun MainScreen(
+    appNavController: NavController,
+    searchBookViewModel: SearchBookViewModel? = null,
+    mainViewModel: MainViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -61,16 +67,19 @@ fun MainScreen(appNavController: NavController, mainViewModel: MainViewModel) {
                     )
                 }
                 composable(SEARCH_BOOK_ROUTE) {
-                    SearchBookScreen()
+                    SearchBookScreen(
+                        appNavController,
+                        onNavigateToAddBookScreen = {
+                            appNavController.navigate(ADD_BOOK_ROUTE)
+                        },
+                        viewModel = searchBookViewModel
+                    )
                 }
                 composable(HISTORY_ROUTE) {
                     HistoryScreen()
                 }
                 composable(SETTING_ROUTE) {
                     SettingScreen()
-                }
-                composable(ADD_BOOK_ROUTE) {
-                    AddBookScreen()
                 }
                 composable(BOOK_INFO_ROUTE) {
                     BookInfoScreen()

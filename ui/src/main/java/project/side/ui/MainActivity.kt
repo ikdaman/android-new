@@ -11,6 +11,9 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
+import project.side.presentation.viewmodel.SearchBookViewModel
+import project.side.ui.screen.AddBookScreen
+import project.side.ui.screen.BarcodeScreen
 import project.side.ui.screen.LoginScreen
 import project.side.ui.screen.MainScreen
 import project.side.ui.theme.IkdamanTheme
@@ -31,9 +34,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             IkdamanTheme {
                 val navController = rememberNavController()
+
+                val searchBookViewModel: SearchBookViewModel = hiltViewModel()
+
                 NavHost(navController = navController, startDestination = MAIN_ROUTE) {
                     composable(MAIN_ROUTE) {
-                        MainScreen(navController, hiltViewModel())
+                        MainScreen(navController, searchBookViewModel)
+                    }
+                    composable(BARCODE_ROUTE) {
+                        BarcodeScreen(
+                            viewModel = searchBookViewModel,
+                            onBack = { navController.popBackStack() },
+                            onNavigateToAddBookScreen = {
+                                navController.popBackStack()
+                                navController.navigate(ADD_BOOK_ROUTE)
+                            }
+                        )
                     }
                     composable(LOGIN_ROUTE) {
                         LoginScreen(loginUseCase, logoutUseCase) {
@@ -43,6 +59,12 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
+                    }
+                    composable(ADD_BOOK_ROUTE) {
+                        AddBookScreen(
+                            appNavController = navController,
+                            viewModel = searchBookViewModel
+                        )
                     }
                 }
             }

@@ -13,6 +13,8 @@ data class BookItem(
     val itemId: Long = 0L,
     val link: String = "",
     val publisher: String = "",
+    val description: String = "",
+    val pubDate: String = "",
     val subInfo: BookSubInfo? = null
 )
 

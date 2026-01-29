@@ -32,6 +32,7 @@ class AladinRepositoryImpl @Inject constructor(private val bookSearchSource: Ala
             val response = bookSearchSource.searchBookWithIsbn(itemId = isbn)
             return response.toDomain()
         } catch (e: Exception) {
+            println("searchBookWithIsbn: $e")
             return BookSearchResult()
         }
     }

@@ -13,26 +13,37 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import project.side.domain.model.BookItem
-import project.side.domain.model.BookSubInfo
 import project.side.domain.model.DomainResult
 import project.side.presentation.viewmodel.SearchBookViewModel
+import project.side.ui.BARCODE_ROUTE
 import project.side.ui.R
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.util.noEffectClick
@@ -40,9 +51,21 @@ import project.side.ui.util.oneClick
 
 @Composable
 fun SearchBookScreen(
+    appNavController: NavController? = null,
+    onNavigateToAddBookScreen: () -> Unit = {},
     viewModel: SearchBookViewModel? = hiltViewModel(),
     state: DomainResult<List<BookItem>>? = viewModel?.bookResultListState?.collectAsState()?.value
 ) {
+    val searchResult = viewModel?.bookDetail?.collectAsStateWithLifecycle()?.value
+    LaunchedEffect(searchResult) {
+        when (searchResult) {
+            is DomainResult.Success -> {
+                onNavigateToAddBookScreen()
+            }
+            else -> {}
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,16 +91,26 @@ fun SearchBookScreen(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val keyboardController = LocalSoftwareKeyboardController.current
+                    var text by remember { mutableStateOf("") }
+
                     BasicTextField(
-                        value = "소년",
-                        onValueChange = {},
+                        value = text,
+                        onValueChange = { text = it },
                         textStyle = MaterialTheme.typography.labelMedium.copy(color = Color.Black),
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 16.dp),
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = {
+                            keyboardController?.hide()
+                            viewModel?.searchBook(text)
+                        })
                     )
-                    Box(modifier = Modifier.oneClick {
 
+                    // camera icon opens barcode screen
+                    Box(modifier = Modifier.oneClick {
+                        appNavController?.navigate(BARCODE_ROUTE)
                     }) {
                         Icon(
                             painter = painterResource(R.drawable.camera),
@@ -86,7 +119,9 @@ fun SearchBookScreen(
                             modifier = Modifier.padding(8.dp)
                         )
                     }
-                    Box(modifier = Modifier.oneClick {}) {
+                    Box(modifier = Modifier.oneClick {
+                        viewModel?.searchBook(text)
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.search),
                             contentDescription = "search",
@@ -106,10 +141,10 @@ fun SearchBookScreen(
                                 .height(IntrinsicSize.Max)
                                 .padding(vertical = 16.dp)
                                 .noEffectClick {
-                                    // onClickAddBookButton(bookItem.isbn)
+                                    viewModel?.searchBookByIsbn(it.isbn)
                                 }) {
                             AsyncImage(
-                                model = it.link,
+                                model = it.cover,
                                 contentDescription = "book cover",
                                 modifier = Modifier
                                     .size(94.dp, 130.dp)
