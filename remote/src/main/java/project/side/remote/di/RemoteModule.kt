@@ -15,6 +15,7 @@ import project.side.remote.BuildConfig
 import project.side.remote.api.AuthService
 import project.side.remote.api.HistoryService
 import project.side.remote.api.TestApiService
+import project.side.remote.api.UserService
 import project.side.remote.auth.AuthInterceptor
 import project.side.remote.auth.TokenAuthenticator
 import project.side.remote.datasource.AuthDataSourceImpl
@@ -80,20 +81,22 @@ object RemoteModule {
     @Provides
     @Singleton
     @DefaultRetrofit
-    fun provideRetrofit(moshi: Moshi, @DefaultOkHttpClient okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl(BuildConfig.BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
+    fun provideRetrofit(moshi: Moshi, @DefaultOkHttpClient okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
 
     @Provides
     @Singleton
     @AuthRetrofit
-    fun provideAuthRetrofit(moshi: Moshi, @AuthOkHttpClient okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl(BuildConfig.BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
+    fun provideAuthRetrofit(moshi: Moshi, @AuthOkHttpClient okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
 
     @Provides
     @Singleton
@@ -114,6 +117,11 @@ object RemoteModule {
     @Singleton
     fun provideAuthDataSource(authService: AuthService): AuthDataSource =
         AuthDataSourceImpl(authService)
+
+    @Provides
+    @Singleton
+    fun provideUserService(@DefaultRetrofit retrofit: Retrofit): UserService =
+        retrofit.create(UserService::class.java)
 
     @Provides
     @Singleton
