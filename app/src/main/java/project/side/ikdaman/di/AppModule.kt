@@ -5,13 +5,17 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import project.side.data.datasource.AuthDataStoreSource
+import project.side.data.datasource.HistoryDataSource
 import project.side.data.datasource.TestDataSource
+import project.side.data.repository.HistoryRepositoryImpl
 import project.side.data.repository.AuthEventRepositoryImpl
 import project.side.data.repository.TestRepositoryImpl
 import project.side.data.repository.UserRepositoryImpl
+import project.side.domain.repository.HistoryRepository
 import project.side.domain.repository.AuthEventRepository
 import project.side.domain.repository.TestRepository
 import project.side.domain.repository.UserRepository
+import project.side.domain.usecase.GetHistoryBooksUseCase
 import project.side.domain.usecase.GetAuthEventUseCase
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.TestUseCase
@@ -47,4 +51,14 @@ object AppModule {
     @Singleton
     fun provideAuthEventUseCase(authEventRepository: AuthEventRepository): GetAuthEventUseCase =
         GetAuthEventUseCase(authEventRepository)
+
+    @Provides
+    @Singleton
+    fun provideHistoryBookRepository(historyDataSource: HistoryDataSource): HistoryRepository =
+        HistoryRepositoryImpl(historyDataSource)
+
+    @Provides
+    @Singleton
+    fun provideGetHistoryBooksUseCase(historyRepository: HistoryRepository) =
+        GetHistoryBooksUseCase(historyRepository)
 }

@@ -9,14 +9,17 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import project.side.data.datasource.AuthDataSource
+import project.side.data.datasource.HistoryDataSource
 import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
 import project.side.remote.api.AuthService
+import project.side.remote.api.HistoryService
 import project.side.remote.api.TestApiService
 import project.side.remote.api.UserService
 import project.side.remote.auth.AuthInterceptor
 import project.side.remote.auth.TokenAuthenticator
 import project.side.remote.datasource.AuthDataSourceImpl
+import project.side.remote.datasource.HistoryDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -119,4 +122,14 @@ object RemoteModule {
     @Singleton
     fun provideUserService(@DefaultRetrofit retrofit: Retrofit): UserService =
         retrofit.create(UserService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideHistoryService(@AuthRetrofit retrofit: Retrofit): HistoryService =
+        retrofit.create(HistoryService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideHistoryDataSource(historyService: HistoryService): HistoryDataSource =
+        HistoryDataSourceImpl(historyService)
 }
