@@ -20,6 +20,7 @@ import project.side.ui.ADD_BOOK_ROUTE
 import project.side.ui.BOOK_INFO_ROUTE
 import project.side.ui.HISTORY_ROUTE
 import project.side.ui.HOME_ROUTE
+import project.side.ui.MANUAL_BOOK_INPUT_ROUTE
 import project.side.ui.SEARCH_BOOK_ROUTE
 import project.side.ui.SETTING_ROUTE
 import project.side.ui.component.BottomNavBar
@@ -71,6 +72,9 @@ fun MainScreen(
                         appNavController,
                         onNavigateToAddBookScreen = {
                             appNavController.navigate(ADD_BOOK_ROUTE)
+                        },
+                        onNavigateToManualInputScreen = {
+                            appNavController.navigate(MANUAL_BOOK_INPUT_ROUTE)
                         },
                         viewModel = searchBookViewModel
                     )

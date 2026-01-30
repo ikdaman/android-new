@@ -1,6 +1,7 @@
 package project.side.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -15,9 +16,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,6 +56,7 @@ import project.side.ui.util.oneClick
 fun SearchBookScreen(
     appNavController: NavController? = null,
     onNavigateToAddBookScreen: () -> Unit = {},
+    onNavigateToManualInputScreen: () -> Unit = {},
     viewModel: SearchBookViewModel? = hiltViewModel(),
     state: DomainResult<List<BookItem>>? = viewModel?.bookResultListState?.collectAsState()?.value
 ) {
@@ -133,36 +137,97 @@ fun SearchBookScreen(
             }
 
             Column {
-                if (state is DomainResult.Success) {
-                    state.data.forEach {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(IntrinsicSize.Max)
-                                .padding(vertical = 16.dp)
-                                .noEffectClick {
-                                    viewModel?.searchBookByIsbn(it.isbn)
-                                }) {
-                            AsyncImage(
-                                model = it.cover,
-                                contentDescription = "book cover",
+                when (state) {
+                    is DomainResult.Success -> {
+                        if (state.data.isEmpty()) {
+                            // Empty search results
+                            Column(
                                 modifier = Modifier
-                                    .size(94.dp, 130.dp)
-                                    .align(Alignment.CenterVertically),
-                                placeholder = ColorPainter(Color.Gray),
-                                error = ColorPainter(Color.Red)
-                            )
-                            Column(Modifier.padding(vertical = 12.dp, horizontal = 16.dp)) {
+                                    .fillMaxWidth()
+                                    .padding(top = 48.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
                                 Text(
-                                    it.title,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
+                                    text = "검색 결과가 없습니다.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Black
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(it.author, style = MaterialTheme.typography.labelMedium)
+                                Spacer(modifier = Modifier.height(10.dp))
+                                TextButton(
+                                    onClick = { onNavigateToManualInputScreen() },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        contentColor = Color.Black,
+                                        containerColor = Color.Gray,
+                                    )
+                                ) {
+                                    Text(
+                                        text = "책 직접 입력하기",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Black
+                                    )
+                                }
+                            }
+                        } else {
+                            state.data.forEach {
+                                Row(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(IntrinsicSize.Max)
+                                        .padding(vertical = 16.dp)
+                                        .noEffectClick {
+                                            viewModel?.searchBookByIsbn(it.isbn)
+                                        }) {
+                                    AsyncImage(
+                                        model = it.cover,
+                                        contentDescription = "book cover",
+                                        modifier = Modifier
+                                            .size(94.dp, 130.dp)
+                                            .align(Alignment.CenterVertically),
+                                        placeholder = ColorPainter(Color.Gray),
+                                        error = ColorPainter(Color.Red)
+                                    )
+                                    Column(Modifier.padding(vertical = 12.dp, horizontal = 16.dp)) {
+                                        Text(
+                                            it.title,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(it.author, style = MaterialTheme.typography.labelMedium)
+                                    }
+                                }
                             }
                         }
+                    }
+                    is DomainResult.Error -> {
+                        // Error state - show error message
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 48.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "검색 결과가 없습니다.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Gray
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            TextButton(
+                                onClick = { onNavigateToManualInputScreen() }
+                            ) {
+                                Text(
+                                    text = "책 직접 입력하기",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                        // Init or Loading state - do nothing
                     }
                 }
             }

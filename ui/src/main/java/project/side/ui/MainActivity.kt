@@ -16,6 +16,7 @@ import project.side.ui.screen.AddBookScreen
 import project.side.ui.screen.BarcodeScreen
 import project.side.ui.screen.LoginScreen
 import project.side.ui.screen.MainScreen
+import project.side.ui.screen.ManualBookInputScreen
 import project.side.ui.theme.IkdamanTheme
 import javax.inject.Inject
 
@@ -64,6 +65,15 @@ class MainActivity : ComponentActivity() {
                         AddBookScreen(
                             appNavController = navController,
                             viewModel = searchBookViewModel
+                        )
+                    }
+                    composable(MANUAL_BOOK_INPUT_ROUTE) {
+                        ManualBookInputScreen(
+                            appNavController = navController,
+                            onSave = { title, author, publisher, pubDate, isbn, pageCount ->
+                                // TODO: Handle save logic
+                                navController.popBackStack()
+                            }
                         )
                     }
                 }
