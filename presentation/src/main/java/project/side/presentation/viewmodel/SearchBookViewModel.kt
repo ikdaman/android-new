@@ -84,17 +84,14 @@ class SearchBookViewModel @Inject constructor(
             val manual = ManualBookInfo(
                 title = book.title,
                 author = book.author,
-                publisher = if (book.publisher.isBlank()) null else book.publisher,
-                pubDate = if (book.pubDate.isBlank()) null else book.pubDate,
-                isbn = if (book.isbn.isBlank()) null else book.isbn,
+                publisher = book.publisher.ifBlank { null },
+                pubDate = book.pubDate.ifBlank { null },
+                isbn = book.isbn.ifBlank { null },
                 pageCount = book.subInfo?.itemPage,
                 reason = reason,
                 startDate = startDate?.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE),
                 endDate = endDate?.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE)
             )
-            // If caller passed start/end dates through params, they should be attached later.
-            // attach optional fields if provided (domain model doesn't have them yet)
-            // If backend needs reason/startDate/endDate, extend ManualBookInfo and Data models accordingly.
 
             saveManualBookInfoUseCase(manual).collect { result ->
                 when (result) {

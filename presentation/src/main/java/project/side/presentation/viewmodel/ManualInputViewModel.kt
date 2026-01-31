@@ -41,27 +41,6 @@ class ManualInputViewModel @Inject constructor(
         }
     }
 
-    // convenience helper for UI layer: accept raw strings and create domain ManualBookInfo here
-    fun saveManualBookInfoFromUi(
-        title: String,
-        author: String,
-        publisher: String?,
-        pubDate: String?,
-        isbn: String?,
-        pageCount: String?
-    ) {
-        saveManualBookInfo(
-            ManualBookInfo(
-                title = title,
-                author = author,
-                publisher = publisher,
-                pubDate = pubDate,
-                isbn = isbn,
-                pageCount = pageCount
-            )
-        )
-    }
-
     // accept optional reason and startDate/endDate from UI bottom sheet
     fun saveManualBookInfoFromUi(
         title: String,
@@ -83,6 +62,7 @@ class ManualInputViewModel @Inject constructor(
                 pubDate = pubDate,
                 isbn = isbn,
                 pageCount = pageCount,
+                reason = reason,
                 startDate = startDate?.format(fmt),
                 endDate = endDate?.format(fmt)
             )

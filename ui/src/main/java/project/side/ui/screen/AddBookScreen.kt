@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import project.side.domain.model.BookItem
 import project.side.presentation.viewmodel.SearchBookViewModel
+import project.side.ui.component.CustomSnackbarHost
 // saveState is Boolean? exposed from ViewModel
 import project.side.ui.theme.IkdamanTheme
 
@@ -63,13 +64,15 @@ fun AddBookScreen(
 
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
-    Scaffold {
+    Scaffold(
+        snackbarHost = {
+            CustomSnackbarHost(snackbarHostState)
+        }
+    ) {
         Box(
             modifier = Modifier.fillMaxSize().padding(it),
             contentAlignment = Alignment.Center
         ) {
-            // snackbar host
-            CustomSnackbarHost(snackbarHostState)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
@@ -138,8 +141,10 @@ fun AddBookScreen(
                     val saveState by viewModel.saveState.collectAsState(initial = null)
                     LaunchedEffect(saveState) {
                         if (saveState == true) {
-                            // show snackbar then navigate back
-                            snackbarHostState.showSnackbar("책을 저장했어요")
+                            // emit global snackbar message via SnackbarManager (MainScreen hosts the UI)
+                            kotlinx.coroutines.launch {
+                                project.side.presentation.util.SnackbarManager.show("책을 저장했어요")
+                            }
                             appNavController.popBackStack()
                         }
                     }

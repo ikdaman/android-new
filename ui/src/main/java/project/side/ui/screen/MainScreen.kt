@@ -16,6 +16,11 @@ import androidx.navigation.compose.rememberNavController
 import project.side.presentation.viewmodel.MainViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import project.side.presentation.viewmodel.SearchBookViewModel
+import project.side.presentation.util.SnackbarManager
+import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.SnackbarHostState
+import project.side.ui.component.CustomSnackbarHost
 import project.side.ui.ADD_BOOK_ROUTE
 import project.side.ui.BOOK_INFO_ROUTE
 import project.side.ui.HISTORY_ROUTE
@@ -51,6 +56,13 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            val snackbarHostState = remember { SnackbarHostState() }
+            CustomSnackbarHost(snackbarHostState)
+            LaunchedEffect(Unit) {
+                SnackbarManager.events.collectLatest { msg ->
+                    snackbarHostState.showSnackbar(msg)
+                }
+            }
             NavHost(
                 navController = navController,
                 startDestination = HOME_ROUTE

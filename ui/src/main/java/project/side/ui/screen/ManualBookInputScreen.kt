@@ -47,6 +47,7 @@ import project.side.presentation.viewmodel.ManualInputViewModel
 import project.side.ui.component.BookRegisterBottomSheet
 import androidx.compose.runtime.mutableStateOf
 import project.side.ui.R
+import project.side.ui.component.CustomSnackbarHost
 import project.side.ui.theme.IkdamanTheme
 
 @Composable
@@ -67,14 +68,17 @@ fun ManualBookInputScreen(
 
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
-    Scaffold {
+    Scaffold(
+        snackbarHost = {
+            CustomSnackbarHost(snackbarHostState)
+        }
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
             contentAlignment = Alignment.Center
         ) {
-            CustomSnackbarHost(snackbarHostState)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -119,7 +123,9 @@ fun ManualBookInputScreen(
                  val saveState by (viewModel?.saveState?.collectAsState() ?: remember { mutableStateOf(null as Boolean?) })
                  LaunchedEffect(saveState) {
                      if (saveState == true) {
-                         snackbarHostState.showSnackbar("책을 저장했어요")
+                         kotlinx.coroutines.launch {
+                             project.side.presentation.util.SnackbarManager.show("책을 저장했어요")
+                         }
                          appNavController.popBackStack()
                      }
                  }
