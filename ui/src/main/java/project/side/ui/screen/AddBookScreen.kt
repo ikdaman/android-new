@@ -61,11 +61,15 @@ fun AddBookScreen(
     // shared show state for BookRegisterBottomSheet
     val showRegister = remember { mutableStateOf(false) }
 
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+
     Scaffold {
         Box(
             modifier = Modifier.fillMaxSize().padding(it),
             contentAlignment = Alignment.Center
         ) {
+            // snackbar host
+            CustomSnackbarHost(snackbarHostState)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
@@ -133,7 +137,11 @@ fun AddBookScreen(
                 if (viewModel != null) {
                     val saveState by viewModel.saveState.collectAsState(initial = null)
                     LaunchedEffect(saveState) {
-                        if (saveState == true) appNavController.popBackStack()
+                        if (saveState == true) {
+                            // show snackbar then navigate back
+                            snackbarHostState.showSnackbar("책을 저장했어요")
+                            appNavController.popBackStack()
+                        }
                     }
                 }
 

@@ -65,6 +65,8 @@ fun ManualBookInputScreen(
 
     val scrollState = rememberScrollState()
 
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+
     Scaffold {
         Box(
             modifier = Modifier
@@ -72,6 +74,7 @@ fun ManualBookInputScreen(
                 .padding(it),
             contentAlignment = Alignment.Center
         ) {
+            CustomSnackbarHost(snackbarHostState)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -113,12 +116,13 @@ fun ManualBookInputScreen(
                 }
                 Spacer(Modifier.height(16.dp))
                 // observe save result from ViewModel; when success -> close screen
-                val saveState by (viewModel?.saveState?.collectAsState() ?: remember { mutableStateOf(null as Boolean?) })
-                LaunchedEffect(saveState) {
-                    if (saveState == true) {
-                        appNavController.popBackStack()
-                    }
-                }
+                 val saveState by (viewModel?.saveState?.collectAsState() ?: remember { mutableStateOf(null as Boolean?) })
+                 LaunchedEffect(saveState) {
+                     if (saveState == true) {
+                         snackbarHostState.showSnackbar("책을 저장했어요")
+                         appNavController.popBackStack()
+                     }
+                 }
 
                 BookRegisterBottomSheet(
                     show = showRegister.value,
