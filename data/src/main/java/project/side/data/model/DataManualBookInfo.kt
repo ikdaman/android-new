@@ -9,6 +9,9 @@ data class DataManualBookInfo(
     val pubDate: String? = null,
     val isbn: String? = null,
     val pageCount: String? = null
+    ,
+    val startDate: String? = null,
+    val endDate: String? = null
 ) {
     companion object {
         fun fromDomain(manualBookInfo: ManualBookInfo): DataManualBookInfo {
@@ -18,7 +21,9 @@ data class DataManualBookInfo(
                 publisher = manualBookInfo.publisher,
                 pubDate = manualBookInfo.pubDate,
                 isbn = manualBookInfo.isbn,
-                pageCount = manualBookInfo.pageCount
+                pageCount = manualBookInfo.pageCount,
+                startDate = manualBookInfo.startDate,
+                endDate = manualBookInfo.endDate
             )
         }
     }

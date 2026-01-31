@@ -134,7 +134,8 @@ fun ManualBookInputScreen(
                             isbn = isbn.ifBlank { null },
                             pageCount = pageCount.ifBlank { null },
                             reason = reason,
-                            startDate = startDate
+                            startDate = startDate,
+                            endDate = endDate
                         )
                     }
                 )

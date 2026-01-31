@@ -6,6 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import java.time.format.DateTimeFormatter
+import java.time.LocalDate
 import project.side.domain.DataResource
 import project.side.domain.model.ManualBookInfo
 import project.side.domain.usecase.SaveManualBookInfoUseCase
@@ -60,7 +62,7 @@ class ManualInputViewModel @Inject constructor(
         )
     }
 
-    // overload to accept optional reason and startDate from UI bottom sheet
+    // accept optional reason and startDate/endDate from UI bottom sheet
     fun saveManualBookInfoFromUi(
         title: String,
         author: String,
@@ -69,9 +71,21 @@ class ManualInputViewModel @Inject constructor(
         isbn: String?,
         pageCount: String?,
         reason: String? = null,
-        startDate: java.time.LocalDate? = null
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null
     ) {
-        // for now we ignore reason/startDate until domain/data models include them
-        saveManualBookInfoFromUi(title, author, publisher, pubDate, isbn, pageCount)
+        val fmt = DateTimeFormatter.ISO_LOCAL_DATE
+        saveManualBookInfo(
+            ManualBookInfo(
+                title = title,
+                author = author,
+                publisher = publisher,
+                pubDate = pubDate,
+                isbn = isbn,
+                pageCount = pageCount,
+                startDate = startDate?.format(fmt),
+                endDate = endDate?.format(fmt)
+            )
+        )
     }
 }

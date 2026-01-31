@@ -89,6 +89,7 @@ class SearchBookViewModel @Inject constructor(
                 isbn = if (book.isbn.isBlank()) null else book.isbn,
                 pageCount = book.subInfo?.itemPage
             )
+            // If caller passed start/end dates through params, they should be attached later.
             // attach optional fields if provided (domain model doesn't have them yet)
             // If backend needs reason/startDate/endDate, extend ManualBookInfo and Data models accordingly.
 
