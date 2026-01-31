@@ -8,6 +8,7 @@ data class ManualBookInfo(
     val isbn: String? = null,
     val pageCount: String? = null
     ,
+    val reason: String? = null,
     val startDate: String? = null, // ISO yyyy-MM-dd
     val endDate: String? = null // ISO yyyy-MM-dd
 )
