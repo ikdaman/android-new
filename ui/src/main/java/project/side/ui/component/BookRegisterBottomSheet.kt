@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -48,11 +50,11 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @Composable
- fun BookRegisterBottomSheet(
-     show: Boolean,
-     onDismiss: () -> Unit,
-     onConfirm: (reason: String?, startDate: java.time.LocalDate?) -> Unit
- ) {
+fun BookRegisterBottomSheet(
+    show: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (reason: String?, startDate: java.time.LocalDate?) -> Unit
+) {
     if (!show) return
 
     val scope = rememberCoroutineScope()
@@ -70,7 +72,15 @@ import java.util.Calendar
         onDismissRequest = { onDismiss() },
         sheetState = rememberModalBottomSheetState()
     ) {
-        RegisterBottomSheetUI(selectedTab, reason, selectedDate, context, onDismiss, scope, onConfirm)
+        RegisterBottomSheetUI(
+            selectedTab,
+            reason,
+            selectedDate,
+            context,
+            onDismiss,
+            scope,
+            onConfirm
+        )
     }
 }
 
@@ -89,53 +99,80 @@ private fun RegisterBottomSheetUI(
             .fillMaxWidth()
             .padding(16.dp),
         shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("책 등록", style = MaterialTheme.typography.titleMedium.copy(color = Color.Black), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            Text(
+                "책 등록",
+                style = MaterialTheme.typography.titleMedium.copy(color = Color.Black),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(Modifier.height(12.dp))
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val tabShape = RoundedCornerShape(6.dp)
-                    val selectedBg = Color(0xFFEEEEEE)
-                    val unselectedBg = Color.White
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val tabShape = RoundedCornerShape(6.dp)
+                val selectedBg = Color(0xFFEEEEEE)
+                val unselectedBg = Color.White
 
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(64.dp)
-                            .border(width = 1.dp, color = Color.Black, shape = tabShape)
-                            .background(if (selectedTab.value == 0) selectedBg else unselectedBg, shape = tabShape)
-                            .noEffectClick { selectedTab.value = 0 }
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text("내 서점", style = MaterialTheme.typography.labelLarge.copy(color = Color.Black))
-                        Spacer(Modifier.height(4.dp))
-                        Text("읽고 싶은 책", style = MaterialTheme.typography.labelSmall.copy(color = Color.Black))
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(64.dp)
-                            .border(width = 1.dp, color = Color.Black, shape = tabShape)
-                            .background(if (selectedTab.value == 1) selectedBg else unselectedBg, shape = tabShape)
-                            .noEffectClick { selectedTab.value = 1 }
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text("히스토리", style = MaterialTheme.typography.labelLarge.copy(color = Color.Black))
-                        Spacer(Modifier.height(4.dp))
-                        Text("독서 시작/완료한 책", style = MaterialTheme.typography.labelSmall.copy(color = Color.Black))
-                    }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(64.dp)
+                        .border(width = 1.dp, color = Color.Black, shape = tabShape)
+                        .background(
+                            if (selectedTab.value == 0) selectedBg else unselectedBg,
+                            shape = tabShape
+                        )
+                        .noEffectClick { selectedTab.value = 0 }
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        "내 서점",
+                        style = MaterialTheme.typography.labelLarge.copy(color = Color.Black)
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "읽고 싶은 책",
+                        style = MaterialTheme.typography.labelSmall.copy(color = Color.Black)
+                    )
                 }
 
-            Spacer(Modifier.height(12.dp))
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(64.dp)
+                        .border(width = 1.dp, color = Color.Black, shape = tabShape)
+                        .background(
+                            if (selectedTab.value == 1) selectedBg else unselectedBg,
+                            shape = tabShape
+                        )
+                        .noEffectClick { selectedTab.value = 1 }
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        "히스토리",
+                        style = MaterialTheme.typography.labelLarge.copy(color = Color.Black)
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "독서 시작/완료한 책",
+                        style = MaterialTheme.typography.labelSmall.copy(color = Color.Black)
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
 
             if (selectedTab.value == 0) {
-                Text("읽고 싶은 이유", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Text(
+                    "읽고 싶은 이유",
+                    style = MaterialTheme.typography.titleSmall.copy(color = Color.Black)
+                )
                 Spacer(Modifier.height(8.dp))
                 BasicTextField(
                     value = reason.value,
@@ -159,37 +196,48 @@ private fun RegisterBottomSheetUI(
                     selectedDate.value.dayOfMonth
                 )
                 val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = selectedDate.value.format(dateFormatter))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .noEffectClick {
+                            val dpd = DatePickerDialog(
+                                context,
+                                { _: DatePicker, y: Int, m: Int, d: Int ->
+                                    selectedDate.value = LocalDate.of(y, m + 1, d)
+                                },
+                                selectedDate.value.year,
+                                selectedDate.value.monthValue - 1,
+                                selectedDate.value.dayOfMonth
+                            )
+                            dpd.show()
+                        }
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Filled.DateRange,
+                        contentDescription = "calendar",
+                        tint = Color.Black
+                    )
                     Spacer(Modifier.width(8.dp))
-                    Button(onClick = {
-                        val dpd = DatePickerDialog(
-                            context,
-                            { _: DatePicker, y: Int, m: Int, d: Int ->
-                                selectedDate.value = LocalDate.of(y, m + 1, d)
-                            },
-                            selectedDate.value.year,
-                            selectedDate.value.monthValue - 1,
-                            selectedDate.value.dayOfMonth
-                        )
-                        dpd.show()
-                    }) {
-                        Text("날짜 선택")
-                    }
+                    Text(text = selectedDate.value.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                Button(onClick = { onDismiss() }) { Text("취소") }
-                Spacer(Modifier.width(8.dp))
-                Button(onClick = {
+            Spacer(Modifier.height(24.dp))
+            Button(
+                onClick = {
                     scope.launch {
                         val reasonToSend = reason.value.takeIf { it.isNotBlank() }
                         onConfirm(reasonToSend, selectedDate.value)
                     }
-                }) { Text("확인") }
-            }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.LightGray,
+                    contentColor = Color.Black,
+                )
+            ) { Text("확인", style = MaterialTheme.typography.labelLarge) }
         }
     }
 }
@@ -199,7 +247,7 @@ private fun RegisterBottomSheetUI(
 fun BookRegisterBottomSheetPreview() {
     IkdamanTheme {
         RegisterBottomSheetUI(
-            selectedTab = remember { mutableStateOf(0) },
+            selectedTab = remember { mutableStateOf(1) },
             reason = remember { mutableStateOf("") },
             selectedDate = remember { mutableStateOf(LocalDate.now()) },
             context = LocalContext.current,
