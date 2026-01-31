@@ -69,11 +69,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(MANUAL_BOOK_INPUT_ROUTE) {
                         ManualBookInputScreen(
-                            appNavController = navController,
-                            onSave = { title, author, publisher, pubDate, isbn, pageCount ->
-                                // TODO: Handle save logic
-                                navController.popBackStack()
-                            }
+                            appNavController = navController
                         )
                     }
                 }
