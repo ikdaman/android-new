@@ -17,13 +17,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -33,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -53,7 +57,7 @@ import java.util.Calendar
 fun BookRegisterBottomSheet(
     show: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (reason: String?, startDate: java.time.LocalDate?) -> Unit
+    onConfirm: (reason: String?, startDate: java.time.LocalDate?, endDate: java.time.LocalDate?) -> Unit
 ) {
     if (!show) return
 
@@ -67,6 +71,8 @@ fun BookRegisterBottomSheet(
     // default date = today
     val today = LocalDate.now()
     val selectedDate = remember { mutableStateOf(today) }
+    // optional end date (null = not selected)
+    val selectedEndDate = remember { mutableStateOf<java.time.LocalDate?>(null) }
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -76,6 +82,7 @@ fun BookRegisterBottomSheet(
             selectedTab,
             reason,
             selectedDate,
+            selectedEndDate,
             context,
             onDismiss,
             scope,
@@ -89,10 +96,11 @@ private fun RegisterBottomSheetUI(
     selectedTab: MutableState<Int>,
     reason: MutableState<String>,
     selectedDate: MutableState<LocalDate>,
+    selectedEndDate: MutableState<LocalDate?>,
     context: Context,
     onDismiss: () -> Unit,
     scope: CoroutineScope,
-    onConfirm: (String?, LocalDate?) -> Unit
+    onConfirm: (String?, LocalDate?, LocalDate?) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -187,7 +195,7 @@ private fun RegisterBottomSheetUI(
                 Spacer(Modifier.height(4.dp))
                 Text("${reason.value.length}/500", style = TextStyle(color = Color.Gray))
             } else {
-                Text("독서 시작")
+                Text("독서 시작", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
                 Spacer(Modifier.height(8.dp))
                 val cal = Calendar.getInstance()
                 cal.set(
@@ -196,6 +204,7 @@ private fun RegisterBottomSheetUI(
                     selectedDate.value.dayOfMonth
                 )
                 val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                // start date row (tappable)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -212,6 +221,8 @@ private fun RegisterBottomSheetUI(
                             )
                             dpd.show()
                         }
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.LightGray.copy(alpha = 0.5f))
                         .padding(8.dp)
                 ) {
                     Icon(
@@ -222,6 +233,44 @@ private fun RegisterBottomSheetUI(
                     Spacer(Modifier.width(8.dp))
                     Text(text = selectedDate.value.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
                 }
+
+                Spacer(Modifier.height(12.dp))
+
+                // end date row (optional). initially null -> show "읽는 중"
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .noEffectClick {
+                            // open date picker with either previously selected end date or today
+                            val initial = selectedEndDate.value ?: LocalDate.now()
+                            val dpd = DatePickerDialog(
+                                context,
+                                { _: DatePicker, y: Int, m: Int, d: Int ->
+                                    selectedEndDate.value = LocalDate.of(y, m + 1, d)
+                                },
+                                initial.year,
+                                initial.monthValue - 1,
+                                initial.dayOfMonth
+                            )
+                            dpd.show()
+                        }
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.LightGray.copy(alpha = 0.2f))
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Filled.DateRange,
+                        contentDescription = "calendar-end",
+                        tint = Color.Black
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    if (selectedEndDate.value == null) {
+                        Text(text = "읽는 중", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                    } else {
+                        Text(text = selectedEndDate.value!!.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
             }
 
             Spacer(Modifier.height(24.dp))
@@ -229,7 +278,7 @@ private fun RegisterBottomSheetUI(
                 onClick = {
                     scope.launch {
                         val reasonToSend = reason.value.takeIf { it.isNotBlank() }
-                        onConfirm(reasonToSend, selectedDate.value)
+                        onConfirm(reasonToSend, selectedDate.value, selectedEndDate.value)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
