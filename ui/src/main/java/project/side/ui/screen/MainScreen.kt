@@ -20,6 +20,7 @@ import project.side.presentation.util.SnackbarManager
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
 import project.side.ui.component.CustomSnackbarHost
 import project.side.ui.ADD_BOOK_ROUTE
 import project.side.ui.BOOK_INFO_ROUTE
@@ -41,8 +42,11 @@ fun MainScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val isLoggedIn = mainViewModel.isLoggedIn.collectAsState()
-
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
+        snackbarHost = {
+            CustomSnackbarHost(snackbarHostState)
+        },
         bottomBar = {
             if (currentRoute != SETTING_ROUTE && currentRoute != BOOK_INFO_ROUTE) {
                 BottomNavBar(navController) { onLoggedIn ->
@@ -56,8 +60,6 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            val snackbarHostState = remember { SnackbarHostState() }
-            CustomSnackbarHost(snackbarHostState)
             LaunchedEffect(Unit) {
                 SnackbarManager.events.collectLatest { msg ->
                     snackbarHostState.showSnackbar(msg)

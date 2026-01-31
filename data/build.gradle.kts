@@ -17,4 +17,6 @@ dependencies {
 
     implementation(libs.javax.inject)
     implementation(libs.kotlinx.coroutines.core)
+    // gson
+    implementation(libs.google.gson)
 }

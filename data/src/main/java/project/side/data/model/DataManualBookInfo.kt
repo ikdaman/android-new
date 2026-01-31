@@ -1,7 +1,7 @@
 package project.side.data.model
 
-import project.side.domain.model.ManualBookInfo
 import com.google.gson.annotations.SerializedName
+import project.side.domain.model.ManualBookInfo
 
 data class DataManualBookInfo(
     val title: String = "",

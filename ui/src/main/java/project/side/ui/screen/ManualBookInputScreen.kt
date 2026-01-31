@@ -26,12 +26,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,10 +43,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
+import project.side.presentation.util.SnackbarManager
 import project.side.presentation.viewmodel.ManualInputViewModel
-import project.side.ui.component.BookRegisterBottomSheet
-import androidx.compose.runtime.mutableStateOf
 import project.side.ui.R
+import project.side.ui.component.BookRegisterBottomSheet
 import project.side.ui.component.CustomSnackbarHost
 import project.side.ui.theme.IkdamanTheme
 
@@ -123,8 +124,8 @@ fun ManualBookInputScreen(
                  val saveState by (viewModel?.saveState?.collectAsState() ?: remember { mutableStateOf(null as Boolean?) })
                  LaunchedEffect(saveState) {
                      if (saveState == true) {
-                         kotlinx.coroutines.launch {
-                             project.side.presentation.util.SnackbarManager.show("책을 저장했어요")
+                         launch {
+                             SnackbarManager.show("책을 저장했어요")
                          }
                          appNavController.popBackStack()
                      }

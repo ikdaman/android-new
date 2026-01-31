@@ -37,7 +37,9 @@ import project.side.ui.component.BookRegisterBottomSheet
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import kotlinx.coroutines.launch
 import project.side.domain.model.BookItem
+import project.side.presentation.util.SnackbarManager
 import project.side.presentation.viewmodel.SearchBookViewModel
 import project.side.ui.component.CustomSnackbarHost
 // saveState is Boolean? exposed from ViewModel
@@ -62,13 +64,7 @@ fun AddBookScreen(
     // shared show state for BookRegisterBottomSheet
     val showRegister = remember { mutableStateOf(false) }
 
-    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
-
-    Scaffold(
-        snackbarHost = {
-            CustomSnackbarHost(snackbarHostState)
-        }
-    ) {
+    Scaffold {
         Box(
             modifier = Modifier.fillMaxSize().padding(it),
             contentAlignment = Alignment.Center
@@ -140,12 +136,17 @@ fun AddBookScreen(
                 if (viewModel != null) {
                     val saveState by viewModel.saveState.collectAsState(initial = null)
                     LaunchedEffect(saveState) {
-                        if (saveState == true) {
-                            // emit global snackbar message via SnackbarManager (MainScreen hosts the UI)
-                            kotlinx.coroutines.launch {
-                                project.side.presentation.util.SnackbarManager.show("책을 저장했어요")
+                        when (saveState) {
+                            true -> {
+                                // emit success message and navigate back
+                                launch { SnackbarManager.show("책을 저장했어요") }
+                                appNavController.popBackStack()
                             }
-                            appNavController.popBackStack()
+                            false -> {
+                                // emit failure message and stay on screen
+                                launch { SnackbarManager.show("책 저장에 실패했어요") }
+                            }
+                            else -> Unit
                         }
                     }
                 }
