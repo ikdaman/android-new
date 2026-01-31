@@ -1,6 +1,7 @@
 package project.side.data.model
 
 import project.side.domain.model.ManualBookInfo
+import com.google.gson.annotations.SerializedName
 
 data class DataManualBookInfo(
     val title: String = "",
@@ -8,10 +9,10 @@ data class DataManualBookInfo(
     val publisher: String? = null,
     val pubDate: String? = null,
     val isbn: String? = null,
-    val pageCount: String? = null
-    ,
-    val startDate: String? = null,
-    val endDate: String? = null
+    val pageCount: String? = null,
+    // JSON keys required by backend
+    @SerializedName("startedDate") val startedDate: String? = null,
+    @SerializedName("finishedDate") val finishedDate: String? = null
 ) {
     companion object {
         fun fromDomain(manualBookInfo: ManualBookInfo): DataManualBookInfo {
@@ -22,8 +23,8 @@ data class DataManualBookInfo(
                 pubDate = manualBookInfo.pubDate,
                 isbn = manualBookInfo.isbn,
                 pageCount = manualBookInfo.pageCount,
-                startDate = manualBookInfo.startDate,
-                endDate = manualBookInfo.endDate
+                startedDate = manualBookInfo.startDate,
+                finishedDate = manualBookInfo.endDate
             )
         }
     }
