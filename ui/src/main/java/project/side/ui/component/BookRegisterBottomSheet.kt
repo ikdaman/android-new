@@ -26,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -40,11 +39,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import project.side.ui.theme.IkdamanTheme
@@ -57,7 +54,7 @@ import java.util.Calendar
 fun BookRegisterBottomSheet(
     show: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (reason: String?, startDate: java.time.LocalDate?, endDate: java.time.LocalDate?) -> Unit
+    onConfirm: (reason: String?, startDate: LocalDate?, endDate: LocalDate?) -> Unit
 ) {
     if (!show) return
 
@@ -72,7 +69,7 @@ fun BookRegisterBottomSheet(
     val today = LocalDate.now()
     val selectedDate = remember { mutableStateOf(today) }
     // optional end date (null = not selected)
-    val selectedEndDate = remember { mutableStateOf<java.time.LocalDate?>(null) }
+    val selectedEndDate = remember { mutableStateOf<LocalDate?>(null) }
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -84,7 +81,6 @@ fun BookRegisterBottomSheet(
             selectedDate,
             selectedEndDate,
             context,
-            onDismiss,
             scope,
             onConfirm
         )
@@ -98,7 +94,6 @@ private fun RegisterBottomSheetUI(
     selectedDate: MutableState<LocalDate>,
     selectedEndDate: MutableState<LocalDate?>,
     context: Context,
-    onDismiss: () -> Unit,
     scope: CoroutineScope,
     onConfirm: (String?, LocalDate?, LocalDate?) -> Unit
 ) {
@@ -116,7 +111,7 @@ private fun RegisterBottomSheetUI(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(32.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val tabShape = RoundedCornerShape(6.dp)
@@ -174,7 +169,7 @@ private fun RegisterBottomSheetUI(
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(32.dp))
 
             if (selectedTab.value == 0) {
                 Text(
@@ -234,8 +229,9 @@ private fun RegisterBottomSheetUI(
                     Text(text = selectedDate.value.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
                 }
 
-                Spacer(Modifier.height(12.dp))
-
+                Spacer(Modifier.height(32.dp))
+                Text("독서 종료", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Spacer(Modifier.height(8.dp))
                 // end date row (optional). initially null -> show "읽는 중"
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -266,14 +262,14 @@ private fun RegisterBottomSheetUI(
                     )
                     Spacer(Modifier.width(8.dp))
                     if (selectedEndDate.value == null) {
-                        Text(text = "읽는 중", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                        Text(text = "읽는 중", style = MaterialTheme.typography.bodyMedium, color = Color.Black)
                     } else {
                         Text(text = selectedEndDate.value!!.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(32.dp))
             Button(
                 onClick = {
                     scope.launch {
@@ -286,7 +282,7 @@ private fun RegisterBottomSheetUI(
                     containerColor = Color.LightGray,
                     contentColor = Color.Black,
                 )
-            ) { Text("확인", style = MaterialTheme.typography.labelLarge) }
+            ) { Text("저장", style = MaterialTheme.typography.labelLarge) }
         }
     }
 }
@@ -300,9 +296,9 @@ fun BookRegisterBottomSheetPreview() {
             reason = remember { mutableStateOf("") },
             selectedDate = remember { mutableStateOf(LocalDate.now()) },
             context = LocalContext.current,
-            onDismiss = {},
             scope = rememberCoroutineScope(),
-            onConfirm = { _, _ -> }
+            selectedEndDate = remember { mutableStateOf(null) },
+            onConfirm = { _, _, _ -> },
         )
     }
 }

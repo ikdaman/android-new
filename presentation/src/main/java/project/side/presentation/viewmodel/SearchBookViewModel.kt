@@ -73,7 +73,7 @@ class SearchBookViewModel @Inject constructor(
         _searchedBookDetail.value = DomainResult.Init
     }
 
-    fun saveSelectedBook(reason: String? = null, startDate: java.time.LocalDate? = null) {
+    fun saveSelectedBook(reason: String? = null, startDate: java.time.LocalDate? = null, endDate: java.time.LocalDate? = null) {
         viewModelScope.launch {
             val book = _selectedBookItem.value
             if (book == null) {
@@ -90,7 +90,7 @@ class SearchBookViewModel @Inject constructor(
                 pageCount = book.subInfo?.itemPage
             )
             // attach optional fields if provided (domain model doesn't have them yet)
-            // If backend needs reason/startDate, extend ManualBookInfo and Data models accordingly.
+            // If backend needs reason/startDate/endDate, extend ManualBookInfo and Data models accordingly.
 
             saveManualBookInfoUseCase(manual).collect { result ->
                 when (result) {

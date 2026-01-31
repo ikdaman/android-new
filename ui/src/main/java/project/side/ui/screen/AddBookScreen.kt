@@ -147,10 +147,10 @@ fun AddBookScreen(
                 BookRegisterBottomSheet(
                     show = showRegister.value,
                     onDismiss = { showRegister.value = false },
-                    onConfirm = { reason, date ->
-                        // trigger save with optional reason/date
+                    onConfirm = { reason, startDate, endDate ->
+                        // trigger save with optional reason/startDate/endDate
                         showRegister.value = false
-                        viewModel?.saveSelectedBook(reason, date)
+                        viewModel?.saveSelectedBook(reason, startDate, endDate)
                     }
                 )
             }

@@ -61,6 +61,8 @@ fun ManualBookInputScreen(
     var isbn by remember { mutableStateOf("") }
     var pageCount by remember { mutableStateOf("") }
 
+    val showRegister = remember { mutableStateOf(false) }
+
     val scrollState = rememberScrollState()
 
     Scaffold {
@@ -99,14 +101,7 @@ fun ManualBookInputScreen(
                     val saveEnabled = title.isNotBlank() && author.isNotBlank()
                     TextButton(
                         onClick = {
-                            viewModel?.saveManualBookInfoFromUi(
-                                title = title,
-                                author = author,
-                                publisher = publisher.ifBlank { null },
-                                pubDate = pubDate.ifBlank { null },
-                                isbn = isbn.ifBlank { null },
-                                pageCount = pageCount.ifBlank { null }
-                            )
+                            showRegister.value = true
                         },
                         enabled = saveEnabled
                     ) {
@@ -114,11 +109,6 @@ fun ManualBookInputScreen(
                             "저장",
                             color = if (saveEnabled) MaterialTheme.colorScheme.primary else Color.Gray
                         )
-                    }
-
-                    val showRegister = remember { mutableStateOf(false) }
-                    TextButton(onClick = { showRegister.value = true }) {
-                        Text("등록 옵션", color = MaterialTheme.colorScheme.primary)
                     }
                 }
                 Spacer(Modifier.height(16.dp))
@@ -133,7 +123,7 @@ fun ManualBookInputScreen(
                 BookRegisterBottomSheet(
                     show = showRegister.value,
                     onDismiss = { showRegister.value = false },
-                    onConfirm = { reason, date ->
+                    onConfirm = { reason, startDate, endDate ->
                         // trigger the actual save with additional data from sheet
                         showRegister.value = false
                         viewModel?.saveManualBookInfoFromUi(
@@ -142,7 +132,9 @@ fun ManualBookInputScreen(
                             publisher = publisher.ifBlank { null },
                             pubDate = pubDate.ifBlank { null },
                             isbn = isbn.ifBlank { null },
-                            pageCount = pageCount.ifBlank { null }
+                            pageCount = pageCount.ifBlank { null },
+                            reason = reason,
+                            startDate = startDate
                         )
                     }
                 )
