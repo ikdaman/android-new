@@ -1,29 +1,70 @@
 package project.side.remote.auth
 
+import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
+import project.side.data.datasource.AuthDataStoreSource
+import project.side.data.model.AuthEvent
+import project.side.data.model.DataAuthEvent
+import project.side.remote.api.UserService
 import javax.inject.Inject
-import javax.inject.Singleton
 
-/**
- * OkHttp Authenticator that handles authentication failures (401 responses).
- * 
- * Currently, this authenticator returns null to prevent retry attempts since
- * there is no token refresh mechanism implemented. This is the correct behavior
- * to avoid infinite retry loops with the same token.
- * 
- * Future enhancement: Implement token refresh logic here when a refresh token
- * mechanism is available.
- */
-@Singleton
-class TokenAuthenticator @Inject constructor() : Authenticator {
+class TokenAuthenticator @Inject constructor(
+    private val authDataStoreSource: AuthDataStoreSource,
+    private val authTokenProvider: AuthTokenProvider,
+    private val userService: UserService
+) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
-        // Don't retry authentication failures for now since we don't have
-        // a token refresh mechanism. This prevents infinite retry loops.
-        // The user will need to log in again to get a fresh token.
+        if (response.request.header("Authorization") == null) {
+            return null
+        }
+
+        if (response.code == 401) {
+            val refreshToken = runBlocking { authDataStoreSource.getRefreshToken() }
+            val authorization = runBlocking { authDataStoreSource.getAuthorization() }
+            if (refreshToken.isNullOrBlank() || authorization.isNullOrBlank()) {
+                clearToken()
+                return null
+            }
+
+            val result = try {
+                runBlocking { userService.reissue("Bearer $authorization", refreshToken) }
+            } catch (e: Exception) {
+                clearToken()
+                return null
+            }
+
+            if (result.isSuccessful) {
+                val newAuthorization = result.headers()["Authorization"]
+                val newRefreshToken = result.headers()["refresh-token"]
+
+                if (newAuthorization != null && newRefreshToken != null) {
+                    runBlocking {
+                        authDataStoreSource.saveToken(
+                            authorization = newAuthorization,
+                            refreshToken = newRefreshToken
+                        )
+                        authTokenProvider.updateToken()
+                    }
+                    return response.request.newBuilder()
+                        .header("Authorization", "Bearer $newAuthorization")
+                        .build()
+                }
+            }
+
+            clearToken()
+        }
         return null
+    }
+
+    private fun clearToken() {
+        runBlocking {
+            authDataStoreSource.clear()
+            authTokenProvider.clearToken()
+        }
+        runBlocking { AuthEvent.notify(DataAuthEvent.LOGIN_REQUIRED) }
     }
 }
