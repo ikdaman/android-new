@@ -19,6 +19,6 @@ class BackendRepositoryImpl @Inject constructor(
         val success = (result.code == 201)
         emit(DataResource.success(success))
     }.catch { e ->
-        emit(DataResource.error(e))
+        emit(DataResource.error(e.message))
     }
 }
