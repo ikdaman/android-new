@@ -10,16 +10,20 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import project.side.data.datasource.AladinBookSearchSource
 import project.side.data.datasource.AuthDataSource
+import project.side.data.datasource.HistoryDataSource
 import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
 import project.side.remote.api.AladinBookService
 import project.side.remote.api.AuthService
 import project.side.remote.api.BackendApiService
+import project.side.remote.api.HistoryService
 import project.side.remote.api.TestApiService
+import project.side.remote.api.UserService
 import project.side.remote.auth.AuthInterceptor
 import project.side.remote.auth.TokenAuthenticator
 import project.side.remote.datasource.AladinBookSearchSourceImpl
 import project.side.remote.datasource.AuthDataSourceImpl
+import project.side.remote.datasource.HistoryDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -81,20 +85,22 @@ object RemoteModule {
     @Provides
     @Singleton
     @DefaultRetrofit
-    fun provideRetrofit(moshi: Moshi, @DefaultOkHttpClient okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl(BuildConfig.BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
+    fun provideRetrofit(moshi: Moshi, @DefaultOkHttpClient okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
 
     @Provides
     @Singleton
     @AuthRetrofit
-    fun provideAuthRetrofit(moshi: Moshi, @AuthOkHttpClient okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl(BuildConfig.BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
+    fun provideAuthRetrofit(moshi: Moshi, @AuthOkHttpClient okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
 
     @Provides
     @Singleton
@@ -121,6 +127,21 @@ object RemoteModule {
     @Singleton
     fun provideAuthDataSource(authService: AuthService): AuthDataSource =
         AuthDataSourceImpl(authService)
+
+    @Provides
+    @Singleton
+    fun provideUserService(@DefaultRetrofit retrofit: Retrofit): UserService =
+        retrofit.create(UserService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideHistoryService(@AuthRetrofit retrofit: Retrofit): HistoryService =
+        retrofit.create(HistoryService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideHistoryDataSource(historyService: HistoryService): HistoryDataSource =
+        HistoryDataSourceImpl(historyService)
 
     @Provides
     @Singleton
