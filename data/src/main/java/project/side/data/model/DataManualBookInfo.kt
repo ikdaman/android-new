@@ -10,6 +10,7 @@ data class DataManualBookInfo(
     val pubDate: String? = null,
     val isbn: String? = null,
     val pageCount: String? = null,
+    val reason: String? = null,
     // JSON keys required by backend
     @SerializedName("startedDate") val startedDate: String? = null,
     @SerializedName("finishedDate") val finishedDate: String? = null
@@ -23,6 +24,7 @@ data class DataManualBookInfo(
                 pubDate = manualBookInfo.pubDate,
                 isbn = manualBookInfo.isbn,
                 pageCount = manualBookInfo.pageCount,
+                reason = manualBookInfo.reason,
                 startedDate = manualBookInfo.startDate,
                 finishedDate = manualBookInfo.endDate
             )

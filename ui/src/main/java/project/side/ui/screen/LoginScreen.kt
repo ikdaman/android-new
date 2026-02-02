@@ -36,9 +36,9 @@ fun LoginScreen(
     loginUseCase: LoginUseCase? = null,
     logoutUseCase: LogoutUseCase? = null,
     viewModel: LoginViewModel? = hiltViewModel(),
-    uiState: LoginUIState? = viewModel?.uiState?.collectAsState()?.value,
     navigateToHome: () -> Unit = {}
 ) {
+    val uiState = viewModel?.uiState?.collectAsState()?.value
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {

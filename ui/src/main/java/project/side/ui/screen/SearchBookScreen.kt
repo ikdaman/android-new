@@ -57,9 +57,9 @@ fun SearchBookScreen(
     appNavController: NavController? = null,
     onNavigateToAddBookScreen: () -> Unit = {},
     onNavigateToManualInputScreen: () -> Unit = {},
-    viewModel: SearchBookViewModel? = hiltViewModel(),
-    state: DomainResult<List<BookItem>>? = viewModel?.bookResultListState?.collectAsState()?.value
+    viewModel: SearchBookViewModel? = hiltViewModel()
 ) {
+    val state = viewModel?.bookResultListState?.collectAsState()?.value
     val searchResult = viewModel?.bookDetail?.collectAsStateWithLifecycle()?.value
     LaunchedEffect(searchResult) {
         when (searchResult) {
@@ -240,21 +240,7 @@ fun SearchBookScreen(
 fun SearchBookScreenPreview() {
     IkdamanTheme {
         SearchBookScreen(
-            viewModel = null,
-            state = DomainResult.Success(
-                listOf(
-                    BookItem(
-                        title = "책 제목1",
-                        link = "https://picsum.photos/200/300",
-                        author = "작가 1"
-                    ),
-                    BookItem(
-                        title = "책 제목2",
-                        link = "https://picsum.photos/200/300",
-                        author = "작가 2"
-                    ),
-                )
-            )
+            viewModel = null
         )
     }
 }
