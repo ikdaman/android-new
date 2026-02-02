@@ -8,16 +8,20 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import project.side.data.datasource.AladinBookSearchSource
 import project.side.data.datasource.AuthDataSource
 import project.side.data.datasource.HistoryDataSource
 import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
+import project.side.remote.api.AladinBookService
 import project.side.remote.api.AuthService
+import project.side.remote.api.BackendApiService
 import project.side.remote.api.HistoryService
 import project.side.remote.api.TestApiService
 import project.side.remote.api.UserService
 import project.side.remote.auth.AuthInterceptor
 import project.side.remote.auth.TokenAuthenticator
+import project.side.remote.datasource.AladinBookSearchSourceImpl
 import project.side.remote.datasource.AuthDataSourceImpl
 import project.side.remote.datasource.HistoryDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
@@ -105,6 +109,12 @@ object RemoteModule {
 
     @Provides
     @Singleton
+    fun provideBackendApiService(@AuthRetrofit retrofit: Retrofit): BackendApiService =
+        retrofit.create(BackendApiService::class.java)
+
+
+    @Provides
+    @Singleton
     fun provideTestDataSource(testApiService: TestApiService): TestDataSource =
         TestDataSourceImpl(testApiService)
 
@@ -132,4 +142,24 @@ object RemoteModule {
     @Singleton
     fun provideHistoryDataSource(historyService: HistoryService): HistoryDataSource =
         HistoryDataSourceImpl(historyService)
+
+    @Provides
+    @Singleton
+    fun provideAladinBookService(moshi: Moshi): AladinBookService =
+        Retrofit.Builder()
+            .baseUrl("https://www.aladin.co.kr/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(AladinBookService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAladinBookSearchSource(service: AladinBookService) : AladinBookSearchSource =
+        AladinBookSearchSourceImpl(service)
+
+    @Provides
+    @Singleton
+    fun provideBackendDataSource(backendApiService: BackendApiService): project.side.data.datasource.BackendDataSource =
+        project.side.remote.datasource.BackendDataSourceImpl(backendApiService)
 }
+

@@ -15,23 +15,39 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import project.side.presentation.viewmodel.MainViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import project.side.presentation.viewmodel.SearchBookViewModel
+import project.side.presentation.util.SnackbarManager
+import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
+import project.side.ui.component.CustomSnackbarHost
 import project.side.ui.ADD_BOOK_ROUTE
 import project.side.ui.BOOK_INFO_ROUTE
 import project.side.ui.HISTORY_ROUTE
 import project.side.ui.HOME_ROUTE
+import project.side.ui.MANUAL_BOOK_INPUT_ROUTE
 import project.side.ui.SEARCH_BOOK_ROUTE
 import project.side.ui.SETTING_ROUTE
 import project.side.ui.component.BottomNavBar
 import project.side.ui.util.navigateIfLoggedIn
 
 @Composable
-fun MainScreen(appNavController: NavController, mainViewModel: MainViewModel) {
+fun MainScreen(
+    appNavController: NavController,
+    searchBookViewModel: SearchBookViewModel? = null,
+    mainViewModel: MainViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val isLoggedIn = mainViewModel.isLoggedIn.collectAsState()
-
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
+        snackbarHost = {
+            CustomSnackbarHost(snackbarHostState)
+        },
         bottomBar = {
             if (currentRoute != SETTING_ROUTE && currentRoute != BOOK_INFO_ROUTE) {
                 BottomNavBar(navController) { onLoggedIn ->
@@ -45,6 +61,11 @@ fun MainScreen(appNavController: NavController, mainViewModel: MainViewModel) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            LaunchedEffect(Unit) {
+                SnackbarManager.events.collectLatest { msg ->
+                    snackbarHostState.showSnackbar(msg)
+                }
+            }
             NavHost(
                 navController = navController,
                 startDestination = HOME_ROUTE
@@ -62,16 +83,22 @@ fun MainScreen(appNavController: NavController, mainViewModel: MainViewModel) {
                     )
                 }
                 composable(SEARCH_BOOK_ROUTE) {
-                    SearchBookScreen()
+                    SearchBookScreen(
+                        appNavController,
+                        onNavigateToAddBookScreen = {
+                            appNavController.navigate(ADD_BOOK_ROUTE)
+                        },
+                        onNavigateToManualInputScreen = {
+                            appNavController.navigate(MANUAL_BOOK_INPUT_ROUTE)
+                        },
+                        viewModel = searchBookViewModel
+                    )
                 }
                 composable(HISTORY_ROUTE) {
                     HistoryScreen(hiltViewModel())
                 }
                 composable(SETTING_ROUTE) {
                     SettingScreen()
-                }
-                composable(ADD_BOOK_ROUTE) {
-                    AddBookScreen()
                 }
                 composable(BOOK_INFO_ROUTE) {
                     BookInfoScreen()
