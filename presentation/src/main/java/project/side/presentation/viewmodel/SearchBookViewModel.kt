@@ -42,30 +42,34 @@ class SearchBookViewModel @Inject constructor(
 
     fun searchBook(title: String) {
         viewModelScope.launch {
-            val result = searchBookWithTitleUseCase(title, 0)
-            if (result.books.isNotEmpty()) {
-                _bookResultListState.value = DomainResult.Success(result.books)
-            } else {
+            try {
+                val result = searchBookWithTitleUseCase(title, 0)
+                if (result.books.isNotEmpty()) {
+                    _bookResultListState.value = DomainResult.Success(result.books)
+                } else {
+                    _bookResultListState.value = DomainResult.Error(message = "책을 찾을 수 없습니다.")
+                }
+            } catch (e: Exception) {
                 _bookResultListState.value = DomainResult.Error(message = "책을 찾을 수 없습니다.")
             }
-        }.runCatching {
-            _bookResultListState.value = DomainResult.Error(message = "책을 찾을 수 없습니다.")
         }
     }
 
     fun searchBookByIsbn(isbn: String) {
         Log.i("SearchBookViewModel", "searchBookByIsbn: $isbn")
         viewModelScope.launch {
-            val result: BookSearchResult = searchBookWithIsbnUseCase(isbn)
-            if (result.books.isNotEmpty()) {
-                val bookItem = result.books.first()
-                _searchedBookDetail.value = DomainResult.Success(bookItem)
-                _selectedBookItem.value = bookItem
-            } else {
+            try {
+                val result: BookSearchResult = searchBookWithIsbnUseCase(isbn)
+                if (result.books.isNotEmpty()) {
+                    val bookItem = result.books.first()
+                    _searchedBookDetail.value = DomainResult.Success(bookItem)
+                    _selectedBookItem.value = bookItem
+                } else {
+                    _searchedBookDetail.value = DomainResult.Error(message = "책을 찾을 수 없습니다.")
+                }
+            } catch (e: Exception) {
                 _searchedBookDetail.value = DomainResult.Error(message = "책을 찾을 수 없습니다.")
             }
-        }.runCatching {
-            _searchedBookDetail.value = DomainResult.Error(message = "책을 찾을 수 없습니다.")
         }
     }
 
