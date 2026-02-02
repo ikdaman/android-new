@@ -57,9 +57,10 @@ fun SearchBookScreen(
     appNavController: NavController? = null,
     onNavigateToAddBookScreen: () -> Unit = {},
     onNavigateToManualInputScreen: () -> Unit = {},
-    viewModel: SearchBookViewModel? = hiltViewModel()
+    viewModel: SearchBookViewModel? = hiltViewModel(),
+    state: DomainResult<List<BookItem>>? = null
 ) {
-    val state = viewModel?.bookResultListState?.collectAsState()?.value
+    val derivedState = state ?: viewModel?.bookResultListState?.collectAsState()?.value
     val searchResult = viewModel?.bookDetail?.collectAsStateWithLifecycle()?.value
     LaunchedEffect(searchResult) {
         when (searchResult) {
@@ -137,9 +138,9 @@ fun SearchBookScreen(
             }
 
             Column {
-                when (state) {
+                when (derivedState) {
                     is DomainResult.Success -> {
-                        if (state.data.isEmpty()) {
+                        if (derivedState.data.isEmpty()) {
                             // Empty search results
                             Column(
                                 modifier = Modifier
@@ -169,7 +170,7 @@ fun SearchBookScreen(
                                 }
                             }
                         } else {
-                            state.data.forEach {
+                            derivedState.data.forEach {
                                 Row(
                                     Modifier
                                         .fillMaxWidth()
@@ -240,7 +241,21 @@ fun SearchBookScreen(
 fun SearchBookScreenPreview() {
     IkdamanTheme {
         SearchBookScreen(
-            viewModel = null
+            viewModel = null,
+            state = DomainResult.Success(
+                listOf(
+                    BookItem(
+                        title = "책 제목1",
+                        link = "https://picsum.photos/200/300",
+                        author = "작가 1"
+                    ),
+                    BookItem(
+                        title = "책 제목2",
+                        link = "https://picsum.photos/200/300",
+                        author = "작가 2"
+                    ),
+                )
+            )
         )
     }
 }
