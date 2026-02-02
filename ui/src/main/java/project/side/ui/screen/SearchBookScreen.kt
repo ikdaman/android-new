@@ -58,8 +58,9 @@ fun SearchBookScreen(
     onNavigateToAddBookScreen: () -> Unit = {},
     onNavigateToManualInputScreen: () -> Unit = {},
     viewModel: SearchBookViewModel? = hiltViewModel(),
-    state: DomainResult<List<BookItem>>? = viewModel?.bookResultListState?.collectAsState()?.value
+    state: DomainResult<List<BookItem>>? = null
 ) {
+    val derivedState = state ?: viewModel?.bookResultListState?.collectAsState()?.value
     val searchResult = viewModel?.bookDetail?.collectAsStateWithLifecycle()?.value
     LaunchedEffect(searchResult) {
         when (searchResult) {
@@ -137,9 +138,9 @@ fun SearchBookScreen(
             }
 
             Column {
-                when (state) {
+                when (derivedState) {
                     is DomainResult.Success -> {
-                        if (state.data.isEmpty()) {
+                        if (derivedState.data.isEmpty()) {
                             // Empty search results
                             Column(
                                 modifier = Modifier
@@ -169,7 +170,7 @@ fun SearchBookScreen(
                                 }
                             }
                         } else {
-                            state.data.forEach {
+                            derivedState.data.forEach {
                                 Row(
                                     Modifier
                                         .fillMaxWidth()

@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,9 +38,7 @@ import project.side.ui.component.BookRegisterBottomSheet
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import kotlinx.coroutines.launch
 import project.side.domain.model.BookItem
-import project.side.presentation.util.SnackbarManager
 import project.side.presentation.viewmodel.SearchBookViewModel
 import project.side.ui.component.CustomSnackbarHost
 // saveState is Boolean? exposed from ViewModel
@@ -64,7 +63,13 @@ fun AddBookScreen(
     // shared show state for BookRegisterBottomSheet
     val showRegister = remember { mutableStateOf(false) }
 
-    Scaffold {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold(
+        snackbarHost = {
+            CustomSnackbarHost(snackbarHostState)
+        }
+    ) {
         Box(
             modifier = Modifier.fillMaxSize().padding(it),
             contentAlignment = Alignment.Center
@@ -138,13 +143,13 @@ fun AddBookScreen(
                     LaunchedEffect(saveState) {
                         when (saveState) {
                             true -> {
-                                // emit success message and navigate back
-                                launch { SnackbarManager.show("책을 저장했어요") }
+                                // show success message and navigate back
+                                snackbarHostState.showSnackbar("책을 저장했어요")
                                 appNavController.popBackStack()
                             }
                             false -> {
-                                // emit failure message and stay on screen
-                                launch { SnackbarManager.show("책 저장에 실패했어요") }
+                                // show failure message and stay on screen
+                                snackbarHostState.showSnackbar("책 저장에 실패했어요")
                             }
                             else -> Unit
                         }

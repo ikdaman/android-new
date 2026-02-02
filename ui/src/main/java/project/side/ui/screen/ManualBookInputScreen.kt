@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,8 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.launch
-import project.side.presentation.util.SnackbarManager
 import project.side.presentation.viewmodel.ManualInputViewModel
 import project.side.ui.R
 import project.side.ui.component.BookRegisterBottomSheet
@@ -67,7 +66,7 @@ fun ManualBookInputScreen(
 
     val scrollState = rememberScrollState()
 
-    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         snackbarHost = {
@@ -123,11 +122,15 @@ fun ManualBookInputScreen(
                 // observe save result from ViewModel; when success -> close screen
                  val saveState by (viewModel?.saveState?.collectAsState() ?: remember { mutableStateOf(null as Boolean?) })
                  LaunchedEffect(saveState) {
-                     if (saveState == true) {
-                         launch {
-                             SnackbarManager.show("책을 저장했어요")
+                     when (saveState) {
+                         true -> {
+                             snackbarHostState.showSnackbar("책을 저장했어요")
+                             appNavController.popBackStack()
                          }
-                         appNavController.popBackStack()
+                         false -> {
+                             snackbarHostState.showSnackbar("책 저장에 실패했어요")
+                         }
+                         else -> Unit
                      }
                  }
 
