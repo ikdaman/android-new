@@ -18,7 +18,10 @@ import project.side.domain.model.ManualBookInfo
 import project.side.domain.usecase.SaveManualBookInfoUseCase
 import project.side.domain.usecase.search.SearchBookWithIsbnUseCase
 import project.side.domain.usecase.search.SearchBookWithTitleUseCase
+import project.side.presentation.model.SearchBookState
 import javax.inject.Inject
+
+private const val PAGE_SIZE = 50
 
 @HiltViewModel
 class SearchBookViewModel @Inject constructor(
@@ -27,9 +30,8 @@ class SearchBookViewModel @Inject constructor(
     private val saveManualBookInfoUseCase: SaveManualBookInfoUseCase
 ) : ViewModel() {
 
-
-    private val _bookResultListState = MutableStateFlow<DomainResult<List<BookItem>>>(DomainResult.Init)
-    val bookResultListState: StateFlow<DomainResult<List<BookItem>>> = _bookResultListState.asStateFlow()
+    private val _searchState = MutableStateFlow(SearchBookState())
+    val searchState: StateFlow<SearchBookState> = _searchState.asStateFlow()
 
     private val _searchedBookDetail = MutableStateFlow<DomainResult<BookItem>>(DomainResult.Init)
     val bookDetail: StateFlow<DomainResult<BookItem>> = _searchedBookDetail.asStateFlow()
@@ -43,18 +45,51 @@ class SearchBookViewModel @Inject constructor(
 
     fun searchBook(title: String) {
         viewModelScope.launch {
-            _bookResultListState.value = DomainResult.Loading
+            _searchState.value = SearchBookState(query = title, isLoading = true)
             try {
                 val result = searchBookWithTitleUseCase(title, 1)
-                if (result.books.isNotEmpty()) {
-                    _bookResultListState.value = DomainResult.Success(result.books)
-                } else {
-                    _bookResultListState.value = DomainResult.Error(message = "검색 결과가 없습니다.")
-                }
+                val hasMore = 1 * PAGE_SIZE < result.totalBookCount
+                _searchState.value = _searchState.value.copy(
+                    books = result.books,
+                    currentPage = 1,
+                    totalBookCount = result.totalBookCount,
+                    isLoading = false,
+                    hasMore = hasMore,
+                    errorMessage = if (result.books.isEmpty()) "검색 결과가 없습니다." else null
+                )
             } catch (e: java.io.IOException) {
-                _bookResultListState.value = DomainResult.Error(message = "네트워크 연결을 확인해주세요.")
+                _searchState.value = _searchState.value.copy(
+                    isLoading = false,
+                    errorMessage = "네트워크 연결을 확인해주세요."
+                )
             } catch (e: Exception) {
-                _bookResultListState.value = DomainResult.Error(message = "검색 중 오류가 발생했습니다.")
+                _searchState.value = _searchState.value.copy(
+                    isLoading = false,
+                    errorMessage = "검색 중 오류가 발생했습니다."
+                )
+            }
+        }
+    }
+
+    fun loadNextPage() {
+        val current = _searchState.value
+        if (current.isLoadingMore || !current.hasMore || current.query.isBlank()) return
+
+        viewModelScope.launch {
+            val nextPage = current.currentPage + 1
+            _searchState.value = current.copy(isLoadingMore = true)
+            try {
+                val result = searchBookWithTitleUseCase(current.query, nextPage)
+                val hasMore = nextPage * PAGE_SIZE < result.totalBookCount
+                _searchState.value = _searchState.value.copy(
+                    books = _searchState.value.books + result.books,
+                    currentPage = nextPage,
+                    totalBookCount = result.totalBookCount,
+                    isLoadingMore = false,
+                    hasMore = hasMore
+                )
+            } catch (e: Exception) {
+                _searchState.value = _searchState.value.copy(isLoadingMore = false)
             }
         }
     }

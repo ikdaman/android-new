@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -24,7 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +49,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import project.side.domain.model.BookItem
 import project.side.domain.model.DomainResult
+import project.side.presentation.model.SearchBookState
 import project.side.presentation.viewmodel.SearchBookViewModel
 import project.side.ui.BARCODE_ROUTE
 import project.side.ui.R
@@ -61,14 +65,29 @@ fun SearchBookScreen(
     viewModel: SearchBookViewModel? = hiltViewModel(),
     state: DomainResult<List<BookItem>>? = null
 ) {
-    val derivedState = state ?: viewModel?.bookResultListState?.collectAsState()?.value
+    val searchState = viewModel?.searchState?.collectAsStateWithLifecycle()?.value ?: SearchBookState()
     val searchResult = viewModel?.bookDetail?.collectAsStateWithLifecycle()?.value
+
     LaunchedEffect(searchResult) {
         when (searchResult) {
             is DomainResult.Success -> {
                 onNavigateToAddBookScreen()
             }
             else -> {}
+        }
+    }
+
+    // Infinite scroll detection
+    val listState = rememberLazyListState()
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            lastVisibleItem != null && lastVisibleItem.index >= listState.layoutInfo.totalItemsCount - 3
+        }
+    }
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore && searchState.hasMore && !searchState.isLoadingMore) {
+            viewModel?.loadNextPage()
         }
     }
 
@@ -138,107 +157,99 @@ fun SearchBookScreen(
                 }
             }
 
-            Column {
-                when (derivedState) {
-                    is DomainResult.Success -> {
-                        if (derivedState.data.isEmpty()) {
-                            // Empty search results
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 48.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "검색 결과가 없습니다.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Black
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                TextButton(
-                                    onClick = { onNavigateToManualInputScreen() },
-                                    colors = ButtonDefaults.textButtonColors(
-                                        contentColor = Color.Black,
-                                        containerColor = Color.Gray,
-                                    )
-                                ) {
-                                    Text(
-                                        text = "책 직접 입력하기",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Black
-                                    )
-                                }
-                            }
-                        } else {
-                            derivedState.data.forEach {
-                                Row(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .height(IntrinsicSize.Max)
-                                        .padding(vertical = 16.dp)
-                                        .noEffectClick {
-                                            viewModel?.searchBookByIsbn(it.isbn)
-                                        }) {
-                                    AsyncImage(
-                                        model = it.cover,
-                                        contentDescription = "book cover",
-                                        modifier = Modifier
-                                            .size(94.dp, 130.dp)
-                                            .align(Alignment.CenterVertically),
-                                        placeholder = ColorPainter(Color.Gray),
-                                        error = ColorPainter(Color.Red)
-                                    )
-                                    Column(Modifier.padding(vertical = 12.dp, horizontal = 16.dp)) {
-                                        Text(
-                                            it.title,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            maxLines = 2,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Text(it.author, style = MaterialTheme.typography.labelMedium)
-                                    }
-                                }
-                            }
-                        }
+            when {
+                searchState.isLoading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
-                    is DomainResult.Error -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 48.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                }
+                searchState.errorMessage != null -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 48.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = searchState.errorMessage,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        TextButton(
+                            onClick = { onNavigateToManualInputScreen() }
                         ) {
                             Text(
-                                text = derivedState.message,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.Gray
+                                text = "책 직접 입력하기",
+                                style = MaterialTheme.typography.bodyMedium
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            TextButton(
-                                onClick = { onNavigateToManualInputScreen() }
-                            ) {
-                                Text(
-                                    text = "책 직접 입력하기",
-                                    style = MaterialTheme.typography.bodyMedium
+                        }
+                    }
+                }
+                searchState.books.isNotEmpty() -> {
+                    // Total count
+                    if (searchState.totalBookCount > 0) {
+                        Text(
+                            text = "총 ${searchState.totalBookCount}건",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray,
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .padding(top = 8.dp, bottom = 4.dp)
+                        )
+                    }
+
+                    LazyColumn(state = listState) {
+                        items(searchState.books, key = { it.isbn.ifBlank { it.title + it.author } }) { book ->
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(IntrinsicSize.Max)
+                                    .padding(vertical = 16.dp)
+                                    .noEffectClick {
+                                        viewModel?.searchBookByIsbn(book.isbn)
+                                    }) {
+                                AsyncImage(
+                                    model = book.cover,
+                                    contentDescription = "book cover",
+                                    modifier = Modifier
+                                        .size(94.dp, 130.dp)
+                                        .align(Alignment.CenterVertically),
+                                    placeholder = ColorPainter(Color.Gray),
+                                    error = ColorPainter(Color.Red)
                                 )
+                                Column(Modifier.padding(vertical = 12.dp, horizontal = 16.dp)) {
+                                    Text(
+                                        book.title,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(book.author, style = MaterialTheme.typography.labelMedium)
+                                }
                             }
                         }
-                    }
-                    is DomainResult.Loading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 48.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
+
+                        // Loading more indicator
+                        if (searchState.isLoadingMore) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                }
+                            }
                         }
-                    }
-                    else -> {
-                        // Init state - do nothing
                     }
                 }
             }
