@@ -43,17 +43,36 @@ import project.side.ui.theme.Typography
 fun HistoryScreen(viewModel: HistoryViewModel) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    HistoryScreenUI(uiState = uiState, onViewTypeChanged = viewModel::onViewTypeChanged)
+    HistoryScreenUI(
+        uiState = uiState,
+        onViewTypeChanged = viewModel::onViewTypeChanged,
+        onRetry = { viewModel.getBooks() }
+    )
 }
 
 @Composable
 fun HistoryScreenUI(
     uiState: HistoryBookState = HistoryBookState(),
-    onViewTypeChanged: () -> Unit = {}
+    onViewTypeChanged: () -> Unit = {},
+    onRetry: () -> Unit = {}
 ) {
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
+        }
+    } else if (uiState.errorMessage != null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = uiState.errorMessage,
+                    style = Typography.bodyMedium,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                androidx.compose.material3.TextButton(onClick = onRetry) {
+                    Text("다시 시도", color = Color.Black)
+                }
+            }
         }
     } else {
         Column(

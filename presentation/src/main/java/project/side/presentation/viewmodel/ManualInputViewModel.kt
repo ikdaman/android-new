@@ -3,9 +3,10 @@ package project.side.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
 import java.time.LocalDate
 import project.side.domain.DataResource
@@ -17,25 +18,21 @@ import javax.inject.Inject
 class ManualInputViewModel @Inject constructor(
     private val saveManualBookInfoUseCase: SaveManualBookInfoUseCase
 ) : ViewModel() {
-    // expose only boolean success/failure (null = idle/loading)
-    val saveState = MutableStateFlow<Boolean?>(null)
+    private val _saveEvent = MutableSharedFlow<SaveEvent>()
+    val saveEvent: SharedFlow<SaveEvent> = _saveEvent.asSharedFlow()
 
     fun saveManualBookInfo(manual: ManualBookInfo) {
         viewModelScope.launch {
             saveManualBookInfoUseCase(manual).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
-                        saveState.value = result.data
-                        // keep the value long enough for UI to observe, then reset
-                        delay(200)
-                        saveState.value = null
+                        if (result.data) _saveEvent.emit(SaveEvent.Success)
+                        else _saveEvent.emit(SaveEvent.Error("책 저장에 실패했어요."))
                     }
                     is DataResource.Error -> {
-                        saveState.value = false
-                        delay(200)
-                        saveState.value = null
+                        _saveEvent.emit(SaveEvent.Error(result.message ?: "책 저장에 실패했어요."))
                     }
-                    is DataResource.Loading -> saveState.value = null
+                    is DataResource.Loading -> { /* no-op */ }
                 }
             }
         }

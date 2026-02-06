@@ -38,7 +38,7 @@ class LoginViewModel @Inject constructor(): ViewModel() {
                 when (logoutState) {
                     LoginState.Loading -> _uiState.value = LoginUIState.Loading
                     LoginState.Success -> _uiState.value = LoginUIState.Success("로그아웃 성공")
-                    else -> {}
+                    is LoginState.Error -> _uiState.value = LoginUIState.Error(logoutState.message)
                 }
             }
         }

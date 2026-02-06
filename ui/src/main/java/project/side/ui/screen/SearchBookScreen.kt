@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -203,7 +204,6 @@ fun SearchBookScreen(
                         }
                     }
                     is DomainResult.Error -> {
-                        // Error state - show error message
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -212,7 +212,7 @@ fun SearchBookScreen(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "검색 결과가 없습니다.",
+                                text = derivedState.message,
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = Color.Gray
                             )
@@ -227,8 +227,18 @@ fun SearchBookScreen(
                             }
                         }
                     }
+                    is DomainResult.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
                     else -> {
-                        // Init or Loading state - do nothing
+                        // Init state - do nothing
                     }
                 }
             }

@@ -137,21 +137,19 @@ fun AddBookScreen(
                     Text(text = selectedBookResolved.isbn, style = MaterialTheme.typography.labelSmall)
                 }
                 Spacer(Modifier.height(24.dp))
-                // observe save result from viewModel and close screen on success
+                // observe save events from viewModel
                 if (viewModel != null) {
-                    val saveState by viewModel.saveState.collectAsState(initial = null)
-                    LaunchedEffect(saveState) {
-                        when (saveState) {
-                            true -> {
-                                // show success message and navigate back
-                                snackbarHostState.showSnackbar("책을 저장했어요")
-                                appNavController.popBackStack()
+                    LaunchedEffect(Unit) {
+                        viewModel.saveEvent.collect { event ->
+                            when (event) {
+                                is project.side.presentation.viewmodel.SaveEvent.Success -> {
+                                    snackbarHostState.showSnackbar("책을 저장했어요")
+                                    appNavController.popBackStack()
+                                }
+                                is project.side.presentation.viewmodel.SaveEvent.Error -> {
+                                    snackbarHostState.showSnackbar(event.message)
+                                }
                             }
-                            false -> {
-                                // show failure message and stay on screen
-                                snackbarHostState.showSnackbar("책 저장에 실패했어요")
-                            }
-                            else -> Unit
                         }
                     }
                 }

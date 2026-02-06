@@ -27,6 +27,7 @@ import project.side.remote.datasource.HistoryDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -59,6 +60,9 @@ object RemoteModule {
     @Singleton
     @DefaultOkHttpClient
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
         .addInterceptor(
             HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
@@ -73,6 +77,9 @@ object RemoteModule {
         tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient =
         OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
@@ -145,8 +152,9 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideAladinBookService(moshi: Moshi): AladinBookService =
+    fun provideAladinBookService(moshi: Moshi, @DefaultOkHttpClient okHttpClient: OkHttpClient): AladinBookService =
         Retrofit.Builder()
+            .client(okHttpClient)
             .baseUrl("https://www.aladin.co.kr/")
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()

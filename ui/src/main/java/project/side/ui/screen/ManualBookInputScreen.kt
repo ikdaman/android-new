@@ -119,20 +119,22 @@ fun ManualBookInputScreen(
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-                // observe save result from ViewModel; when success -> close screen
-                 val saveState by (viewModel?.saveState?.collectAsState() ?: remember { mutableStateOf(null as Boolean?) })
-                 LaunchedEffect(saveState) {
-                     when (saveState) {
-                         true -> {
-                             snackbarHostState.showSnackbar("책을 저장했어요")
-                             appNavController.popBackStack()
-                         }
-                         false -> {
-                             snackbarHostState.showSnackbar("책 저장에 실패했어요")
-                         }
-                         else -> Unit
-                     }
-                 }
+                // observe save events from ViewModel
+                if (viewModel != null) {
+                    LaunchedEffect(Unit) {
+                        viewModel.saveEvent.collect { event ->
+                            when (event) {
+                                is project.side.presentation.viewmodel.SaveEvent.Success -> {
+                                    snackbarHostState.showSnackbar("책을 저장했어요")
+                                    appNavController.popBackStack()
+                                }
+                                is project.side.presentation.viewmodel.SaveEvent.Error -> {
+                                    snackbarHostState.showSnackbar(event.message)
+                                }
+                            }
+                        }
+                    }
+                }
 
                 BookRegisterBottomSheet(
                     show = showRegister.value,
