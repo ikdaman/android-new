@@ -19,4 +19,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     // gson
     implementation(libs.google.gson)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
 }
