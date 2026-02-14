@@ -98,12 +98,6 @@ fun SearchBookScreen(
                 .fillMaxSize()
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp),
         ) {
-            Text(
-                "책 추가하기",
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.height(16.dp))
             // Text Input Fields for Book Search
             Box(
                 Modifier
