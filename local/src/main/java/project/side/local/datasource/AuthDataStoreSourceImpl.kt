@@ -25,7 +25,7 @@ class AuthDataStoreSourceImpl @Inject constructor(
         prefs[NICKNAME_KEY]
     }
 
-    suspend fun getProvider(): String? = authDataStore.data.first()[PROVIDER_KEY]
+    override suspend fun getProvider(): String? = authDataStore.data.first()[PROVIDER_KEY]
 
     override suspend fun getAuthorization(): String? = authDataStore.data.first()[AUTHORIZATION_KEY]
 

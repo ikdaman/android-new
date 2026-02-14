@@ -16,5 +16,6 @@ interface AuthDataStoreSource {
         authorization: String,
         refreshToken: String
     )
+    suspend fun getProvider(): String?
     fun isLoggedIn(): Flow<Boolean>
 }

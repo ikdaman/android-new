@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import project.side.domain.model.DomainAuthEvent
 import project.side.domain.usecase.GetAuthEventUseCase
 import project.side.domain.usecase.SignupUseCase
+import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.viewmodel.SearchBookViewModel
@@ -36,6 +37,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var logoutUseCase: LogoutUseCase
+
+    @Inject
+    lateinit var getProviderUseCase: GetProviderUseCase
 
     @Inject
     lateinit var signupUseCase: SignupUseCase
@@ -69,7 +73,12 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController = navController, startDestination = MAIN_ROUTE) {
                     composable(MAIN_ROUTE) {
-                        MainScreen(navController, searchBookViewModel)
+                        MainScreen(
+                            navController,
+                            searchBookViewModel,
+                            logoutUseCase = logoutUseCase,
+                            getProviderUseCase = getProviderUseCase
+                        )
                     }
                     composable(BARCODE_ROUTE) {
                         BarcodeScreen(
@@ -84,7 +93,6 @@ class MainActivity : ComponentActivity() {
                     composable(LOGIN_ROUTE) {
                         LoginScreen(
                             loginUseCase = loginUseCase,
-                            logoutUseCase = logoutUseCase,
                             navigateToHome = {
                                 navController.navigate(MAIN_ROUTE) {
                                     popUpTo(LOGIN_ROUTE) {

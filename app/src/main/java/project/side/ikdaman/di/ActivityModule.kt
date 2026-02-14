@@ -11,6 +11,7 @@ import project.side.data.datasource.SocialAuthDataSource
 import project.side.data.repository.AuthRepositoryImpl
 import project.side.domain.repository.AuthRepository
 import project.side.domain.usecase.SignupUseCase
+import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 
@@ -26,11 +27,9 @@ object ActivityModule {
         authDataStoreSource: AuthDataStoreSource
     ): AuthRepository = AuthRepositoryImpl(authDataSource, socialAuthDataSource, authDataStoreSource)
 
-
     @Provides
     @ActivityScoped
     fun provideLoginUseCase(authRepository: AuthRepository) = LoginUseCase(authRepository)
-
 
     @Provides
     @ActivityScoped
@@ -39,4 +38,8 @@ object ActivityModule {
     @Provides
     @ActivityScoped
     fun provideSignupUseCase(authRepository: AuthRepository) = SignupUseCase(authRepository)
+
+    @Provides
+    @ActivityScoped
+    fun provideGetProviderUseCase(authRepository: AuthRepository) = GetProviderUseCase(authRepository)
 }

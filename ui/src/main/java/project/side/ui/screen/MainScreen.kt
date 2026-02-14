@@ -29,7 +29,11 @@ import project.side.ui.HISTORY_ROUTE
 import project.side.ui.HOME_ROUTE
 import project.side.ui.MANUAL_BOOK_INPUT_ROUTE
 import project.side.ui.SEARCH_BOOK_ROUTE
+import project.side.ui.LOGIN_ROUTE
+import project.side.ui.MAIN_ROUTE
 import project.side.ui.SETTING_ROUTE
+import project.side.domain.usecase.auth.GetProviderUseCase
+import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.ui.component.BottomNavBar
 import project.side.ui.util.navigateIfLoggedIn
 
@@ -37,6 +41,8 @@ import project.side.ui.util.navigateIfLoggedIn
 fun MainScreen(
     appNavController: NavController,
     searchBookViewModel: SearchBookViewModel? = null,
+    logoutUseCase: LogoutUseCase? = null,
+    getProviderUseCase: GetProviderUseCase? = null,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
@@ -98,7 +104,15 @@ fun MainScreen(
                     HistoryScreen(hiltViewModel())
                 }
                 composable(SETTING_ROUTE) {
-                    SettingScreen()
+                    SettingScreen(
+                        logoutUseCase = logoutUseCase,
+                        getProviderUseCase = getProviderUseCase,
+                        onLogoutComplete = {
+                            appNavController.navigate(LOGIN_ROUTE) {
+                                popUpTo(MAIN_ROUTE) { inclusive = true }
+                            }
+                        }
+                    )
                 }
                 composable(BOOK_INFO_ROUTE) {
                     BookInfoScreen()

@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import project.side.domain.model.DomainResult
 import project.side.domain.usecase.auth.LoginUseCase
-import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.model.LoginUIState
 import project.side.presentation.viewmodel.LoginViewModel
 
@@ -34,7 +33,6 @@ import project.side.presentation.viewmodel.LoginViewModel
 @Composable
 fun LoginScreen(
     loginUseCase: LoginUseCase? = null,
-    logoutUseCase: LogoutUseCase? = null,
     viewModel: LoginViewModel? = hiltViewModel(),
     navigateToHome: () -> Unit = {},
     navigateToSignup: (String, String, String) -> Unit = { _, _, _ -> }
@@ -73,29 +71,14 @@ fun LoginScreen(
                     Text("Google Login")
                 }
                 Button(onClick = {
-                    viewModel?.googleLogout(logoutUseCase!!)
-                }) {
-                    Text("Google Logout")
-                }
-                Button(onClick = {
                     viewModel?.naverLogin(loginUseCase!!)
                 }, modifier = Modifier.fillMaxWidth()) {
                     Text("Naver Login")
                 }
                 Button(onClick = {
-                    viewModel?.naverLogout(logoutUseCase!!)
-                }) {
-                    Text("Naver Logout")
-                }
-                Button(onClick = {
                     viewModel?.kakaoLogin(loginUseCase!!)
                 }, modifier = Modifier.fillMaxWidth()) {
                     Text("Kakao Login")
-                }
-                Button(onClick = {
-                    viewModel?.kakaoLogout(logoutUseCase!!)
-                }) {
-                    Text("Kakao Logout")
                 }
             }
         }

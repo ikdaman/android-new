@@ -15,4 +15,6 @@ interface AuthRepository {
     fun kakaoLogout(): Flow<LogoutState>
 
     fun signup(socialToken: String?, provider: String?, providerId: String?, nickname: String?): Flow<SignupState>
+
+    suspend fun getProvider(): String?
 }

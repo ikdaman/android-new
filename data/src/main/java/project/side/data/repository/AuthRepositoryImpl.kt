@@ -85,6 +85,10 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getProvider(): String? {
+        return authDataStoreSource.getProvider()
+    }
+
     private suspend fun FlowCollector<LoginState>.processLogin(
         socialResult: SocialLoginResult
     ) {
