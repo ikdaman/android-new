@@ -45,11 +45,11 @@ fun HomeScreen(
     val totalCount = storeBooks.size
     val listState = rememberLazyListState()
 
-    val shouldLoadMore = remember {
+    val shouldLoadMore = remember(storeBooks.size) {
         derivedStateOf {
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             val totalItems = listState.layoutInfo.totalItemsCount
-            lastVisibleItem >= totalItems - 2 && totalItems > 0
+            lastVisibleItem >= totalItems - 2 && totalItems > 0 && storeBooks.size >= 5
         }
     }
 
