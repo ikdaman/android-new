@@ -63,3 +63,25 @@ UI
 ## 참고
 - 기존 `DataManualBookInfo` 형식에서 새 `SaveMyBookRequest` 형식으로 변경
 - bookInfo와 historyInfo를 분리하여 구조화
+
+## 화면 이동 플로우
+```
+HomeScreen
+  └─ 검색바 클릭 → SearchBookScreen (알라딘 도서 검색)
+      ├─ 검색 결과에서 책 선택
+      │   └─ → AddBookScreen (선택한 책 정보 전달)
+      │       ├─ 추가 정보 입력 (이유, 독서 날짜 등)
+      │       ├─ "추가하기" 버튼 → SaveMyBook API 호출
+      │       │   ├─ 성공 → MainScreen (popBackStack)
+      │       │   └─ 실패 → 에러 메시지 표시
+      │       └─ 뒤로 가기 → SearchBookScreen
+      └─ "직접 입력" 버튼
+          └─ → ManualBookInputScreen (직접 입력)
+              ├─ 책 정보 수동 입력
+              ├─ "추가하기" 버튼 → SaveMyBook API 호출
+              └─ 뒤로 가기 → SearchBookScreen
+
+바코드 스캔:
+  SearchBookScreen → BarcodeScreen
+    └─ 바코드 인식 성공 → AddBookScreen (ISBN으로 검색된 책 정보)
+```

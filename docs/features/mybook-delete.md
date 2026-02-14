@@ -23,3 +23,15 @@ UI
         → MyBookService.deleteMyBook(mybookId) [DELETE /mybooks/{mybookId}]
   ← Flow<DataResource<Unit>> (Loading → Success | Error)
 ```
+
+## 화면 이동 플로우
+```
+BookDetailScreen (예정)
+  └─ 삭제 버튼 클릭
+      └─ 확인 다이얼로그
+          ├─ 확인 → 삭제 API 호출
+          │   ├─ 성공 → 이전 화면으로 복귀 (popBackStack)
+          │   └─ 실패 → 에러 메시지 표시
+          └─ 취소 → BookDetailScreen
+```
+※ 현재 API 레이어만 구현됨. UI 연동은 BookDetailScreen 구현 시 추가 예정.

@@ -46,3 +46,16 @@ UI
 ## 날짜 형식
 - ISO 8601: `yyyy-MM-dd` (예: "2024-01-15")
 - nullable: 설정하지 않을 경우 null
+
+## 화면 이동 플로우
+```
+BookDetailScreen (예정)
+  └─ 독서 상태 변경 버튼 클릭
+      └─ 상태 선택 (TODO → INPROGRESS → DONE)
+          ├─ INPROGRESS 선택 → 시작일 입력
+          ├─ DONE 선택 → 완료일 입력
+          └─ API 호출
+              ├─ 성공 → BookDetailScreen (갱신된 상태 표시)
+              └─ 실패 → 에러 메시지 표시
+```
+※ 현재 API 레이어만 구현됨. UI 연동은 BookDetailScreen 구현 시 추가 예정.

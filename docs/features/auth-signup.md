@@ -44,6 +44,19 @@ UI
   ← Flow<SignupState> (Loading → Success | Error)
 ```
 
+## 화면 이동 플로우
+```
+LoginScreen (소셜 로그인 → 서버 404 응답)
+  └─ → SignupScreen (socialToken/provider/providerId를 Navigation 인자로 전달)
+        ├─ 닉네임 입력 → "중복 확인" 버튼 → CheckNicknameUseCase 호출
+        │   ├─ 사용 가능 → "가입하기" 버튼 활성화
+        │   └─ 사용 불가 → Snackbar "이미 사용 중인 닉네임입니다."
+        ├─ "가입하기" 버튼 클릭 → SignupUseCase 호출
+        │   ├─ 성공 (SignupState.Success) → MainScreen (popUpTo LoginScreen inclusive)
+        │   └─ 실패 (SignupState.Error) → Snackbar 에러 메시지
+        └─ 뒤로 가기 → LoginScreen
+```
+
 ## 상태 (SignupState)
 | 상태 | 설명 |
 |------|------|

@@ -14,14 +14,18 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import project.side.domain.model.DomainAuthEvent
 import project.side.domain.usecase.GetAuthEventUseCase
+import project.side.domain.usecase.SignupUseCase
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.viewmodel.SearchBookViewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import project.side.ui.screen.AddBookScreen
 import project.side.ui.screen.BarcodeScreen
 import project.side.ui.screen.LoginScreen
 import project.side.ui.screen.MainScreen
 import project.side.ui.screen.ManualBookInputScreen
+import project.side.ui.screen.SignupScreen
 import project.side.ui.theme.IkdamanTheme
 import javax.inject.Inject
 
@@ -32,6 +36,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var logoutUseCase: LogoutUseCase
+
+    @Inject
+    lateinit var signupUseCase: SignupUseCase
 
     @Inject
     lateinit var getAuthEventUseCase: GetAuthEventUseCase
@@ -75,13 +82,45 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(LOGIN_ROUTE) {
-                        LoginScreen(loginUseCase, logoutUseCase) {
-                            navController.navigate(MAIN_ROUTE) {
-                                popUpTo(LOGIN_ROUTE) {
-                                    inclusive = true
+                        LoginScreen(
+                            loginUseCase = loginUseCase,
+                            logoutUseCase = logoutUseCase,
+                            navigateToHome = {
+                                navController.navigate(MAIN_ROUTE) {
+                                    popUpTo(LOGIN_ROUTE) {
+                                        inclusive = true
+                                    }
+                                }
+                            },
+                            navigateToSignup = { socialToken, provider, providerId ->
+                                navController.navigate(
+                                    "Signup/$socialToken/$provider/$providerId"
+                                )
+                            }
+                        )
+                    }
+                    composable(
+                        route = SIGNUP_ROUTE,
+                        arguments = listOf(
+                            navArgument("socialToken") { type = NavType.StringType },
+                            navArgument("provider") { type = NavType.StringType },
+                            navArgument("providerId") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val socialToken = backStackEntry.arguments?.getString("socialToken") ?: ""
+                        val provider = backStackEntry.arguments?.getString("provider") ?: ""
+                        val providerId = backStackEntry.arguments?.getString("providerId") ?: ""
+                        SignupScreen(
+                            socialToken = socialToken,
+                            provider = provider,
+                            providerId = providerId,
+                            signupUseCase = signupUseCase,
+                            onSignupComplete = {
+                                navController.navigate(MAIN_ROUTE) {
+                                    popUpTo(LOGIN_ROUTE) { inclusive = true }
                                 }
                             }
-                        }
+                        )
                     }
                     composable(ADD_BOOK_ROUTE) {
                         AddBookScreen(

@@ -31,6 +31,15 @@ UI
   ← Flow<DataResource<Member>> (Loading → Success | Error)
 ```
 
+## 화면 이동 플로우
+```
+SettingScreen (예정)
+  └─ 화면 진입 시 자동 호출
+      ├─ 성공 → 닉네임 표시
+      └─ 실패 → 에러 메시지 표시
+```
+※ 현재 API 레이어만 구현됨. UI 연동은 SettingScreen 구현 시 추가 예정.
+
 ## 응답 데이터
 | 필드 | 타입 | 설명 |
 |------|------|------|

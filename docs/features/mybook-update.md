@@ -48,3 +48,16 @@ UI
 ## 참고
 - 모든 필드가 nullable이므로 변경할 필드만 전달 가능
 - 책의 기본 정보(제목, 저자 등)는 이 API로 수정 불가
+
+## 화면 이동 플로우
+```
+BookDetailScreen (예정)
+  └─ 수정 버튼 클릭
+      └─ MyBookEditScreen (예정)
+          ├─ 기존 정보 표시 (reason, historyInfo 등)
+          ├─ 수정 → API 호출
+          │   ├─ 성공 → BookDetailScreen (갱신된 정보)
+          │   └─ 실패 → 에러 메시지 표시
+          └─ 취소 → BookDetailScreen
+```
+※ 현재 API 레이어만 구현됨. 수정 전용 화면 구현 예정.

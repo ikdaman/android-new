@@ -62,3 +62,14 @@ UI
 | books[].bookInfo.title | String | 책 제목 |
 | books[].bookInfo.author | List<String> | 저자 목록 |
 | books[].bookInfo.coverImage | String? | 표지 이미지 URL |
+
+## 화면 이동 플로우
+```
+HomeScreen 또는 StoreScreen (예정)
+  └─ 검색바에 키워드 입력 → 검색 실행
+      ├─ 검색 결과 표시 (페이지네이션)
+      │   └─ 책 아이템 클릭 → BookDetailScreen (예정)
+      └─ 검색 결과 없음 → 빈 상태 표시
+```
+※ 현재 API 레이어만 구현됨. 내 책 검색용 UI 구현 예정.
+※ 알라딘 도서 검색(SearchBookScreen)과는 별도 기능.

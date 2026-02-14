@@ -63,3 +63,15 @@ UI
 | first | Boolean | 첫 페이지 여부 |
 | last | Boolean | 마지막 페이지 여부 |
 | empty | Boolean | 빈 결과 여부 |
+
+## 화면 이동 플로우
+```
+MainScreen > Bottom Tab (예정)
+  └─ 서점 탭 선택
+      └─ StoreScreen (예정)
+          ├─ 내 서점 목록 표시 (페이지네이션)
+          │   └─ 책 아이템 클릭 → BookDetailScreen (예정)
+          ├─ 검색 → MyBook 검색 API 호출
+          └─ 빈 목록 → "서점에 책을 추가해보세요" 안내
+```
+※ 현재 API 레이어만 구현됨. 전용 서점 화면 구현 예정.

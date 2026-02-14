@@ -37,6 +37,20 @@ UI
 |------|------|------|
 | available | Boolean | true: 사용 가능, false: 이미 사용 중 |
 
+## 화면 이동 플로우
+```
+SignupScreen (구현 완료)
+  └─ 닉네임 입력 → "중복 확인" 버튼 클릭
+      ├─ 사용 가능 (available: true)
+      │   └─ Snackbar "사용 가능한 닉네임입니다." + "가입하기" 버튼 활성화
+      └─ 사용 불가 (available: false)
+          └─ Snackbar "이미 사용 중인 닉네임입니다." + "가입하기" 버튼 비활성화
+
+SettingScreen > 닉네임 수정 (예정)
+  └─ 닉네임 변경 시 중복 확인 용도로 재사용 예정
+```
+※ 화면 이동 없이 현재 화면에서 Snackbar로 결과를 표시함.
+
 ## 참고
 - 기존에 `TestApiService`에 있던 API를 `MemberService`로 이동
 - 회원가입 flow와 닉네임 변경 flow에서 공통으로 사용

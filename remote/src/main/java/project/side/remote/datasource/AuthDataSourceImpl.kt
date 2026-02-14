@@ -36,7 +36,7 @@ class AuthDataSourceImpl @Inject constructor(
                     } else DataApiResult.Error("토큰이 비어있습니다.")
                 } ?: DataApiResult.Error("응답이 비어있습니다.")
             } else {
-                DataApiResult.Error(mapServerError(response.code(), response.message()))
+                DataApiResult.Error(mapServerError(response.code(), response.message()), response.code())
             }
         } catch (e: Exception) {
             DataApiResult.Error("네트워크 오류: ${e.message}")
@@ -59,7 +59,7 @@ class AuthDataSourceImpl @Inject constructor(
             val response = authService.logout()
             if (response.isSuccessful) {
                 DataApiResult.Success(Unit)
-            } else DataApiResult.Error(mapServerError(response.code(), response.message()))
+            } else DataApiResult.Error(mapServerError(response.code(), response.message()), response.code())
         } catch (e: Exception) {
             DataApiResult.Error("네트워크 오류: ${e.message}")
         }
@@ -94,7 +94,7 @@ class AuthDataSourceImpl @Inject constructor(
                     } else DataApiResult.Error("토큰이 비어있습니다.")
                 } ?: DataApiResult.Error("응답이 비어있습니다.")
             } else {
-                DataApiResult.Error(mapServerError(response.code(), response.message()))
+                DataApiResult.Error(mapServerError(response.code(), response.message()), response.code())
             }
         } catch (e: Exception) {
             DataApiResult.Error("네트워크 오류: ${e.message}")

@@ -34,6 +34,18 @@ UI
 - 인증 만료 (401)
 - 서버 오류 (500)
 
+## 화면 이동 플로우
+```
+SettingScreen (예정)
+  └─ 회원탈퇴 버튼 클릭
+      └─ 확인 다이얼로그
+          ├─ 확인 → 탈퇴 API 호출
+          │   ├─ 성공 → 로컬 데이터 삭제 → LoginScreen (popUpTo MainScreen inclusive)
+          │   └─ 실패 → 에러 메시지 표시
+          └─ 취소 → SettingScreen
+```
+※ 현재 API 레이어만 구현됨. UI 연동은 SettingScreen 구현 시 추가 예정.
+
 ## 주의사항
 - 탈퇴는 되돌릴 수 없으므로 UI에서 재확인 필요
 - 탈퇴 후 같은 소셜 계정으로 재가입 가능 여부는 서버 정책에 따름

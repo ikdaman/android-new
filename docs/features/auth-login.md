@@ -45,11 +45,27 @@ UI (LoginViewModel)
   ← Flow<LoginState> (Loading → Success | Error)
 ```
 
+## 화면 이동 플로우
+```
+LoginScreen
+  ├─ 로그인 성공 (LoginState.Success)
+  │   └─ → MainScreen (popUpTo LoginScreen inclusive)
+  ├─ 신규 사용자 (LoginState.SignupRequired, HTTP 404)
+  │   └─ → SignupScreen (socialToken/provider/providerId 전달)
+  └─ 로그인 실패 (LoginState.Error)
+      └─ → LoginScreen (Snackbar 에러 메시지 표시)
+
+인증 만료 시:
+  DomainAuthEvent.LOGIN_REQUIRED
+    └─ 앱 어디서든 → LoginScreen (popUpTo MainScreen inclusive)
+```
+
 ## 상태 (LoginState)
 | 상태 | 설명 |
 |------|------|
 | Loading | 로그인 진행 중 |
 | Success | 로그인 성공 |
+| SignupRequired(socialToken, provider, providerId) | 신규 사용자 - 회원가입 필요 |
 | Error(message) | 로그인 실패 (에러 메시지 포함) |
 
 ## 에러 케이스

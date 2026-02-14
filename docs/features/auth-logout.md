@@ -29,6 +29,16 @@ UI (LoginViewModel)
   ← Flow<LogoutState> (Loading → Success | Error)
 ```
 
+## 화면 이동 플로우
+```
+LoginScreen (로그아웃 버튼 클릭)
+  ├─ 로그아웃 성공 (LogoutState.Success)
+  │   └─ → LoginScreen (Snackbar "로그아웃 성공")
+  └─ 로그아웃 실패 (LogoutState.Error)
+      └─ → LoginScreen (Snackbar 에러 메시지)
+```
+※ 현재 로그아웃 버튼은 LoginScreen에 배치되어 있어, 화면 전환 없이 상태만 갱신됨
+
 ## 상태 (LogoutState)
 | 상태 | 설명 |
 |------|------|

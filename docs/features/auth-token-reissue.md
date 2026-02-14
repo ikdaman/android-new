@@ -37,6 +37,18 @@ OkHttp 요청 → 401 응답
   → 원래 요청 새 토큰으로 재시도
 ```
 
+## 화면 이동 플로우
+```
+(자동 처리 - 사용자 화면 변경 없음)
+  TokenAuthenticator가 401 응답 감지
+    ├─ 토큰 재발급 성공
+    │   └─ 원래 요청 재시도 (화면 변경 없음)
+    └─ 토큰 재발급 실패
+        └─ DomainAuthEvent.LOGIN_REQUIRED 발행
+            └─ → LoginScreen (popUpTo MainScreen inclusive)
+```
+※ 사용자는 토큰 재발급을 인지하지 못함. 실패 시에만 로그인 화면으로 이동.
+
 ## 실패 시 처리
 - 리프레시 토큰도 만료된 경우:
   - 로컬 토큰 및 캐시 삭제

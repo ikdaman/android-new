@@ -112,6 +112,8 @@ class AuthRepositoryImpl @Inject constructor(
                     data.nickname
                 )
                 emit(LoginState.Success)
+            } else if (loginResult is DataApiResult.Error && loginResult.code == 404) {
+                emit(LoginState.SignupRequired(accessToken, provider, providerId))
             } else {
                 emit(LoginState.Error("로그인 실패"))
             }

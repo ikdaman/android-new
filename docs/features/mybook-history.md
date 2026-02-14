@@ -51,3 +51,14 @@ UI (HistoryViewModel)
 ## 변경 이력
 - 기존 파라미터: `page`, `limit`, `sort`
 - 변경 후 파라미터: `keyword`, `page`, `size`
+
+## 화면 이동 플로우
+```
+MainScreen > Bottom Tab "History"
+  └─ HistoryScreen (구현 완료)
+      ├─ 화면 진입 시 독서 기록 목록 자동 로딩
+      ├─ 키워드 검색 → 필터링된 결과 표시
+      ├─ 페이지네이션 (스크롤 시 추가 로딩)
+      └─ 책 아이템 클릭 → BookDetailScreen (예정)
+```
+※ HistoryScreen UI는 구현 완료. 상세 화면 연동 예정.

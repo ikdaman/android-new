@@ -36,7 +36,8 @@ fun LoginScreen(
     loginUseCase: LoginUseCase? = null,
     logoutUseCase: LogoutUseCase? = null,
     viewModel: LoginViewModel? = hiltViewModel(),
-    navigateToHome: () -> Unit = {}
+    navigateToHome: () -> Unit = {},
+    navigateToSignup: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
     val uiState = viewModel?.uiState?.collectAsState()?.value
     val snackbarHostState = remember { SnackbarHostState() }
@@ -101,6 +102,10 @@ fun LoginScreen(
 
         LaunchedEffect(uiState) {
             var message = ""
+            if (uiState is LoginUIState.SignupRequired) {
+                val state = uiState as LoginUIState.SignupRequired
+                navigateToSignup(state.socialToken, state.provider, state.providerId)
+            }
             if (uiState is LoginUIState.Error) {
                 message = uiState.message
             }

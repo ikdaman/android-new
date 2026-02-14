@@ -54,6 +54,11 @@ class LoginViewModel @Inject constructor(): ViewModel() {
                 when (loginState) {
                     LoginState.Loading -> _uiState.value = LoginUIState.Loading
                     LoginState.Success -> _uiState.value = LoginUIState.Success("로그인 성공")
+                    is LoginState.SignupRequired -> _uiState.value = LoginUIState.SignupRequired(
+                        loginState.socialToken,
+                        loginState.provider,
+                        loginState.providerId
+                    )
                     is LoginState.Error -> _uiState.value = LoginUIState.Error(loginState.message)
                 }
             }
