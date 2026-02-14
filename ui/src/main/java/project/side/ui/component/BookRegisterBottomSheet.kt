@@ -277,7 +277,13 @@ private fun RegisterBottomSheetUI(
                 onClick = {
                     scope.launch {
                         val reasonToSend = reason.value.takeIf { it.isNotBlank() }
-                        onConfirm(reasonToSend, selectedDate.value, selectedEndDate.value)
+                        if (selectedTab.value == 0) {
+                            // 내 서점: 독서 시작/종료 날짜 없음
+                            onConfirm(reasonToSend, null, null)
+                        } else {
+                            // 히스토리: 독서 시작/종료 날짜 전달
+                            onConfirm(reasonToSend, selectedDate.value, selectedEndDate.value)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

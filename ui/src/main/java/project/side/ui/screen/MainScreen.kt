@@ -14,6 +14,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import project.side.presentation.viewmodel.BookInfoViewModel
 import project.side.presentation.viewmodel.MainViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import project.side.presentation.viewmodel.SearchBookViewModel
@@ -87,6 +90,9 @@ fun MainScreen(
                         storeBooks = storeBooks,
                         historyBooks = historyBooks,
                         onLoadMore = { mainViewModel.loadMore() },
+                        onBookClick = { mybookId ->
+                            navController.navigate("BookInfo/$mybookId")
+                        },
                         navigateToSetting = {
                             appNavController.navigateIfLoggedIn(isLoggedIn.value) {
                                 navController.navigate(SETTING_ROUTE)
@@ -123,8 +129,18 @@ fun MainScreen(
                         }
                     )
                 }
-                composable(BOOK_INFO_ROUTE) {
-                    BookInfoScreen()
+                composable(
+                    BOOK_INFO_ROUTE,
+                    arguments = listOf(navArgument("mybookId") { type = NavType.IntType })
+                ) {
+                    val bookInfoViewModel: BookInfoViewModel = hiltViewModel()
+                    BookInfoScreen(
+                        viewModel = bookInfoViewModel,
+                        onBack = { navController.popBackStack() },
+                        onDeleteComplete = {
+                            navController.popBackStack(HOME_ROUTE, inclusive = false)
+                        }
+                    )
                 }
             }
         }

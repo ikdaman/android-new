@@ -40,6 +40,7 @@ fun HomeScreen(
     storeBooks: List<StoreBookItem> = emptyList(),
     historyBooks: List<HistoryBookInfo> = emptyList(),
     onLoadMore: () -> Unit = {},
+    onBookClick: (Int) -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
 ) {
@@ -74,7 +75,8 @@ fun HomeScreen(
                 author = book.author.joinToString(", "),
                 coverImage = book.coverImage,
                 date = book.createdDate,
-                description = book.description
+                description = book.description,
+                onClick = { onBookClick(book.mybookId) }
             )
             Spacer(modifier = Modifier.height(55.dp))
         }
@@ -85,7 +87,8 @@ fun HomeScreen(
                 author = book.author?.joinToString(", ") ?: "",
                 coverImage = book.coverImage,
                 date = book.startedDate,
-                description = book.description
+                description = book.description,
+                onClick = { onBookClick(book.mybookId) }
             )
             Spacer(modifier = Modifier.height(55.dp))
         }

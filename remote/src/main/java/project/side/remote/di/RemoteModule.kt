@@ -7,7 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import project.side.remote.logging.CompactLoggingInterceptor
 import project.side.data.datasource.AladinBookSearchSource
 import project.side.data.datasource.AuthDataSource
 import project.side.data.datasource.HistoryDataSource
@@ -68,11 +68,8 @@ object RemoteModule {
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .writeTimeout(15, TimeUnit.SECONDS)
-        .addInterceptor(
-            HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }
-        ).build()
+        .addInterceptor(CompactLoggingInterceptor())
+        .build()
 
     @Provides
     @Singleton
@@ -85,11 +82,7 @@ object RemoteModule {
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-            .addInterceptor(
-                HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                }
-            )
+            .addInterceptor(CompactLoggingInterceptor())
             .addInterceptor(authInterceptor)
             .authenticator(tokenAuthenticator)
             .build()

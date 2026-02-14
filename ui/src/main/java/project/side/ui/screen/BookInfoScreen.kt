@@ -1,6 +1,7 @@
 package project.side.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,12 +15,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,11 +39,73 @@ import coil.compose.AsyncImage
 import project.side.domain.model.MyBookDetail
 import project.side.domain.model.MyBookDetailBookInfo
 import project.side.domain.model.MyBookDetailHistoryInfo
+import project.side.presentation.viewmodel.BookInfoUiState
+import project.side.presentation.viewmodel.BookInfoViewModel
 import project.side.ui.theme.IkdamanTheme
 
 @Composable
 fun BookInfoScreen(
-    detail: MyBookDetail = dummyStoreDetail,
+    viewModel: BookInfoViewModel,
+    onBack: () -> Unit = {},
+    onEdit: () -> Unit = {},
+    onDeleteComplete: () -> Unit = {}
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val deleteSuccess by viewModel.deleteSuccess.collectAsState()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(deleteSuccess) {
+        if (deleteSuccess) {
+            onDeleteComplete()
+        }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("책 삭제") },
+            text = { Text("책을 삭제하면 모든 기록이 사라져요.\n삭제하시겠어요?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                    viewModel.deleteBook()
+                }) {
+                    Text("삭제", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("취소")
+                }
+            }
+        )
+    }
+
+    when (val state = uiState) {
+        is BookInfoUiState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        is BookInfoUiState.Error -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = state.message ?: "오류가 발생했습니다.", color = Color.Red)
+            }
+        }
+        is BookInfoUiState.Success -> {
+            BookInfoContent(
+                detail = state.detail,
+                onBack = onBack,
+                onEdit = onEdit,
+                onDelete = { showDeleteDialog = true }
+            )
+        }
+    }
+}
+
+@Composable
+private fun BookInfoContent(
+    detail: MyBookDetail,
     onBack: () -> Unit = {},
     onEdit: () -> Unit = {},
     onDelete: () -> Unit = {}
@@ -162,7 +233,7 @@ private fun InfoRow(label: String, value: String) {
     }
 }
 
-// 더미 데이터: 내 서점 타입
+// Preview용 더미 데이터
 private val dummyStoreDetail = MyBookDetail(
     mybookId = "1",
     readingStatus = "WISH",
@@ -187,7 +258,6 @@ private val dummyStoreDetail = MyBookDetail(
     )
 )
 
-// 더미 데이터: 히스토리 타입
 private val dummyHistoryDetail = MyBookDetail(
     mybookId = "2",
     readingStatus = "READING",
@@ -216,7 +286,7 @@ private val dummyHistoryDetail = MyBookDetail(
 @Composable
 fun BookInfoScreenStorePreview() {
     IkdamanTheme {
-        BookInfoScreen(detail = dummyStoreDetail)
+        BookInfoContent(detail = dummyStoreDetail)
     }
 }
 
@@ -224,6 +294,6 @@ fun BookInfoScreenStorePreview() {
 @Composable
 fun BookInfoScreenHistoryPreview() {
     IkdamanTheme {
-        BookInfoScreen(detail = dummyHistoryDetail)
+        BookInfoContent(detail = dummyHistoryDetail)
     }
 }

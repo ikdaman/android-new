@@ -2,6 +2,7 @@ package project.side.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,9 +34,10 @@ fun HomeBookItem(
     author: String = "",
     coverImage: String? = null,
     date: String = "",
-    description: String? = null
+    description: String? = null,
+    onClick: () -> Unit = {}
 ) {
-    Row {
+    Row(modifier = Modifier.clickable { onClick() }) {
         Box(modifier = Modifier.height(200.dp)) {
             if (coverImage != null) {
                 AsyncImage(
