@@ -139,9 +139,7 @@ class MyBookDataSourceImpl @Inject constructor(
             )
             val response = myBookService.saveMyBook(apiRequest)
             if (response.isSuccessful) {
-                response.body()?.let {
-                    DataApiResult.Success(it.mybookId)
-                } ?: DataApiResult.Error("응답이 비어있습니다.")
+                DataApiResult.Success(response.code())
             } else {
                 DataApiResult.Error(mapServerError(response.code(), response.message()))
             }

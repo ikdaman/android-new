@@ -52,5 +52,5 @@ interface MyBookService {
     @POST("/mybooks")
     suspend fun saveMyBook(
         @Body request: SaveMyBookRequest
-    ): Response<MyBookIdResponse>
+    ): Response<Unit>
 }
