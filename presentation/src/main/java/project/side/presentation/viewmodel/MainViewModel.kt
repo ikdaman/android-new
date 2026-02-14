@@ -116,6 +116,14 @@ class MainViewModel @Inject constructor(
         fetchHistoryBooks()
     }
 
+    fun refreshStoreBooks() {
+        storeBooksPage = 0
+        storeBooksLastPage = false
+        storeBooksLoading = false
+        _storeBooks.value = emptyList()
+        fetchStoreBooks()
+    }
+
     suspend fun showSnackbar(message: String) {
         _snackbarEvents.emit(message)
     }

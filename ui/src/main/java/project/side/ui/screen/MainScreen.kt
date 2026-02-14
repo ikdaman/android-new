@@ -57,6 +57,12 @@ fun MainScreen(
     val storeBooks by mainViewModel.storeBooks.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
+    // 홈 화면에 돌아올 때 내 서점 목록 새로고침
+    LaunchedEffect(currentRoute) {
+        if (currentRoute == HOME_ROUTE) {
+            mainViewModel.refreshStoreBooks()
+        }
+    }
     Scaffold(
         snackbarHost = {
             CustomSnackbarHost(snackbarHostState)

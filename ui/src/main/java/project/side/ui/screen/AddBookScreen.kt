@@ -144,8 +144,8 @@ fun AddBookScreen(
                         viewModel.saveEvent.collect { event ->
                             when (event) {
                                 is project.side.presentation.viewmodel.SaveEvent.Success -> {
-                                    snackbarHostState.showSnackbar("책을 저장했어요")
                                     appNavController.popBackStack(MAIN_ROUTE, inclusive = false)
+                                    project.side.presentation.util.SnackbarManager.show("책을 저장했어요")
                                 }
                                 is project.side.presentation.viewmodel.SaveEvent.Error -> {
                                     snackbarHostState.showSnackbar(event.message)
