@@ -31,10 +31,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import coil.compose.AsyncImage
 import project.side.domain.model.MyBookDetail
 import project.side.domain.model.MyBookDetailBookInfo
@@ -205,7 +209,16 @@ private fun BookInfoContent(
             InfoRow("출판사", detail.bookInfo.publisher ?: "-")
             Spacer(Modifier.height(16.dp))
             if (detail.bookInfo.aladinId != null) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                val context = LocalContext.current
+                val aladinUrl = "https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=${detail.bookInfo.aladinId}&partner=openAPI&start=api"
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .clickable {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(aladinUrl)))
+                        }
+                ) {
                     Text("알라딘에서 보기", style = MaterialTheme.typography.labelMedium)
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,

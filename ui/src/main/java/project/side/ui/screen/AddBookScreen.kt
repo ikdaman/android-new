@@ -25,9 +25,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -155,12 +159,23 @@ fun AddBookScreen(
                     }
                 }
 
-                Row (verticalAlignment = Alignment.CenterVertically) {
-                    Text("알라딘에서 보기", style = MaterialTheme.typography.labelMedium)
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = null,
-                    )
+                if (selectedBookResolved.itemId != 0L) {
+                    val context = LocalContext.current
+                    val aladinUrl = "https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=${selectedBookResolved.itemId}&partner=openAPI&start=api"
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .clickable {
+                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(aladinUrl)))
+                            }
+                    ) {
+                        Text("알라딘에서 보기", style = MaterialTheme.typography.labelMedium)
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                        )
+                    }
                 }
                 BookRegisterBottomSheet(
                     show = showRegister.value,
