@@ -60,20 +60,15 @@ class AladinRepositoryImplTest {
         coVerify(exactly = 1) { bookSearchSource.searchBookWithTitle(title, startPage) }
     }
 
-    @Test
-    fun `searchBookWithTitle returns empty result on exception`() = runTest {
+    @Test(expected = RuntimeException::class)
+    fun `searchBookWithTitle throws exception when data source fails`() = runTest {
         // Given
         val title = "에러책"
         val startPage = 0
         coEvery { bookSearchSource.searchBookWithTitle(title, startPage) } throws RuntimeException("Network error")
 
         // When
-        val result = repository.searchBookWithTitle(title, startPage)
-
-        // Then
-        assertEquals(BookSearchResult(), result)
-        assertEquals(0, result.totalBookCount)
-        assertEquals(emptyList<Any>(), result.books)
+        repository.searchBookWithTitle(title, startPage)
     }
 
     @Test
@@ -129,32 +124,23 @@ class AladinRepositoryImplTest {
         coVerify(exactly = 1) { bookSearchSource.searchBookWithIsbn(isbn) }
     }
 
-    @Test
-    fun `searchBookWithIsbn returns empty result on exception`() = runTest {
+    @Test(expected = RuntimeException::class)
+    fun `searchBookWithIsbn throws exception when data source fails`() = runTest {
         // Given
         val isbn = "0000000000000"
         coEvery { bookSearchSource.searchBookWithIsbn(isbn) } throws RuntimeException("Not found")
 
         // When
-        val result = repository.searchBookWithIsbn(isbn)
-
-        // Then
-        assertEquals(BookSearchResult(), result)
-        assertEquals(0, result.totalBookCount)
-        assertEquals(emptyList<Any>(), result.books)
+        repository.searchBookWithIsbn(isbn)
     }
 
-    @Test
-    fun `searchBookWithIsbn handles network timeout exception`() = runTest {
+    @Test(expected = java.net.SocketTimeoutException::class)
+    fun `searchBookWithIsbn throws exception on network timeout`() = runTest {
         // Given
         val isbn = "1234567890123"
         coEvery { bookSearchSource.searchBookWithIsbn(isbn) } throws java.net.SocketTimeoutException("Timeout")
 
         // When
-        val result = repository.searchBookWithIsbn(isbn)
-
-        // Then
-        assertEquals(BookSearchResult(), result)
-        assertEquals(0, result.totalBookCount)
+        repository.searchBookWithIsbn(isbn)
     }
 }

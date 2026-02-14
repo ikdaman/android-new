@@ -51,21 +51,21 @@ class SearchBookWithTitleUseCaseTest {
     }
 
     @Test
-    fun `invoke uses default startPage of 0 when not specified`() = runTest {
+    fun `invoke uses default startPage of 1 when not specified`() = runTest {
         // Given
         val keyword = "자바"
         val expectedResult = BookSearchResult(
             totalBookCount = 5,
             books = emptyList()
         )
-        coEvery { repository.searchBookWithTitle(keyword, 0) } returns expectedResult
+        coEvery { repository.searchBookWithTitle(keyword, 1) } returns expectedResult
 
         // When
         val result = useCase.invoke(keyword)
 
         // Then
         assertEquals(expectedResult, result)
-        coVerify(exactly = 1) { repository.searchBookWithTitle(keyword, 0) }
+        coVerify(exactly = 1) { repository.searchBookWithTitle(keyword, 1) }
     }
 
     @Test
@@ -73,7 +73,7 @@ class SearchBookWithTitleUseCaseTest {
         // Given
         val keyword = "비어있는책"
         val emptyResult = BookSearchResult()
-        coEvery { repository.searchBookWithTitle(keyword, 0) } returns emptyResult
+        coEvery { repository.searchBookWithTitle(keyword, 1) } returns emptyResult
 
         // When
         val result = useCase.invoke(keyword)

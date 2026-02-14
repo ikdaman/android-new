@@ -32,9 +32,9 @@ class HistoryRepositoryImplTest {
     @Test
     fun `getHistoryBooks emits loading then success when data source succeeds`() = runTest {
         // Given
+        val keyword = "test"
         val page = 1
-        val limit = 10
-        val sort = "desc"
+        val size = 10
         val historyEntity = HistoryBookEntity(
             totalPages = 5,
             nowPage = 1,
@@ -48,10 +48,10 @@ class HistoryRepositoryImplTest {
                 )
             )
         )
-        coEvery { historyDataSource.getHistoryBooks(page, limit, sort) } returns DataApiResult.Success(historyEntity)
+        coEvery { historyDataSource.getHistoryBooks(keyword, page, size) } returns DataApiResult.Success(historyEntity)
 
         // When
-        val flow = repository.getHistoryBooks(page, limit, sort)
+        val flow = repository.getHistoryBooks(keyword, page, size)
         val results = flow.toList()
 
         // Then
@@ -63,20 +63,20 @@ class HistoryRepositoryImplTest {
         assertEquals(1, successData.nowPage)
         assertEquals(1, successData.books.size)
         assertEquals("테스트 책", successData.books[0].title)
-        coVerify(exactly = 1) { historyDataSource.getHistoryBooks(page, limit, sort) }
+        coVerify(exactly = 1) { historyDataSource.getHistoryBooks(keyword, page, size) }
     }
 
     @Test
     fun `getHistoryBooks emits loading then error when data source returns error`() = runTest {
         // Given
+        val keyword = "test"
         val page = 1
-        val limit = 10
-        val sort = "asc"
+        val size = 10
         val errorMessage = "서버 오류"
-        coEvery { historyDataSource.getHistoryBooks(page, limit, sort) } returns DataApiResult.Error(errorMessage)
+        coEvery { historyDataSource.getHistoryBooks(keyword, page, size) } returns DataApiResult.Error(errorMessage)
 
         // When
-        val flow = repository.getHistoryBooks(page, limit, sort)
+        val flow = repository.getHistoryBooks(keyword, page, size)
         val results = flow.toList()
 
         // Then
@@ -89,14 +89,14 @@ class HistoryRepositoryImplTest {
     @Test
     fun `getHistoryBooks emits loading then error when exception occurs`() = runTest {
         // Given
+        val keyword = "test"
         val page = 2
-        val limit = 20
-        val sort = "recent"
+        val size = 20
         val exceptionMessage = "네트워크 오류"
-        coEvery { historyDataSource.getHistoryBooks(page, limit, sort) } throws RuntimeException(exceptionMessage)
+        coEvery { historyDataSource.getHistoryBooks(keyword, page, size) } throws RuntimeException(exceptionMessage)
 
         // When
-        val flow = repository.getHistoryBooks(page, limit, sort)
+        val flow = repository.getHistoryBooks(keyword, page, size)
         val results = flow.toList()
 
         // Then
@@ -109,13 +109,13 @@ class HistoryRepositoryImplTest {
     @Test
     fun `getHistoryBooks uses default error message when exception message is null`() = runTest {
         // Given
+        val keyword = "test"
         val page = 1
-        val limit = 10
-        val sort = "desc"
-        coEvery { historyDataSource.getHistoryBooks(page, limit, sort) } throws RuntimeException()
+        val size = 10
+        coEvery { historyDataSource.getHistoryBooks(keyword, page, size) } throws RuntimeException()
 
         // When
-        val flow = repository.getHistoryBooks(page, limit, sort)
+        val flow = repository.getHistoryBooks(keyword, page, size)
         val results = flow.toList()
 
         // Then
@@ -127,18 +127,18 @@ class HistoryRepositoryImplTest {
     @Test
     fun `getHistoryBooks handles empty book list`() = runTest {
         // Given
+        val keyword = "test"
         val page = 1
-        val limit = 10
-        val sort = "desc"
+        val size = 10
         val emptyHistoryEntity = HistoryBookEntity(
             totalPages = 0,
             nowPage = 0,
             books = emptyList()
         )
-        coEvery { historyDataSource.getHistoryBooks(page, limit, sort) } returns DataApiResult.Success(emptyHistoryEntity)
+        coEvery { historyDataSource.getHistoryBooks(keyword, page, size) } returns DataApiResult.Success(emptyHistoryEntity)
 
         // When
-        val flow = repository.getHistoryBooks(page, limit, sort)
+        val flow = repository.getHistoryBooks(keyword, page, size)
         val results = flow.toList()
 
         // Then
@@ -152,16 +152,16 @@ class HistoryRepositoryImplTest {
     @Test
     fun `getHistoryBooks passes correct parameters to data source`() = runTest {
         // Given
+        val keyword = "test"
         val page = 3
-        val limit = 15
-        val sort = "oldest"
+        val size = 15
         val historyEntity = HistoryBookEntity(0, 0, emptyList())
-        coEvery { historyDataSource.getHistoryBooks(page, limit, sort) } returns DataApiResult.Success(historyEntity)
+        coEvery { historyDataSource.getHistoryBooks(keyword, page, size) } returns DataApiResult.Success(historyEntity)
 
         // When
-        repository.getHistoryBooks(page, limit, sort).toList()
+        repository.getHistoryBooks(keyword, page, size).toList()
 
         // Then
-        coVerify(exactly = 1) { historyDataSource.getHistoryBooks(page, limit, sort) }
+        coVerify(exactly = 1) { historyDataSource.getHistoryBooks(keyword, page, size) }
     }
 }
