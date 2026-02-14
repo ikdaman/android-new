@@ -10,9 +10,9 @@ class GetHistoryBooksUseCase @Inject constructor(
     private val historyRepository: HistoryRepository
 ) {
     suspend operator fun invoke(
-        page: Int,
-        limit: Int,
-        sort: String
+        keyword: String? = null,
+        page: Int? = null,
+        size: Int? = null
     ): Flow<DataResource<HistoryBook>> =
-        historyRepository.getHistoryBooks(page, limit, sort)
+        historyRepository.getHistoryBooks(keyword, page, size)
 }

@@ -177,7 +177,7 @@ fun SearchBookScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = searchState.errorMessage,
+                            text = searchState.errorMessage ?: "",
                             style = MaterialTheme.typography.bodyLarge,
                             color = Color.Gray
                         )

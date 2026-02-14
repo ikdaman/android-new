@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import project.side.domain.model.LoginState
+import project.side.domain.model.LogoutState
 import project.side.domain.model.SocialAuthType
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
@@ -36,9 +37,9 @@ class LoginViewModel @Inject constructor(): ViewModel() {
 
             logoutUseCase(authType.toDomainAuthType()).collect { logoutState ->
                 when (logoutState) {
-                    LoginState.Loading -> _uiState.value = LoginUIState.Loading
-                    LoginState.Success -> _uiState.value = LoginUIState.Success("로그아웃 성공")
-                    is LoginState.Error -> _uiState.value = LoginUIState.Error(logoutState.message)
+                    LogoutState.Loading -> _uiState.value = LoginUIState.Loading
+                    LogoutState.Success -> _uiState.value = LoginUIState.Success("로그아웃 성공")
+                    is LogoutState.Error -> _uiState.value = LoginUIState.Error(logoutState.message)
                 }
             }
         }

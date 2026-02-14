@@ -14,12 +14,12 @@ class HistoryRepositoryImpl @Inject constructor(
     private val historyDataSource: HistoryDataSource
 ) : HistoryRepository {
     override suspend fun getHistoryBooks(
-        page: Int,
-        limit: Int,
-        sort: String
+        keyword: String?,
+        page: Int?,
+        size: Int?
     ): Flow<DataResource<HistoryBook>> = flow {
         emit(DataResource.Loading())
-        val result = historyDataSource.getHistoryBooks(page, limit, sort)
+        val result = historyDataSource.getHistoryBooks(keyword, page, size)
         if (result is DataApiResult.Success) {
             emit(DataResource.Success(result.data.toDomain()))
         } else if (result is DataApiResult.Error) {

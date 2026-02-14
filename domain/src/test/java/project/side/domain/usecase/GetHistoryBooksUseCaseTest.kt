@@ -31,9 +31,9 @@ class GetHistoryBooksUseCaseTest {
     @Test
     fun `invoke returns flow from repository with correct params`() = runTest {
         // Given
+        val keyword = "test"
         val page = 1
-        val limit = 10
-        val sort = "desc"
+        val size = 10
         val historyBook = HistoryBook(
             totalPages = 5,
             nowPage = 1,
@@ -51,10 +51,10 @@ class GetHistoryBooksUseCaseTest {
             DataResource.Loading(),
             DataResource.Success(historyBook)
         )
-        coEvery { historyRepository.getHistoryBooks(page, limit, sort) } returns expectedFlow
+        coEvery { historyRepository.getHistoryBooks(keyword, page, size) } returns expectedFlow
 
         // When
-        val resultFlow = useCase.invoke(page, limit, sort)
+        val resultFlow = useCase.invoke(keyword, page, size)
         val results = resultFlow.toList()
 
         // Then
@@ -62,24 +62,24 @@ class GetHistoryBooksUseCaseTest {
         assert(results[0] is DataResource.Loading)
         assert(results[1] is DataResource.Success)
         assertEquals(historyBook, (results[1] as DataResource.Success).data)
-        coVerify(exactly = 1) { historyRepository.getHistoryBooks(page, limit, sort) }
+        coVerify(exactly = 1) { historyRepository.getHistoryBooks(keyword, page, size) }
     }
 
     @Test
     fun `invoke returns error flow when repository fails`() = runTest {
         // Given
+        val keyword = null
         val page = 1
-        val limit = 20
-        val sort = "asc"
+        val size = 20
         val errorMessage = "네트워크 오류"
         val expectedFlow = flowOf(
             DataResource.Loading(),
             DataResource.Error(errorMessage)
         )
-        coEvery { historyRepository.getHistoryBooks(page, limit, sort) } returns expectedFlow
+        coEvery { historyRepository.getHistoryBooks(keyword, page, size) } returns expectedFlow
 
         // When
-        val resultFlow = useCase.invoke(page, limit, sort)
+        val resultFlow = useCase.invoke(keyword, page, size)
         val results = resultFlow.toList()
 
         // Then
@@ -92,18 +92,18 @@ class GetHistoryBooksUseCaseTest {
     @Test
     fun `invoke passes all parameters correctly to repository`() = runTest {
         // Given
+        val keyword = "history"
         val page = 3
-        val limit = 15
-        val sort = "recent"
+        val size = 15
         val emptyHistory = HistoryBook(totalPages = 0, nowPage = 0, books = emptyList())
-        coEvery { historyRepository.getHistoryBooks(page, limit, sort) } returns flowOf(
+        coEvery { historyRepository.getHistoryBooks(keyword, page, size) } returns flowOf(
             DataResource.Success(emptyHistory)
         )
 
         // When
-        useCase.invoke(page, limit, sort)
+        useCase.invoke(keyword, page, size)
 
         // Then
-        coVerify(exactly = 1) { historyRepository.getHistoryBooks(page, limit, sort) }
+        coVerify(exactly = 1) { historyRepository.getHistoryBooks(keyword, page, size) }
     }
 }

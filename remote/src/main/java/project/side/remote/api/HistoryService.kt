@@ -8,8 +8,8 @@ import retrofit2.http.Query
 interface HistoryService {
     @GET("mybooks/history")
     suspend fun getHistoryBooks(
-        @Query("page") page: Int,
-        @Query("limit") limit: Int,
-        @Query("sort") sort: String
+        @Query("keyword") keyword: String?,
+        @Query("page") page: Int?,
+        @Query("size") size: Int?
     ): Response<HistoryBookResponse>
 }

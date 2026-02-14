@@ -63,6 +63,28 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun signup(
+        socialToken: String?,
+        provider: String?,
+        providerId: String?,
+        nickname: String?
+    ) = flow {
+        emit(project.side.domain.model.SignupState.Loading)
+        val signupResult = authDataSource.signup(socialToken, provider, providerId, nickname)
+        if (signupResult is DataApiResult.Success) {
+            val data = signupResult.data
+            authDataStoreSource.saveAuthInfo(
+                provider ?: "",
+                data.authorization,
+                data.refreshToken,
+                data.nickname
+            )
+            emit(project.side.domain.model.SignupState.Success)
+        } else if (signupResult is DataApiResult.Error) {
+            emit(project.side.domain.model.SignupState.Error(signupResult.message))
+        }
+    }
+
     private suspend fun FlowCollector<LoginState>.processLogin(
         socialResult: SocialLoginResult
     ) {

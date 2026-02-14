@@ -7,22 +7,38 @@ import dagger.hilt.components.SingletonComponent
 import project.side.data.datasource.AladinBookSearchSource
 import project.side.data.datasource.AuthDataStoreSource
 import project.side.data.datasource.HistoryDataSource
+import project.side.data.datasource.MemberDataSource
+import project.side.data.datasource.MyBookDataSource
 import project.side.data.datasource.TestDataSource
 
 import project.side.data.repository.AladinRepositoryImpl
 import project.side.data.repository.HistoryRepositoryImpl
 import project.side.data.repository.AuthEventRepositoryImpl
+import project.side.data.repository.MemberRepositoryImpl
+import project.side.data.repository.MyBookRepositoryImpl
 import project.side.data.repository.TestRepositoryImpl
 import project.side.data.repository.UserRepositoryImpl
 import project.side.domain.repository.AladinRepository
 import project.side.domain.repository.HistoryRepository
 import project.side.domain.repository.AuthEventRepository
+import project.side.domain.repository.MemberRepository
+import project.side.domain.repository.MyBookRepository
 import project.side.domain.repository.TestRepository
 import project.side.domain.repository.UserRepository
 import project.side.domain.usecase.GetHistoryBooksUseCase
 import project.side.domain.usecase.GetAuthEventUseCase
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.TestUseCase
+import project.side.domain.usecase.member.CheckNicknameUseCase
+import project.side.domain.usecase.member.GetMyInfoUseCase
+import project.side.domain.usecase.member.UpdateNicknameUseCase
+import project.side.domain.usecase.member.WithdrawUseCase
+import project.side.domain.usecase.mybook.DeleteMyBookUseCase
+import project.side.domain.usecase.mybook.GetMyBookDetailUseCase
+import project.side.domain.usecase.mybook.GetStoreBooksUseCase
+import project.side.domain.usecase.mybook.SearchMyBooksUseCase
+import project.side.domain.usecase.mybook.UpdateMyBookUseCase
+import project.side.domain.usecase.mybook.UpdateReadingStatusUseCase
 import javax.inject.Singleton
 
 @Module
@@ -81,4 +97,67 @@ object AppModule {
     @Singleton
     fun provideGetHistoryBooksUseCase(historyRepository: HistoryRepository) =
         GetHistoryBooksUseCase(historyRepository)
+
+    // Member
+    @Provides
+    @Singleton
+    fun provideMemberRepository(memberDataSource: MemberDataSource): MemberRepository =
+        MemberRepositoryImpl(memberDataSource)
+
+    @Provides
+    @Singleton
+    fun provideGetMyInfoUseCase(memberRepository: MemberRepository) =
+        GetMyInfoUseCase(memberRepository)
+
+    @Provides
+    @Singleton
+    fun provideUpdateNicknameUseCase(memberRepository: MemberRepository) =
+        UpdateNicknameUseCase(memberRepository)
+
+    @Provides
+    @Singleton
+    fun provideWithdrawUseCase(memberRepository: MemberRepository) =
+        WithdrawUseCase(memberRepository)
+
+    @Provides
+    @Singleton
+    fun provideCheckNicknameUseCase(memberRepository: MemberRepository) =
+        CheckNicknameUseCase(memberRepository)
+
+    // MyBook
+    @Provides
+    @Singleton
+    fun provideMyBookRepository(myBookDataSource: MyBookDataSource): MyBookRepository =
+        MyBookRepositoryImpl(myBookDataSource)
+
+    @Provides
+    @Singleton
+    fun provideGetMyBookDetailUseCase(myBookRepository: MyBookRepository) =
+        GetMyBookDetailUseCase(myBookRepository)
+
+    @Provides
+    @Singleton
+    fun provideDeleteMyBookUseCase(myBookRepository: MyBookRepository) =
+        DeleteMyBookUseCase(myBookRepository)
+
+    @Provides
+    @Singleton
+    fun provideSearchMyBooksUseCase(myBookRepository: MyBookRepository) =
+        SearchMyBooksUseCase(myBookRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetStoreBooksUseCase(myBookRepository: MyBookRepository) =
+        GetStoreBooksUseCase(myBookRepository)
+
+    @Provides
+    @Singleton
+    fun provideUpdateReadingStatusUseCase(myBookRepository: MyBookRepository) =
+        UpdateReadingStatusUseCase(myBookRepository)
+
+    @Provides
+    @Singleton
+    fun provideUpdateMyBookUseCase(myBookRepository: MyBookRepository) =
+        UpdateMyBookUseCase(myBookRepository)
+
 }

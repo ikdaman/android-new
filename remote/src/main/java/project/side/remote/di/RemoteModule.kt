@@ -11,12 +11,16 @@ import okhttp3.logging.HttpLoggingInterceptor
 import project.side.data.datasource.AladinBookSearchSource
 import project.side.data.datasource.AuthDataSource
 import project.side.data.datasource.HistoryDataSource
+import project.side.data.datasource.MemberDataSource
+import project.side.data.datasource.MyBookDataSource
 import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
 import project.side.remote.api.AladinBookService
 import project.side.remote.api.AuthService
 import project.side.remote.api.BackendApiService
 import project.side.remote.api.HistoryService
+import project.side.remote.api.MemberService
+import project.side.remote.api.MyBookService
 import project.side.remote.api.TestApiService
 import project.side.remote.api.UserService
 import project.side.remote.auth.AuthInterceptor
@@ -24,6 +28,8 @@ import project.side.remote.auth.TokenAuthenticator
 import project.side.remote.datasource.AladinBookSearchSourceImpl
 import project.side.remote.datasource.AuthDataSourceImpl
 import project.side.remote.datasource.HistoryDataSourceImpl
+import project.side.remote.datasource.MemberDataSourceImpl
+import project.side.remote.datasource.MyBookDataSourceImpl
 import project.side.remote.datasource.TestDataSourceImpl
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -169,5 +175,25 @@ object RemoteModule {
     @Singleton
     fun provideBackendDataSource(backendApiService: BackendApiService): project.side.data.datasource.BackendDataSource =
         project.side.remote.datasource.BackendDataSourceImpl(backendApiService)
+
+    @Provides
+    @Singleton
+    fun provideMemberService(@AuthRetrofit retrofit: Retrofit): MemberService =
+        retrofit.create(MemberService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMemberDataSource(memberService: MemberService): MemberDataSource =
+        MemberDataSourceImpl(memberService)
+
+    @Provides
+    @Singleton
+    fun provideMyBookService(@AuthRetrofit retrofit: Retrofit): MyBookService =
+        retrofit.create(MyBookService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMyBookDataSource(myBookService: MyBookService): MyBookDataSource =
+        MyBookDataSourceImpl(myBookService)
 }
 

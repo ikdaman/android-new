@@ -23,13 +23,13 @@ class HistoryViewModel @Inject constructor(
 //    }
 
     fun getBooks(
-        page: Int = 0,
-        limit: Int = 30,
-        sort: String = "createdDate,desc",
+        keyword: String? = null,
+        page: Int? = 0,
+        size: Int? = 30,
         isLoadMore: Boolean = false
     ) {
         viewModelScope.launch {
-            getHistoryBooksUseCase(page, limit, sort).collect {
+            getHistoryBooksUseCase(keyword, page, size).collect {
                 when (it) {
                     is DataResource.Success -> {
                         _uiState.value = _uiState.value.copy(

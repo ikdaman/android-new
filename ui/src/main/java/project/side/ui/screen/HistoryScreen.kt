@@ -64,7 +64,7 @@ fun HistoryScreenUI(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = uiState.errorMessage,
+                    text = uiState.errorMessage ?: "",
                     style = Typography.bodyMedium,
                     color = Color.Gray
                 )
