@@ -73,7 +73,7 @@ fun HomeScreen(
                 title = book.title,
                 author = book.author.joinToString(", "),
                 coverImage = book.coverImage,
-                date = book.createdDate,
+                date = book.createdDate.take(10),
                 description = book.description,
                 onClick = { onBookClick(book.mybookId) }
             )
