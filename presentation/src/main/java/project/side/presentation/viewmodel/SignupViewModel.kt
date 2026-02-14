@@ -38,11 +38,23 @@ class SignupViewModel @Inject constructor(
     fun signup(signupUseCase: SignupUseCase, socialToken: String, provider: String, providerId: String, nickname: String) {
         viewModelScope.launch {
             _uiState.value = SignupUIState.Loading
-            signupUseCase(socialToken, provider, providerId, nickname).collect { state ->
-                when (state) {
-                    SignupState.Loading -> _uiState.value = SignupUIState.Loading
-                    SignupState.Success -> _uiState.value = SignupUIState.Success
-                    is SignupState.Error -> _uiState.value = SignupUIState.Error(state.message)
+            checkNicknameUseCase(nickname).collect { result ->
+                when (result) {
+                    is DataResource.Loading -> _uiState.value = SignupUIState.Loading
+                    is DataResource.Success -> {
+                        if (result.data.available) {
+                            signupUseCase(socialToken, provider, providerId, nickname).collect { state ->
+                                when (state) {
+                                    SignupState.Loading -> _uiState.value = SignupUIState.Loading
+                                    SignupState.Success -> _uiState.value = SignupUIState.Success
+                                    is SignupState.Error -> _uiState.value = SignupUIState.Error(state.message)
+                                }
+                            }
+                        } else {
+                            _uiState.value = SignupUIState.NicknameDuplicate
+                        }
+                    }
+                    is DataResource.Error -> _uiState.value = SignupUIState.Error(result.message ?: "닉네임 확인 중 오류가 발생했습니다")
                 }
             }
         }

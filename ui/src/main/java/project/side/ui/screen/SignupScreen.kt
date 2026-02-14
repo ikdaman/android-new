@@ -25,7 +25,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import project.side.domain.usecase.SignupUseCase
 import project.side.presentation.model.SignupUIState
@@ -43,7 +45,7 @@ fun SignupScreen(
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     var nickname by remember { mutableStateOf("") }
-    var isNicknameAvailable by remember { mutableStateOf(false) }
+    val showDuplicateError = uiState is SignupUIState.NicknameDuplicate
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -70,47 +72,43 @@ fun SignupScreen(
 
             OutlinedTextField(
                 value = nickname,
-                onValueChange = {
-                    nickname = it
-                    isNicknameAvailable = false
-                },
+                onValueChange = { nickname = it },
                 label = { Text("닉네임") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = "최대 10자/한글영어숫자가능",
+                style = TextStyle(fontSize = 12.sp, color = Color.Black),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp, top = 4.dp)
+            )
 
-            Button(
-                onClick = { viewModel.checkNickname(nickname) },
-                enabled = nickname.isNotBlank() && uiState !is SignupUIState.Loading,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("중복 확인")
+            if (showDuplicateError) {
+                Text(
+                    text = "중복된 닉네임이에요.\n닉네임을 다시 확인해주세요.",
+                    style = TextStyle(fontSize = 12.sp, color = Color.Red),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, top = 4.dp)
+                )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname) },
-                enabled = isNicknameAvailable && uiState !is SignupUIState.Loading,
+                enabled = nickname.isNotBlank() && uiState !is SignupUIState.Loading,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("가입하기")
+                Text("완료")
             }
         }
 
         LaunchedEffect(uiState) {
             when (val state = uiState) {
-                is SignupUIState.NicknameChecked -> {
-                    if (state.available) {
-                        isNicknameAvailable = true
-                        snackbarHostState.showSnackbar("사용 가능한 닉네임입니다.")
-                    } else {
-                        isNicknameAvailable = false
-                        snackbarHostState.showSnackbar("이미 사용 중인 닉네임입니다.")
-                    }
-                }
                 is SignupUIState.Success -> {
                     onSignupComplete()
                 }

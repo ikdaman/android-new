@@ -107,45 +107,90 @@ class SignupViewModelTest {
     }
 
     @Test
-    fun `signup emits Success on success`() = runTest {
+    fun `signup checks nickname then signs up on available`() = runTest {
         // Given
         val socialToken = "token123"
         val provider = "GOOGLE"
         val providerId = "google123"
         val nickname = "testnick"
-        val expectedFlow = flowOf(
+        coEvery { checkNicknameUseCase(nickname) } returns flowOf(
+            DataResource.success(NicknameCheck(available = true))
+        )
+        coEvery { signupUseCase(socialToken, provider, providerId, nickname) } returns flowOf(
             SignupState.Loading,
             SignupState.Success
         )
-        coEvery { signupUseCase(socialToken, provider, providerId, nickname) } returns expectedFlow
 
         // When
         viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
 
         // Then
         assertEquals(SignupUIState.Success, viewModel.uiState.value)
+        coVerify(exactly = 1) { checkNicknameUseCase(nickname) }
         coVerify(exactly = 1) { signupUseCase(socialToken, provider, providerId, nickname) }
     }
 
     @Test
-    fun `signup emits Error on failure`() = runTest {
+    fun `signup emits NicknameDuplicate when nickname is taken`() = runTest {
+        // Given
+        val socialToken = "token123"
+        val provider = "GOOGLE"
+        val providerId = "google123"
+        val nickname = "takennick"
+        coEvery { checkNicknameUseCase(nickname) } returns flowOf(
+            DataResource.success(NicknameCheck(available = false))
+        )
+
+        // When
+        viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
+
+        // Then
+        assertEquals(SignupUIState.NicknameDuplicate, viewModel.uiState.value)
+        coVerify(exactly = 1) { checkNicknameUseCase(nickname) }
+        coVerify(exactly = 0) { signupUseCase(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `signup emits Error on signup failure`() = runTest {
         // Given
         val socialToken = "token123"
         val provider = "GOOGLE"
         val providerId = "google123"
         val nickname = "testnick"
         val errorMessage = "Signup failed"
-        val expectedFlow = flowOf(
+        coEvery { checkNicknameUseCase(nickname) } returns flowOf(
+            DataResource.success(NicknameCheck(available = true))
+        )
+        coEvery { signupUseCase(socialToken, provider, providerId, nickname) } returns flowOf(
             SignupState.Loading,
             SignupState.Error(errorMessage)
         )
-        coEvery { signupUseCase(socialToken, provider, providerId, nickname) } returns expectedFlow
 
         // When
         viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
 
         // Then
         assertEquals(SignupUIState.Error(errorMessage), viewModel.uiState.value)
+        coVerify(exactly = 1) { checkNicknameUseCase(nickname) }
         coVerify(exactly = 1) { signupUseCase(socialToken, provider, providerId, nickname) }
+    }
+
+    @Test
+    fun `signup emits Error on nickname check failure`() = runTest {
+        // Given
+        val socialToken = "token123"
+        val provider = "GOOGLE"
+        val providerId = "google123"
+        val nickname = "testnick"
+        coEvery { checkNicknameUseCase(nickname) } returns flowOf(
+            DataResource.error("닉네임 확인 중 오류가 발생했습니다")
+        )
+
+        // When
+        viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
+
+        // Then
+        assertEquals(SignupUIState.Error("닉네임 확인 중 오류가 발생했습니다"), viewModel.uiState.value)
+        coVerify(exactly = 0) { signupUseCase(any(), any(), any(), any()) }
     }
 }
