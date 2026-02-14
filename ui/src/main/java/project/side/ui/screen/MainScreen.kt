@@ -32,6 +32,7 @@ import project.side.ui.HISTORY_ROUTE
 import project.side.ui.HOME_ROUTE
 import project.side.ui.MANUAL_BOOK_INPUT_ROUTE
 import project.side.ui.SEARCH_BOOK_ROUTE
+import project.side.ui.SEARCH_MY_BOOK_ROUTE
 import project.side.ui.LOGIN_ROUTE
 import project.side.ui.MAIN_ROUTE
 import project.side.ui.SETTING_ROUTE
@@ -99,6 +100,9 @@ fun MainScreen(
                         },
                         navigateToSearchBook = {
                             navController.navigate(SEARCH_BOOK_ROUTE)
+                        },
+                        navigateToMyBookSearch = {
+                            navController.navigate(SEARCH_MY_BOOK_ROUTE)
                         }
                     )
                 }
@@ -112,6 +116,14 @@ fun MainScreen(
                             appNavController.navigate(MANUAL_BOOK_INPUT_ROUTE)
                         },
                         viewModel = searchBookViewModel
+                    )
+                }
+                composable(SEARCH_MY_BOOK_ROUTE) {
+                    MyBookSearchScreen(
+                        onBack = { navController.popBackStack() },
+                        onBookClick = { mybookId ->
+                            navController.navigate("BookInfo/$mybookId")
+                        }
                     )
                 }
                 composable(HISTORY_ROUTE) {

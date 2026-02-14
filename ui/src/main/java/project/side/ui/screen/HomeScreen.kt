@@ -41,6 +41,7 @@ fun HomeScreen(
     onBookClick: (Int) -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
+    navigateToMyBookSearch: () -> Unit = {},
 ) {
     val totalCount = storeBooks.size
     val listState = rememberLazyListState()
@@ -64,7 +65,7 @@ fun HomeScreen(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         item {
-            HomeHeader(nickname, totalCount, navigateToSetting, navigateToSearchBook)
+            HomeHeader(nickname, totalCount, navigateToSetting, navigateToSearchBook, navigateToMyBookSearch)
         }
         items(storeBooks.size) { index ->
             val book = storeBooks[index]
@@ -83,7 +84,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeader(nickname: String = "", totalCount: Int = 0, navigateToSetting: () -> Unit = {}, navigateToBookInfo: () -> Unit = {}) {
+fun HomeHeader(nickname: String = "", totalCount: Int = 0, navigateToSetting: () -> Unit = {}, navigateToBookInfo: () -> Unit = {}, navigateToMyBookSearch: () -> Unit = {}) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -129,9 +130,11 @@ fun HomeHeader(nickname: String = "", totalCount: Int = 0, navigateToSetting: ()
             Text("(${totalCount}권)")
             Spacer(modifier = Modifier.weight(1f))
             Image(
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier
+                    .size(16.dp)
+                    .clickable { navigateToMyBookSearch() },
                 painter = painterResource(R.drawable.search),
-                contentDescription = null,
+                contentDescription = "내 책 검색",
             )
         }
     }
