@@ -157,7 +157,9 @@ class MainViewModelTest {
         val historyBookItems = listOf(
             HistoryBookInfo(
                 mybookId = 1, title = "히스토리 책",
+                author = listOf("저자1"),
                 coverImage = "https://example.com/cover.jpg",
+                description = "설명",
                 startedDate = "2025-01-01", finishedDate = null
             )
         )

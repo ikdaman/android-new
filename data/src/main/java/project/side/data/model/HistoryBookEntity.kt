@@ -15,7 +15,9 @@ data class HistoryBookEntity(
             HistoryBookInfo(
                 mybookId = it.mybookId,
                 title = it.title,
+                author = it.author,
                 coverImage = it.coverImage,
+                description = it.description,
                 startedDate = it.startedDate,
                 finishedDate = it.finishedDate
             )
@@ -26,7 +28,9 @@ data class HistoryBookEntity(
 data class HistoryBookInfoEntity(
     val mybookId: Int,
     val title: String,
+    val author: List<String>?,
     val coverImage: String,
+    val description: String?,
     val startedDate: String,
     val finishedDate: String?
 )

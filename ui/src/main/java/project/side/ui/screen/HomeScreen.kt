@@ -82,8 +82,10 @@ fun HomeScreen(
             val book = historyBooks[index]
             HomeBookItem(
                 title = book.title,
+                author = book.author?.joinToString(", ") ?: "",
                 coverImage = book.coverImage,
-                date = book.startedDate
+                date = book.startedDate,
+                description = book.description
             )
             Spacer(modifier = Modifier.height(55.dp))
         }

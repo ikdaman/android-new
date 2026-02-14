@@ -15,7 +15,9 @@ data class HistoryBookResponse(
             HistoryBookInfoEntity(
                 mybookId = it.mybookId,
                 title = it.bookInfo.title,
+                author = it.bookInfo.author,
                 coverImage = it.bookInfo.coverImage,
+                description = it.bookInfo.description,
                 startedDate = it.startedDate,
                 finishedDate = it.finishedDate
             )
@@ -32,7 +34,9 @@ data class HistoryBook(
 
 data class HistoryBookInfo(
     val title: String,
-    val coverImage: String
+    val author: List<String>?,
+    val coverImage: String,
+    val description: String?
 )
 
 
