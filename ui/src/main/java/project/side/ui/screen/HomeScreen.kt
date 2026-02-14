@@ -27,7 +27,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import project.side.domain.model.HistoryBookInfo
 import project.side.domain.model.StoreBookItem
 import project.side.ui.R
 import project.side.ui.component.HomeBookItem
@@ -38,13 +37,12 @@ import project.side.ui.theme.Typography
 fun HomeScreen(
     nickname: String = "",
     storeBooks: List<StoreBookItem> = emptyList(),
-    historyBooks: List<HistoryBookInfo> = emptyList(),
     onLoadMore: () -> Unit = {},
     onBookClick: (Int) -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
 ) {
-    val totalCount = storeBooks.size + historyBooks.size
+    val totalCount = storeBooks.size
     val listState = rememberLazyListState()
 
     val shouldLoadMore = remember {
@@ -75,18 +73,6 @@ fun HomeScreen(
                 author = book.author.joinToString(", "),
                 coverImage = book.coverImage,
                 date = book.createdDate,
-                description = book.description,
-                onClick = { onBookClick(book.mybookId) }
-            )
-            Spacer(modifier = Modifier.height(55.dp))
-        }
-        items(historyBooks.size) { index ->
-            val book = historyBooks[index]
-            HomeBookItem(
-                title = book.title,
-                author = book.author?.joinToString(", ") ?: "",
-                coverImage = book.coverImage,
-                date = book.startedDate,
                 description = book.description,
                 onClick = { onBookClick(book.mybookId) }
             )
