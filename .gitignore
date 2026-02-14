@@ -16,3 +16,4 @@ local.properties
 key.properties
 release.keystore
 .idea
+.omc
