@@ -116,7 +116,12 @@ fun MainScreen(
                     )
                 }
                 composable(HISTORY_ROUTE) {
-                    HistoryScreen(hiltViewModel())
+                    HistoryScreen(
+                        viewModel = hiltViewModel(),
+                        onBookClick = { mybookId ->
+                            navController.navigate("BookInfo/$mybookId")
+                        }
+                    )
                 }
                 composable(SETTING_ROUTE) {
                     SettingScreen(

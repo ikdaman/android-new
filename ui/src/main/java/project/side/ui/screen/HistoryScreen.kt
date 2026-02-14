@@ -48,14 +48,18 @@ import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.Typography
 
 @Composable
-fun HistoryScreen(viewModel: HistoryViewModel) {
+fun HistoryScreen(
+    viewModel: HistoryViewModel,
+    onBookClick: (Int) -> Unit = {}
+) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     HistoryScreenUI(
         uiState = uiState,
         onViewTypeChanged = viewModel::onViewTypeChanged,
         onLoadMore = { viewModel.loadMore() },
-        onRetry = { viewModel.getBooks() }
+        onRetry = { viewModel.getBooks() },
+        onBookClick = onBookClick
     )
 }
 
@@ -64,7 +68,8 @@ fun HistoryScreenUI(
     uiState: HistoryBookState = HistoryBookState(),
     onViewTypeChanged: () -> Unit = {},
     onLoadMore: () -> Unit = {},
-    onRetry: () -> Unit = {}
+    onRetry: () -> Unit = {},
+    onBookClick: (Int) -> Unit = {}
 ) {
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -149,7 +154,11 @@ fun HistoryScreenUI(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(uiState.books.size) { index ->
-                            HistoryDataSetBookItem(book = uiState.books[index])
+                            val book = uiState.books[index]
+                            HistoryDataSetBookItem(
+                                book = book,
+                                onClick = { onBookClick(book.mybookId) }
+                            )
                         }
                     }
                 }
@@ -196,7 +205,11 @@ fun HistoryScreenUI(
                             }
                         }
                         items(uiState.books.size) { index ->
-                            HistoryListBookItem(book = uiState.books[index])
+                            val book = uiState.books[index]
+                            HistoryListBookItem(
+                                book = book,
+                                onClick = { onBookClick(book.mybookId) }
+                            )
                             HorizontalDivider(
                                 color = Color.Black,
                                 thickness = 1.dp,
@@ -212,11 +225,12 @@ fun HistoryScreenUI(
 }
 
 @Composable
-fun HistoryListBookItem(book: HistoryBookInfo) {
+fun HistoryListBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(41.dp),
+            .height(41.dp)
+            .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         VerticalDivider(
@@ -251,11 +265,12 @@ fun HistoryListBookItem(book: HistoryBookInfo) {
 }
 
 @Composable
-fun HistoryDataSetBookItem(book: HistoryBookInfo) {
+fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .height(150.dp)
-            .background(Color(0xFFD9D9D9)),
+            .background(Color(0xFFD9D9D9))
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
