@@ -49,6 +49,7 @@ fun MainScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val isLoggedIn = mainViewModel.isLoggedIn.collectAsState()
+    val nickname by mainViewModel.nickname.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -78,6 +79,7 @@ fun MainScreen(
             ) {
                 composable(HOME_ROUTE) {
                     HomeScreen(
+                        nickname = nickname,
                         navigateToSetting = {
                             appNavController.navigateIfLoggedIn(isLoggedIn.value) {
                                 navController.navigate(SETTING_ROUTE)

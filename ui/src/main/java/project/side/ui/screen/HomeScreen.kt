@@ -30,12 +30,13 @@ import project.side.ui.theme.Typography
 
 @Composable
 fun HomeScreen(
+    nickname: String = "",
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
 ) {
     LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
         item {
-            HomeHeader(navigateToSetting, navigateToSearchBook)
+            HomeHeader(nickname, navigateToSetting, navigateToSearchBook)
         }
         items(5) {
             HomeBookItem()
@@ -46,7 +47,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeader(navigateToSetting: () -> Unit = {}, navigateToBookInfo: () -> Unit = {}) {
+fun HomeHeader(nickname: String = "", navigateToSetting: () -> Unit = {}, navigateToBookInfo: () -> Unit = {}) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -61,7 +62,7 @@ fun HomeHeader(navigateToSetting: () -> Unit = {}, navigateToBookInfo: () -> Uni
         )
         Text(
             modifier = Modifier.padding(bottom = 27.dp),
-            text = "오늘 " + "OO님의\n" + "눈에 꽂힌 책은\n" + "무엇이었나요?",
+            text = "오늘 " + "${nickname.ifEmpty { "OO" }}님의\n" + "눈에 꽂힌 책은\n" + "무엇이었나요?",
             style = Typography.bodyLarge.copy(fontSize = 22.sp)
         )
 
