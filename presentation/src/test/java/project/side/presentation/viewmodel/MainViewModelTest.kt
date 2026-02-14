@@ -128,6 +128,7 @@ class MainViewModelTest {
 
         // When
         viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
+        viewModel.refreshStoreBooks()
 
         // Then
         assertEquals(1, viewModel.storeBooks.value.size)

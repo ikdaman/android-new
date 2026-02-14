@@ -50,7 +50,6 @@ class MainViewModel @Inject constructor(
 
     init {
         validateToken()
-        fetchStoreBooks()
     }
 
     private fun validateToken() {
