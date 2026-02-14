@@ -57,16 +57,16 @@ class MainViewModelTest {
     }
 
     private fun stubDefaultBooks() {
-        every { getStoreBooksUseCase() } returns flowOf(
+        every { getStoreBooksUseCase(any(), any(), any()) } returns flowOf(
             DataResource.success(
                 StoreBook(
                     content = emptyList(),
                     totalPages = 0, totalElements = 0, last = true, first = true,
-                    size = 10, number = 0, numberOfElements = 0, empty = true
+                    size = 5, number = 0, numberOfElements = 0, empty = true
                 )
             )
         )
-        coEvery { getHistoryBooksUseCase() } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
             DataResource.success(
                 HistoryBook(totalPages = 0, nowPage = 0, books = emptyList())
             )
@@ -128,16 +128,16 @@ class MainViewModelTest {
             )
         )
         every { getLoginStateUseCase() } returns flowOf(false)
-        every { getStoreBooksUseCase() } returns flowOf(
+        every { getStoreBooksUseCase(any(), any(), any()) } returns flowOf(
             DataResource.success(
                 StoreBook(
                     content = storeBookItems,
                     totalPages = 1, totalElements = 1, last = true, first = true,
-                    size = 10, number = 0, numberOfElements = 1, empty = false
+                    size = 5, number = 0, numberOfElements = 1, empty = false
                 )
             )
         )
-        coEvery { getHistoryBooksUseCase() } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
             DataResource.success(
                 HistoryBook(totalPages = 0, nowPage = 0, books = emptyList())
             )
@@ -162,16 +162,16 @@ class MainViewModelTest {
             )
         )
         every { getLoginStateUseCase() } returns flowOf(false)
-        every { getStoreBooksUseCase() } returns flowOf(
+        every { getStoreBooksUseCase(any(), any(), any()) } returns flowOf(
             DataResource.success(
                 StoreBook(
                     content = emptyList(),
                     totalPages = 0, totalElements = 0, last = true, first = true,
-                    size = 10, number = 0, numberOfElements = 0, empty = true
+                    size = 5, number = 0, numberOfElements = 0, empty = true
                 )
             )
         )
-        coEvery { getHistoryBooksUseCase() } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
             DataResource.success(
                 HistoryBook(totalPages = 1, nowPage = 0, books = historyBookItems)
             )

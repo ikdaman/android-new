@@ -46,6 +46,18 @@ class MainViewModel @Inject constructor(
     private val _snackbarEvents = MutableSharedFlow<String>()
     val snackbarEvents = _snackbarEvents.asSharedFlow()
 
+    private var storeBooksPage = 0
+    private var storeBooksLastPage = false
+    private var storeBooksLoading = false
+
+    private var historyBooksPage = 0
+    private var historyBooksLastPage = false
+    private var historyBooksLoading = false
+
+    companion object {
+        private const val PAGE_SIZE = 5
+    }
+
     init {
         validateToken()
     }
@@ -65,20 +77,43 @@ class MainViewModel @Inject constructor(
     }
 
     private fun fetchBooks() {
+        fetchStoreBooks()
+        fetchHistoryBooks()
+    }
+
+    private fun fetchStoreBooks() {
+        if (storeBooksLoading || storeBooksLastPage) return
+        storeBooksLoading = true
         viewModelScope.launch {
-            getStoreBooksUseCase().collect { result ->
+            getStoreBooksUseCase(page = storeBooksPage, size = PAGE_SIZE).collect { result ->
                 if (result is DataResource.Success) {
-                    _storeBooks.value = result.data.content
+                    _storeBooks.value = _storeBooks.value + result.data.content
+                    storeBooksLastPage = result.data.last
+                    storeBooksPage++
                 }
+                storeBooksLoading = false
             }
         }
+    }
+
+    private fun fetchHistoryBooks() {
+        if (historyBooksLoading || historyBooksLastPage) return
+        historyBooksLoading = true
         viewModelScope.launch {
-            getHistoryBooksUseCase().collect { result ->
+            getHistoryBooksUseCase(page = historyBooksPage, size = PAGE_SIZE).collect { result ->
                 if (result is DataResource.Success) {
-                    _historyBooks.value = result.data.books
+                    _historyBooks.value = _historyBooks.value + result.data.books
+                    historyBooksLastPage = result.data.nowPage >= result.data.totalPages - 1
+                    historyBooksPage++
                 }
+                historyBooksLoading = false
             }
         }
+    }
+
+    fun loadMore() {
+        fetchStoreBooks()
+        fetchHistoryBooks()
     }
 
     suspend fun showSnackbar(message: String) {

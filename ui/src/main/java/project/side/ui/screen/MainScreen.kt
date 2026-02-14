@@ -86,6 +86,7 @@ fun MainScreen(
                         nickname = nickname,
                         storeBooks = storeBooks,
                         historyBooks = historyBooks,
+                        onLoadMore = { mainViewModel.loadMore() },
                         navigateToSetting = {
                             appNavController.navigateIfLoggedIn(isLoggedIn.value) {
                                 navController.navigate(SETTING_ROUTE)
