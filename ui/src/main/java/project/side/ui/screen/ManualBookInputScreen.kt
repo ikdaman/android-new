@@ -48,6 +48,7 @@ import project.side.presentation.viewmodel.ManualInputViewModel
 import project.side.ui.R
 import project.side.ui.component.BookRegisterBottomSheet
 import project.side.ui.component.CustomSnackbarHost
+import project.side.ui.MAIN_ROUTE
 import project.side.ui.theme.IkdamanTheme
 
 @Composable
@@ -126,7 +127,7 @@ fun ManualBookInputScreen(
                             when (event) {
                                 is project.side.presentation.viewmodel.SaveEvent.Success -> {
                                     snackbarHostState.showSnackbar("책을 저장했어요")
-                                    appNavController.popBackStack()
+                                    appNavController.popBackStack(MAIN_ROUTE, inclusive = false)
                                 }
                                 is project.side.presentation.viewmodel.SaveEvent.Error -> {
                                     snackbarHostState.showSnackbar(event.message)

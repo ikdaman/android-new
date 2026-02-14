@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import project.side.domain.model.BookItem
 import project.side.presentation.viewmodel.SearchBookViewModel
+import project.side.ui.MAIN_ROUTE
 import project.side.ui.component.CustomSnackbarHost
 // saveState is Boolean? exposed from ViewModel
 import project.side.ui.theme.IkdamanTheme
@@ -144,7 +145,7 @@ fun AddBookScreen(
                             when (event) {
                                 is project.side.presentation.viewmodel.SaveEvent.Success -> {
                                     snackbarHostState.showSnackbar("책을 저장했어요")
-                                    appNavController.popBackStack()
+                                    appNavController.popBackStack(MAIN_ROUTE, inclusive = false)
                                 }
                                 is project.side.presentation.viewmodel.SaveEvent.Error -> {
                                     snackbarHostState.showSnackbar(event.message)
