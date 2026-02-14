@@ -17,11 +17,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +54,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
     HistoryScreenUI(
         uiState = uiState,
         onViewTypeChanged = viewModel::onViewTypeChanged,
+        onLoadMore = { viewModel.loadMore() },
         onRetry = { viewModel.getBooks() }
     )
 }
@@ -57,6 +63,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
 fun HistoryScreenUI(
     uiState: HistoryBookState = HistoryBookState(),
     onViewTypeChanged: () -> Unit = {},
+    onLoadMore: () -> Unit = {},
     onRetry: () -> Unit = {}
 ) {
     if (uiState.isLoading) {
@@ -121,7 +128,19 @@ fun HistoryScreenUI(
 
             when (uiState.viewType) {
                 HistoryViewType.DATASET -> {
+                    val gridState = rememberLazyGridState()
+                    val shouldLoadMoreGrid = remember {
+                        derivedStateOf {
+                            val lastVisibleItem = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                            val totalItems = gridState.layoutInfo.totalItemsCount
+                            lastVisibleItem >= totalItems - 2 && totalItems > 0
+                        }
+                    }
+                    LaunchedEffect(shouldLoadMoreGrid.value) {
+                        if (shouldLoadMoreGrid.value) onLoadMore()
+                    }
                     LazyVerticalGrid(
+                        state = gridState,
                         modifier = Modifier
                             .background(Color(0xFFEDEDED))
                             .padding(12.dp),
@@ -136,7 +155,18 @@ fun HistoryScreenUI(
                 }
 
                 HistoryViewType.LIST -> {
-                    LazyColumn(modifier = Modifier.weight(1f)) {
+                    val listState = rememberLazyListState()
+                    val shouldLoadMoreList = remember {
+                        derivedStateOf {
+                            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                            val totalItems = listState.layoutInfo.totalItemsCount
+                            lastVisibleItem >= totalItems - 2 && totalItems > 0
+                        }
+                    }
+                    LaunchedEffect(shouldLoadMoreList.value) {
+                        if (shouldLoadMoreList.value) onLoadMore()
+                    }
+                    LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
                         item {
                             Row(
                                 modifier = Modifier

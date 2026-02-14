@@ -18,6 +18,14 @@ class HistoryViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<HistoryBookState> = MutableStateFlow(HistoryBookState())
     val uiState = _uiState.asStateFlow()
 
+    private var currentPage = 0
+    private var isLastPage = false
+    private var isLoadingMore = false
+
+    companion object {
+        private const val PAGE_SIZE = 5
+    }
+
     init {
         getBooks()
     }
@@ -25,7 +33,7 @@ class HistoryViewModel @Inject constructor(
     fun getBooks(
         keyword: String? = null,
         page: Int? = 0,
-        size: Int? = 30,
+        size: Int? = PAGE_SIZE,
         isLoadMore: Boolean = false
     ) {
         viewModelScope.launch {
@@ -38,6 +46,9 @@ class HistoryViewModel @Inject constructor(
                             nowPage = it.data.nowPage,
                             books = if (isLoadMore) _uiState.value.books + it.data.books else it.data.books,
                         )
+                        isLastPage = it.data.nowPage >= it.data.totalPages - 1
+                        currentPage = it.data.nowPage
+                        isLoadingMore = false
                     }
 
                     is DataResource.Error -> {
@@ -45,14 +56,23 @@ class HistoryViewModel @Inject constructor(
                             isLoading = false,
                             errorMessage = it.message
                         )
+                        isLoadingMore = false
                     }
 
                     is DataResource.Loading -> {
-                        _uiState.value = _uiState.value.copy(isLoading = true)
+                        if (!isLoadMore) {
+                            _uiState.value = _uiState.value.copy(isLoading = true)
+                        }
                     }
                 }
             }
         }
+    }
+
+    fun loadMore() {
+        if (isLoadingMore || isLastPage) return
+        isLoadingMore = true
+        getBooks(page = currentPage + 1, size = PAGE_SIZE, isLoadMore = true)
     }
 
     fun onViewTypeChanged() {
