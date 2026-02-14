@@ -61,13 +61,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideBackendRepository(backendDataSource: project.side.data.datasource.BackendDataSource): project.side.domain.repository.BackendRepository =
-        project.side.data.repository.BackendRepositoryImpl(backendDataSource)
-
-    @Provides
-    @Singleton
-    fun provideSaveManualBookInfoUseCase(backendRepository: project.side.domain.repository.BackendRepository) =
-        project.side.domain.usecase.SaveManualBookInfoUseCase(backendRepository)
+    fun provideSaveManualBookInfoUseCase(myBookRepository: MyBookRepository) =
+        project.side.domain.usecase.SaveManualBookInfoUseCase(myBookRepository)
 
     @Provides
     @Singleton

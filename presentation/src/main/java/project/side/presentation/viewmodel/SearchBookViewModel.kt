@@ -127,12 +127,16 @@ class SearchBookViewModel @Inject constructor(
             }
 
             val manual = ManualBookInfo(
+                source = "ALADIN",
+                aladinId = book.itemId.toInt(),
                 title = book.title,
                 author = book.author,
                 publisher = book.publisher.ifBlank { null },
                 pubDate = book.pubDate.ifBlank { null },
                 isbn = book.isbn.ifBlank { null },
-                pageCount = book.subInfo?.itemPage,
+                pageCount = book.subInfo?.itemPage?.toIntOrNull(),
+                description = book.description.ifBlank { null },
+                coverImage = book.cover.ifBlank { null },
                 reason = reason,
                 startDate = startDate?.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE),
                 endDate = endDate?.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE)
@@ -141,8 +145,7 @@ class SearchBookViewModel @Inject constructor(
             saveManualBookInfoUseCase(manual).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
-                        if (result.data) _saveEvent.emit(SaveEvent.Success)
-                        else _saveEvent.emit(SaveEvent.Error("책 저장에 실패했어요."))
+                        _saveEvent.emit(SaveEvent.Success)
                     }
                     is DataResource.Error -> {
                         _saveEvent.emit(SaveEvent.Error(result.message ?: "책 저장에 실패했어요."))

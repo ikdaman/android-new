@@ -17,7 +17,6 @@ import project.side.data.datasource.TestDataSource
 import project.side.remote.BuildConfig
 import project.side.remote.api.AladinBookService
 import project.side.remote.api.AuthService
-import project.side.remote.api.BackendApiService
 import project.side.remote.api.HistoryService
 import project.side.remote.api.MemberService
 import project.side.remote.api.MyBookService
@@ -122,12 +121,6 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideBackendApiService(@AuthRetrofit retrofit: Retrofit): BackendApiService =
-        retrofit.create(BackendApiService::class.java)
-
-
-    @Provides
-    @Singleton
     fun provideTestDataSource(testApiService: TestApiService): TestDataSource =
         TestDataSourceImpl(testApiService)
 
@@ -170,11 +163,6 @@ object RemoteModule {
     @Singleton
     fun provideAladinBookSearchSource(service: AladinBookService) : AladinBookSearchSource =
         AladinBookSearchSourceImpl(service)
-
-    @Provides
-    @Singleton
-    fun provideBackendDataSource(backendApiService: BackendApiService): project.side.data.datasource.BackendDataSource =
-        project.side.remote.datasource.BackendDataSourceImpl(backendApiService)
 
     @Provides
     @Singleton

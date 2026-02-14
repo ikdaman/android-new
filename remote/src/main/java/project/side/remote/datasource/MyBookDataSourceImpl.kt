@@ -5,10 +5,14 @@ import project.side.data.model.DataApiResult
 import project.side.data.model.MyBookDetailEntity
 import project.side.data.model.MyBookSearchEntity
 import project.side.data.model.MyBookUpdateEntity
+import project.side.data.model.SaveMyBookEntity
 import project.side.data.model.StoreBookEntity
 import project.side.remote.api.MyBookService
 import project.side.remote.model.mybook.MyBookUpdateRequest
 import project.side.remote.model.mybook.ReadingStatusRequest
+import project.side.remote.model.mybook.SaveBookInfoRequest
+import project.side.remote.model.mybook.SaveHistoryInfoRequest
+import project.side.remote.model.mybook.SaveMyBookRequest
 import javax.inject.Inject
 
 class MyBookDataSourceImpl @Inject constructor(
@@ -98,6 +102,42 @@ class MyBookDataSourceImpl @Inject constructor(
                     finishedDate = request.finishedDate
                 )
             )
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    DataApiResult.Success(it.mybookId)
+                } ?: DataApiResult.Error("응답이 비어있습니다.")
+            } else {
+                DataApiResult.Error(mapServerError(response.code(), response.message()))
+            }
+        } catch (e: Exception) {
+            DataApiResult.Error("네트워크 오류: ${e.message}")
+        }
+    }
+
+    override suspend fun saveMyBook(request: SaveMyBookEntity): DataApiResult<Int> {
+        return try {
+            val apiRequest = SaveMyBookRequest(
+                bookInfo = SaveBookInfoRequest(
+                    source = request.source,
+                    aladinId = request.aladinId,
+                    isbn = request.isbn,
+                    title = request.title,
+                    author = request.author,
+                    publisher = request.publisher,
+                    description = request.description,
+                    totalPage = request.totalPage,
+                    publishDate = request.publishDate,
+                    coverImage = request.coverImage
+                ),
+                historyInfo = if (request.startedDate != null || request.finishedDate != null) {
+                    SaveHistoryInfoRequest(
+                        startedDate = request.startedDate,
+                        finishedDate = request.finishedDate
+                    )
+                } else null,
+                reason = request.reason
+            )
+            val response = myBookService.saveMyBook(apiRequest)
             if (response.isSuccessful) {
                 response.body()?.let {
                     DataApiResult.Success(it.mybookId)

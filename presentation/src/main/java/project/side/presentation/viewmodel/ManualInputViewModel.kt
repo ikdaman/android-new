@@ -26,8 +26,7 @@ class ManualInputViewModel @Inject constructor(
             saveManualBookInfoUseCase(manual).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
-                        if (result.data) _saveEvent.emit(SaveEvent.Success)
-                        else _saveEvent.emit(SaveEvent.Error("책 저장에 실패했어요."))
+                        _saveEvent.emit(SaveEvent.Success)
                     }
                     is DataResource.Error -> {
                         _saveEvent.emit(SaveEvent.Error(result.message ?: "책 저장에 실패했어요."))
@@ -53,12 +52,13 @@ class ManualInputViewModel @Inject constructor(
         val fmt = DateTimeFormatter.ISO_LOCAL_DATE
         saveManualBookInfo(
             ManualBookInfo(
+                source = "CUSTOM",
                 title = title,
                 author = author,
                 publisher = publisher,
                 pubDate = pubDate,
                 isbn = isbn,
-                pageCount = pageCount,
+                pageCount = pageCount?.toIntOrNull(),
                 reason = reason,
                 startDate = startDate?.format(fmt),
                 endDate = endDate?.format(fmt)

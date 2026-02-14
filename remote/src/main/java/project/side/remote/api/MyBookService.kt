@@ -7,10 +7,12 @@ import project.side.remote.model.mybook.MyBookUpdateRequest
 import project.side.remote.model.mybook.ReadingStatusRequest
 import project.side.remote.model.mybook.StoreBookResponse
 import retrofit2.Response
+import project.side.remote.model.mybook.SaveMyBookRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -45,5 +47,10 @@ interface MyBookService {
     suspend fun updateMyBook(
         @Path("mybookId") mybookId: Int,
         @Body request: MyBookUpdateRequest
+    ): Response<MyBookIdResponse>
+
+    @POST("/mybooks")
+    suspend fun saveMyBook(
+        @Body request: SaveMyBookRequest
     ): Response<MyBookIdResponse>
 }
