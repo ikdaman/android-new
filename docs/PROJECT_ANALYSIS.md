@@ -190,11 +190,19 @@
 | Lifecycle ViewModel KTX | 2.10.0 | ViewModel |
 | Kotlinx Coroutines Core | 1.10.2 | 비동기 처리 |
 
+### 로깅
+
+| 라이브러리 | 버전 | 용도 |
+|-----------|------|------|
+| Timber | 5.0.1 | 구조화된 로깅 |
+
 ### 테스트
 
 | 라이브러리 | 버전 | 용도 |
 |-----------|------|------|
 | JUnit | 4.13.2 | 단위 테스트 |
+| MockK | 1.13.17 | Kotlin 모킹 프레임워크 |
+| Kotlinx Coroutines Test | 1.10.2 | 코루틴 테스트 유틸리티 |
 | AndroidX JUnit | 1.3.0 | 계측 테스트 |
 | Espresso Core | 3.7.0 | UI 테스트 |
 | Compose UI Test JUnit4 | BOM 관리 | Compose 테스트 |
@@ -220,6 +228,7 @@
 | `"SearchBook"` | `SEARCH_BOOK_ROUTE` | Main-Level |
 | `"History"` | `HISTORY_ROUTE` | Main-Level |
 | `"Setting"` | `SETTING_ROUTE` | Main-Level |
+| `"SearchMyBook"` | `SEARCH_MY_BOOK_ROUTE` | Main-Level |
 | `"BookInfo"` | `BOOK_INFO_ROUTE` | Main-Level |
 
 ### 네비게이션 구조
@@ -230,6 +239,7 @@ App NavHost (MainActivity)
 │   ├── Home (내 서점)         ← 하단 네비게이션
 │   ├── SearchBook (책 추가)   ← 하단 네비게이션
 │   ├── History (히스토리)     ← 하단 네비게이션 (로그인 필요)
+│   ├── SearchMyBook (내 책 검색)
 │   ├── Setting (설정)
 │   └── BookInfo (책 상세)
 ├── Barcode (바코드 스캔)
@@ -288,10 +298,18 @@ App NavHost (MainActivity)
 - **2가지 뷰 타입**: 리스트 뷰 (시작일/종료일/제목 테이블), 데이터셋 뷰 (3열 그리드 표지)
 - 뷰 타입 토글 기능
 
-### 8-6. 미구현 기능
+### 8-6. 내 책 검색
 
-- SettingScreen: 플레이스홀더 상태
-- BookInfoScreen: 플레이스홀더 상태
+- 홈 화면(내 서점)의 검색 아이콘 클릭 시 내 책 검색 화면으로 이동
+- 백엔드 `GET /mybooks?query=` API (페이지네이션)
+- 검색 결과에서 readingStatus 기반으로 `[내 서점]`/`[히스토리]` 태그 표시
+- 무한 스크롤 페이지네이션 (페이지 크기 10)
+- 책 클릭 시 BookInfoScreen으로 이동
+
+### 8-7. 책 상세 / 설정
+
+- BookInfoScreen: 나의 책 상세 정보 조회, 삭제, 독서 상태 변경, 알라딘에서 보기
+- SettingScreen: 닉네임 변경, 로그아웃, 회원 탈퇴
 
 ---
 
@@ -438,19 +456,31 @@ DataStore Preferences (`auth_pref`)에 다음 키를 저장합니다:
 
 ## 12. API 엔드포인트
 
+> 각 API의 상세 문서는 `docs/api/` 디렉토리를 참조하세요.
+
 ### 자체 백엔드 API
 
-| 메서드 | 경로 | 인증 | 용도 |
-|--------|------|------|------|
-| `POST` | `/auth/login` | social-token 헤더 | 소셜 로그인 |
-| `DELETE` | `/auth/logout` | — | 로그아웃 |
-| `POST` | `/auth/reissue` | Authorization + refresh-token | 토큰 갱신 |
-| `GET` | `/members/check?nickname=` | — | 닉네임 확인 |
-| `POST` | `/mybooks` | Bearer JWT | 책 저장 |
-| `GET` | `/mybooks/history?page=&limit=&sort=` | Bearer JWT | 독서 히스토리 조회 |
+| 메서드 | 경로 | 인증 | 용도 | 상세 문서 |
+|--------|------|------|------|-----------|
+| `POST` | `/auth/login` | social-token 헤더 | 소셜 로그인 | [auth.md](api/auth.md) |
+| `POST` | `/auth/signup` | social-token 헤더 | 회원가입 | [auth.md](api/auth.md) |
+| `DELETE` | `/auth/logout` | Bearer JWT | 로그아웃 | [auth.md](api/auth.md) |
+| `POST` | `/auth/reissue` | Authorization + refresh-token | 토큰 갱신 | [auth.md](api/auth.md) |
+| `GET` | `/members/me` | Bearer JWT | 내 정보 조회 | [member.md](api/member.md) |
+| `PATCH` | `/members/me` | Bearer JWT | 닉네임 변경 | [member.md](api/member.md) |
+| `DELETE` | `/members/me` | Bearer JWT | 회원 탈퇴 | [member.md](api/member.md) |
+| `GET` | `/members/check?nickname=` | 불필요 | 닉네임 중복 확인 | [member.md](api/member.md) |
+| `POST` | `/mybooks` | Bearer JWT | 책 저장 | [mybook.md](api/mybook.md) |
+| `GET` | `/mybooks?query=` | Bearer JWT | 내 책 검색 | [mybook.md](api/mybook.md) |
+| `GET` | `/mybooks/store` | Bearer JWT | 내 서점 목록 조회 | [mybook.md](api/mybook.md) |
+| `GET` | `/mybooks/{mybookId}` | Bearer JWT | 책 상세 조회 | [mybook.md](api/mybook.md) |
+| `DELETE` | `/mybooks/{mybookId}` | Bearer JWT | 책 삭제 | [mybook.md](api/mybook.md) |
+| `PATCH` | `/mybooks/{mybookId}` | Bearer JWT | 책 정보 수정 | [mybook.md](api/mybook.md) |
+| `PATCH` | `/mybooks/{mybookId}/reading-status` | Bearer JWT | 독서 상태 변경 | [mybook.md](api/mybook.md) |
+| `GET` | `/mybooks/history` | Bearer JWT | 독서 히스토리 조회 | [history.md](api/history.md) |
 
 ### 외부 API
 
-| 서비스 | Base URL | 용도 |
-|--------|----------|------|
-| 알라딘 | `https://www.aladin.co.kr/` | 책 검색 (제목/ISBN) |
+| 서비스 | Base URL | 용도 | 상세 문서 |
+|--------|----------|------|-----------|
+| 알라딘 | `https://www.aladin.co.kr/` | 책 검색 (제목/ISBN) | [aladin.md](api/aladin.md) |
