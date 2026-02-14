@@ -85,7 +85,10 @@ fun MainScreen(
                 navController = navController,
                 startDestination = HOME_ROUTE
             ) {
-                composable(HOME_ROUTE) {
+                composable(HOME_ROUTE) { backStackEntry ->
+                    LaunchedEffect(backStackEntry) {
+                        mainViewModel.refreshStoreBooks()
+                    }
                     HomeScreen(
                         nickname = nickname,
                         storeBooks = storeBooks,
