@@ -32,6 +32,8 @@ import project.side.ui.SEARCH_BOOK_ROUTE
 import project.side.ui.LOGIN_ROUTE
 import project.side.ui.MAIN_ROUTE
 import project.side.ui.SETTING_ROUTE
+import project.side.domain.model.HistoryBookInfo
+import project.side.domain.model.StoreBookItem
 import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.ui.component.BottomNavBar
@@ -50,6 +52,8 @@ fun MainScreen(
     val currentRoute = navBackStackEntry?.destination?.route
     val isLoggedIn = mainViewModel.isLoggedIn.collectAsState()
     val nickname by mainViewModel.nickname.collectAsState()
+    val storeBooks by mainViewModel.storeBooks.collectAsState()
+    val historyBooks by mainViewModel.historyBooks.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -80,6 +84,8 @@ fun MainScreen(
                 composable(HOME_ROUTE) {
                     HomeScreen(
                         nickname = nickname,
+                        storeBooks = storeBooks,
+                        historyBooks = historyBooks,
                         navigateToSetting = {
                             appNavController.navigateIfLoggedIn(isLoggedIn.value) {
                                 navController.navigate(SETTING_ROUTE)

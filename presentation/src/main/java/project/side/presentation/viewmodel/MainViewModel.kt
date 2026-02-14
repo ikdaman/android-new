@@ -13,14 +13,20 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import project.side.domain.DataResource
+import project.side.domain.model.HistoryBookInfo
+import project.side.domain.model.StoreBookItem
+import project.side.domain.usecase.GetHistoryBooksUseCase
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
+import project.side.domain.usecase.mybook.GetStoreBooksUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     getLoginStateUseCase: GetLoginStateUseCase,
-    private val getMyInfoUseCase: GetMyInfoUseCase
+    private val getMyInfoUseCase: GetMyInfoUseCase,
+    private val getStoreBooksUseCase: GetStoreBooksUseCase,
+    private val getHistoryBooksUseCase: GetHistoryBooksUseCase
 ): ViewModel() {
     val isLoggedIn: StateFlow<Boolean> = getLoginStateUseCase().stateIn(
         scope = viewModelScope,
@@ -30,6 +36,12 @@ class MainViewModel @Inject constructor(
 
     private val _nickname = MutableStateFlow("")
     val nickname: StateFlow<String> = _nickname.asStateFlow()
+
+    private val _storeBooks = MutableStateFlow<List<StoreBookItem>>(emptyList())
+    val storeBooks: StateFlow<List<StoreBookItem>> = _storeBooks.asStateFlow()
+
+    private val _historyBooks = MutableStateFlow<List<HistoryBookInfo>>(emptyList())
+    val historyBooks: StateFlow<List<HistoryBookInfo>> = _historyBooks.asStateFlow()
 
     private val _snackbarEvents = MutableSharedFlow<String>()
     val snackbarEvents = _snackbarEvents.asSharedFlow()
@@ -46,6 +58,24 @@ class MainViewModel @Inject constructor(
                     if (result is DataResource.Success) {
                         _nickname.value = result.data.nickname
                     }
+                }
+            }
+        }
+        fetchBooks()
+    }
+
+    private fun fetchBooks() {
+        viewModelScope.launch {
+            getStoreBooksUseCase().collect { result ->
+                if (result is DataResource.Success) {
+                    _storeBooks.value = result.data.content
+                }
+            }
+        }
+        viewModelScope.launch {
+            getHistoryBooksUseCase().collect { result ->
+                if (result is DataResource.Success) {
+                    _historyBooks.value = result.data.books
                 }
             }
         }

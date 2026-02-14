@@ -23,6 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import project.side.domain.model.HistoryBookInfo
+import project.side.domain.model.StoreBookItem
 import project.side.ui.R
 import project.side.ui.component.HomeBookItem
 import project.side.ui.theme.IkdamanTheme
@@ -31,15 +33,34 @@ import project.side.ui.theme.Typography
 @Composable
 fun HomeScreen(
     nickname: String = "",
+    storeBooks: List<StoreBookItem> = emptyList(),
+    historyBooks: List<HistoryBookInfo> = emptyList(),
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
 ) {
+    val totalCount = storeBooks.size + historyBooks.size
     LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
         item {
-            HomeHeader(nickname, navigateToSetting, navigateToSearchBook)
+            HomeHeader(nickname, totalCount, navigateToSetting, navigateToSearchBook)
         }
-        items(5) {
-            HomeBookItem()
+        items(storeBooks.size) { index ->
+            val book = storeBooks[index]
+            HomeBookItem(
+                title = book.title,
+                author = book.author.joinToString(", "),
+                coverImage = book.coverImage,
+                date = book.createdDate,
+                description = book.description
+            )
+            Spacer(modifier = Modifier.height(55.dp))
+        }
+        items(historyBooks.size) { index ->
+            val book = historyBooks[index]
+            HomeBookItem(
+                title = book.title,
+                coverImage = book.coverImage,
+                date = book.startedDate
+            )
             Spacer(modifier = Modifier.height(55.dp))
         }
     }
@@ -47,7 +68,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeader(nickname: String = "", navigateToSetting: () -> Unit = {}, navigateToBookInfo: () -> Unit = {}) {
+fun HomeHeader(nickname: String = "", totalCount: Int = 0, navigateToSetting: () -> Unit = {}, navigateToBookInfo: () -> Unit = {}) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -90,7 +111,7 @@ fun HomeHeader(nickname: String = "", navigateToSetting: () -> Unit = {}, naviga
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(modifier = Modifier.padding(end = 8.dp), text = "최신 순")
-            Text("(0권)")
+            Text("(${totalCount}권)")
             Spacer(modifier = Modifier.weight(1f))
             Image(
                 modifier = Modifier.size(16.dp),
