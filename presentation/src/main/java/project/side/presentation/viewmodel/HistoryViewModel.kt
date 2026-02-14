@@ -18,9 +18,9 @@ class HistoryViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<HistoryBookState> = MutableStateFlow(HistoryBookState())
     val uiState = _uiState.asStateFlow()
 
-//    init {
-//        getBooks()
-//    }
+    init {
+        getBooks()
+    }
 
     fun getBooks(
         keyword: String? = null,

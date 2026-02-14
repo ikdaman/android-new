@@ -29,8 +29,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import project.side.domain.model.HistoryBookInfo
 import project.side.presentation.model.HistoryBookState
 import project.side.presentation.model.HistoryViewType
 import project.side.presentation.viewmodel.HistoryViewModel
@@ -89,7 +92,7 @@ fun HistoryScreenUI(
                     .height(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("최신 순 (5권)", style = Typography.bodyMedium.copy(fontSize = 16.sp))
+                Text("최신 순 (${uiState.books.size}권)", style = Typography.bodyMedium.copy(fontSize = 16.sp))
                 Spacer(modifier = Modifier.weight(1f))
                 Image(
                     modifier = Modifier
@@ -126,8 +129,8 @@ fun HistoryScreenUI(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(20) {
-                            HistoryDataSetBookItem()
+                        items(uiState.books.size) { index ->
+                            HistoryDataSetBookItem(book = uiState.books[index])
                         }
                     }
                 }
@@ -162,8 +165,8 @@ fun HistoryScreenUI(
                                 )
                             }
                         }
-                        items(20) {
-                            HistoryListBookItem()
+                        items(uiState.books.size) { index ->
+                            HistoryListBookItem(book = uiState.books[index])
                             HorizontalDivider(
                                 color = Color.Black,
                                 thickness = 1.dp,
@@ -179,7 +182,7 @@ fun HistoryScreenUI(
 }
 
 @Composable
-fun HistoryListBookItem() {
+fun HistoryListBookItem(book: HistoryBookInfo) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,19 +196,19 @@ fun HistoryListBookItem() {
         )
         Text(
             modifier = Modifier.weight(1f),
-            text = "251010",
+            text = book.startedDate,
             style = Typography.bodyMedium,
             textAlign = TextAlign.Center
         )
         Text(
             modifier = Modifier.weight(1f),
-            text = "251025",
+            text = book.finishedDate ?: "-",
             style = Typography.bodyMedium,
             textAlign = TextAlign.Center
         )
         Text(
             modifier = Modifier.weight(2f),
-            text = "지적 대화를 위한 넓고 얇은",
+            text = book.title,
             style = Typography.bodyMedium,
             textAlign = TextAlign.Center
         )
@@ -218,14 +221,19 @@ fun HistoryListBookItem() {
 }
 
 @Composable
-fun HistoryDataSetBookItem() {
+fun HistoryDataSetBookItem(book: HistoryBookInfo) {
     Box(
         modifier = Modifier
             .height(150.dp)
             .background(Color(0xFFD9D9D9)),
         contentAlignment = Alignment.Center
     ) {
-        Text("책 표지")
+        AsyncImage(
+            model = book.coverImage,
+            contentDescription = book.title,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
