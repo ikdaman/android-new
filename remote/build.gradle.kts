@@ -74,6 +74,9 @@ dependencies {
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.okhttp.logging.interceptor)
 
+    // timber
+    implementation(libs.timber)
+
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
 
