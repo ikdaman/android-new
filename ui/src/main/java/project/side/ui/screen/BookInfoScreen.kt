@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -126,10 +127,22 @@ fun BookInfoScreen(
             Spacer(Modifier.height(24.dp))
 
             // 공통 책 정보
+            InfoRow("책 제목", detail.bookInfo.title)
+            Spacer(Modifier.height(16.dp))
             InfoRow("작가", detail.bookInfo.author)
             Spacer(Modifier.height(16.dp))
             InfoRow("출판사", detail.bookInfo.publisher ?: "-")
             Spacer(Modifier.height(16.dp))
+            if (detail.bookInfo.aladinId != null) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("알라딘에서 보기", style = MaterialTheme.typography.labelMedium)
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null,
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
+            }
             InfoRow("페이지 수", if (detail.bookInfo.totalPage != null) "${detail.bookInfo.totalPage}p" else "-")
             Spacer(Modifier.height(16.dp))
             InfoRow("출간일", detail.bookInfo.publishDate ?: "-")
