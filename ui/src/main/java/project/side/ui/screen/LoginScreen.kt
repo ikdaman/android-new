@@ -64,21 +64,21 @@ fun LoginScreen(
                     .weight(1f)
                     .padding(horizontal = 20.dp)
             ) {
-                Text("가입시 이용약관 및 개인정보처리방침에 동의하게 됩니다.", fontSize = 12.sp)
+                Text("가입시 이용약관 및 개인정보처리방침에 동의하게 됩니다.", style = MaterialTheme.typography.bodySmall)
                 Button(onClick = {
                     viewModel?.googleLogin(loginUseCase!!)
                 }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Google Login")
+                    Text("Google Login", style = MaterialTheme.typography.labelLarge)
                 }
                 Button(onClick = {
                     viewModel?.naverLogin(loginUseCase!!)
                 }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Naver Login")
+                    Text("Naver Login", style = MaterialTheme.typography.labelLarge)
                 }
                 Button(onClick = {
                     viewModel?.kakaoLogin(loginUseCase!!)
                 }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Kakao Login")
+                    Text("Kakao Login", style = MaterialTheme.typography.labelLarge)
                 }
             }
         }

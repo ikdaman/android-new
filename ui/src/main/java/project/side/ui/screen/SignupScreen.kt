@@ -73,14 +73,14 @@ fun SignupScreen(
             OutlinedTextField(
                 value = nickname,
                 onValueChange = { nickname = it },
-                label = { Text("닉네임") },
+                label = { Text("닉네임", style = MaterialTheme.typography.bodyMedium) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "최대 10자/한글영어숫자가능",
-                style = TextStyle(fontSize = 12.sp, color = Color.Black),
+                style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 4.dp, top = 4.dp)
@@ -89,7 +89,7 @@ fun SignupScreen(
             if (showDuplicateError) {
                 Text(
                     text = "중복된 닉네임이에요.\n닉네임을 다시 확인해주세요.",
-                    style = TextStyle(fontSize = 12.sp, color = Color.Red),
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 4.dp, top = 4.dp)
@@ -103,7 +103,7 @@ fun SignupScreen(
                 enabled = nickname.isNotBlank() && uiState !is SignupUIState.Loading,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("완료")
+                Text("완료", style = MaterialTheme.typography.labelLarge)
             }
         }
 

@@ -126,8 +126,8 @@ fun HomeHeader(nickname: String = "", totalCount: Int = 0, navigateToSetting: ()
                 .padding(top = 35.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(modifier = Modifier.padding(end = 8.dp), text = "최신 순")
-            Text("(${totalCount}권)")
+            Text(modifier = Modifier.padding(end = 8.dp), text = "최신 순", style = Typography.bodyMedium)
+            Text("(${totalCount}권)", style = Typography.bodySmall)
             Spacer(modifier = Modifier.weight(1f))
             Image(
                 modifier = Modifier

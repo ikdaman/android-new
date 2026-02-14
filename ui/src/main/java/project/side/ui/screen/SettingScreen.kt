@@ -57,7 +57,7 @@ fun SettingScreen(
                 containerColor = MaterialTheme.colorScheme.error
             )
         ) {
-            Text(if (uiState is SettingUIState.Loading) "로그아웃 중..." else "로그아웃")
+            Text(if (uiState is SettingUIState.Loading) "로그아웃 중..." else "로그아웃", style = MaterialTheme.typography.labelLarge)
         }
 
         if (uiState is SettingUIState.Error) {

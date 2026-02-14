@@ -85,7 +85,7 @@ fun HistoryScreenUI(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 androidx.compose.material3.TextButton(onClick = onRetry) {
-                    Text("다시 시도", color = Color.Black)
+                    Text("다시 시도", style = Typography.labelLarge)
                 }
             }
         }

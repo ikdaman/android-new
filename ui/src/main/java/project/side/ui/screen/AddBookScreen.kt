@@ -104,7 +104,7 @@ fun AddBookScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     TextButton(onClick = { showRegister.value = true }) {
-                        Text("저장", color = Color.Black)
+                        Text("저장", style = MaterialTheme.typography.labelLarge)
                     }
                 }
                 Spacer(Modifier.height(16.dp))

@@ -67,19 +67,19 @@ fun BookInfoScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("책 삭제") },
-            text = { Text("책을 삭제하면 모든 기록이 사라져요.\n삭제하시겠어요?") },
+            title = { Text("책 삭제", style = MaterialTheme.typography.titleMedium) },
+            text = { Text("책을 삭제하면 모든 기록이 사라져요.\n삭제하시겠어요?", style = MaterialTheme.typography.bodyMedium) },
             confirmButton = {
                 TextButton(onClick = {
                     showDeleteDialog = false
                     viewModel.deleteBook()
                 }) {
-                    Text("삭제", color = Color.Red)
+                    Text("삭제", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelLarge)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("취소")
+                    Text("취소", style = MaterialTheme.typography.labelLarge)
                 }
             }
         )
@@ -93,7 +93,7 @@ fun BookInfoScreen(
         }
         is BookInfoUiState.Error -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = state.message ?: "오류가 발생했습니다.", color = Color.Red)
+                Text(text = state.message ?: "오류가 발생했습니다.", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
             }
         }
         is BookInfoUiState.Success -> {
@@ -138,10 +138,10 @@ private fun BookInfoContent(
             }
             Row {
                 TextButton(onClick = onEdit) {
-                    Text("수정", color = Color.Black)
+                    Text("수정", style = MaterialTheme.typography.labelLarge)
                 }
                 TextButton(onClick = onDelete) {
-                    Text("삭제", color = Color.Red)
+                    Text("삭제", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelLarge)
                 }
             }
         }

@@ -46,6 +46,10 @@ import coil.compose.AsyncImage
 import project.side.domain.model.MyBookSearchItem
 import project.side.presentation.viewmodel.MyBookSearchViewModel
 import project.side.ui.R
+import project.side.ui.theme.InputBackground
+import project.side.ui.theme.TagHistory
+import project.side.ui.theme.TagStore
+import project.side.ui.theme.TextGray
 import project.side.ui.theme.Typography
 
 @Composable
@@ -95,7 +99,7 @@ fun MyBookSearchScreen(
                     .weight(1f)
                     .height(40.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFFF7F6EF))
+                    .background(InputBackground)
                     .padding(horizontal = 12.dp, vertical = 10.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -107,7 +111,7 @@ fun MyBookSearchScreen(
                     if (searchText.isEmpty()) {
                         Text(
                             text = "검색어를 입력하세요",
-                            style = Typography.bodyMedium.copy(color = Color.Gray)
+                            style = Typography.bodyMedium.copy(color = TextGray)
                         )
                     }
                     innerTextField()
@@ -202,7 +206,7 @@ private fun MyBookSearchResultItem(
                 text = "[$tag]",
                 style = Typography.labelSmall.copy(
                     fontSize = 10.sp,
-                    color = if (isTodo) Color(0xFF4CAF50) else Color(0xFF2196F3)
+                    color = if (isTodo) TagStore else TagHistory
                 )
             )
             Spacer(modifier = Modifier.height(4.dp))
