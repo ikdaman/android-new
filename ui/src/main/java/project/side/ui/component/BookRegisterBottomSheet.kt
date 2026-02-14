@@ -73,7 +73,10 @@ fun BookRegisterBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
-        sheetState = rememberModalBottomSheetState()
+        sheetState = rememberModalBottomSheetState(),
+        dragHandle = null,
+        containerColor = Color.Transparent,
+        shape = RoundedCornerShape(0.dp)
     ) {
         RegisterBottomSheetUI(
             selectedTab,
