@@ -16,8 +16,8 @@ data class HistoryBookResponse(
                 mybookId = it.mybookId,
                 title = it.bookInfo.title,
                 coverImage = it.bookInfo.coverImage,
-                startedDate = it.historyInfo.startedDate,
-                finishedDate = it.historyInfo.finishedDate
+                startedDate = it.startedDate,
+                finishedDate = it.finishedDate
             )
         }
     )
@@ -25,18 +25,14 @@ data class HistoryBookResponse(
 
 data class HistoryBook(
     val mybookId: Int,
-    val bookInfo: HistoryBookInfo,
-    val historyInfo: HistoryInfo
+    val startedDate: String,
+    val finishedDate: String?,
+    val bookInfo: HistoryBookInfo
 )
 
 data class HistoryBookInfo(
     val title: String,
     val coverImage: String
-)
-
-data class HistoryInfo(
-    val startedDate: String,
-    val finishedDate: String?
 )
 
 
