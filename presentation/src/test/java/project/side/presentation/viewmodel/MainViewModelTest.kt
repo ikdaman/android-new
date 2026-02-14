@@ -1,7 +1,6 @@
 package project.side.presentation.viewmodel
 
 import io.mockk.MockKAnnotations
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
@@ -17,12 +16,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import project.side.domain.DataResource
-import project.side.domain.model.HistoryBook
-import project.side.domain.model.HistoryBookInfo
 import project.side.domain.model.Member
 import project.side.domain.model.StoreBook
 import project.side.domain.model.StoreBookItem
-import project.side.domain.usecase.GetHistoryBooksUseCase
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
 import project.side.domain.usecase.mybook.GetStoreBooksUseCase
@@ -37,9 +33,6 @@ class MainViewModelTest {
 
     @MockK
     private lateinit var getStoreBooksUseCase: GetStoreBooksUseCase
-
-    @MockK
-    private lateinit var getHistoryBooksUseCase: GetHistoryBooksUseCase
 
     private lateinit var viewModel: MainViewModel
 
@@ -66,11 +59,6 @@ class MainViewModelTest {
                 )
             )
         )
-        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
-            DataResource.success(
-                HistoryBook(totalPages = 0, nowPage = 0, books = emptyList())
-            )
-        )
     }
 
     @Test
@@ -83,7 +71,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, getHistoryBooksUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
 
         // Then
         verify(exactly = 1) { getMyInfoUseCase() }
@@ -99,7 +87,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, getHistoryBooksUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
 
         // Then
         assertEquals("홍길동", viewModel.nickname.value)
@@ -112,7 +100,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, getHistoryBooksUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
 
         // Then
         verify(exactly = 0) { getMyInfoUseCase() }
@@ -137,53 +125,12 @@ class MainViewModelTest {
                 )
             )
         )
-        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
-            DataResource.success(
-                HistoryBook(totalPages = 0, nowPage = 0, books = emptyList())
-            )
-        )
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, getHistoryBooksUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
 
         // Then
         assertEquals(1, viewModel.storeBooks.value.size)
         assertEquals("테스트 책", viewModel.storeBooks.value[0].title)
-    }
-
-    @Test
-    fun `fetchBooks loads history books successfully`() = runTest {
-        // Given
-        val historyBookItems = listOf(
-            HistoryBookInfo(
-                mybookId = 1, title = "히스토리 책",
-                author = listOf("저자1"),
-                coverImage = "https://example.com/cover.jpg",
-                description = "설명",
-                startedDate = "2025-01-01", finishedDate = null
-            )
-        )
-        every { getLoginStateUseCase() } returns flowOf(false)
-        every { getStoreBooksUseCase(any(), any(), any()) } returns flowOf(
-            DataResource.success(
-                StoreBook(
-                    content = emptyList(),
-                    totalPages = 0, totalElements = 0, last = true, first = true,
-                    size = 5, number = 0, numberOfElements = 0, empty = true
-                )
-            )
-        )
-        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
-            DataResource.success(
-                HistoryBook(totalPages = 1, nowPage = 0, books = historyBookItems)
-            )
-        )
-
-        // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, getHistoryBooksUseCase)
-
-        // Then
-        assertEquals(1, viewModel.historyBooks.value.size)
-        assertEquals("히스토리 책", viewModel.historyBooks.value[0].title)
     }
 }
