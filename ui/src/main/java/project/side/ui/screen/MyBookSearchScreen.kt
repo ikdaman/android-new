@@ -159,13 +159,13 @@ private fun MyBookSearchResultItem(
     item: MyBookSearchItem,
     onClick: () -> Unit = {}
 ) {
-    val isWish = item.readingStatus == "WISH"
-    val tag = if (isWish) "내 서점" else "히스토리"
-    val dateText = if (isWish) {
-        item.createdDate
+    val isTodo = item.readingStatus == "TODO"
+    val tag = if (isTodo) "내 서점" else "히스토리"
+    val dateText = if (isTodo) {
+        item.createdDate.take(10)
     } else {
-        val start = item.startedDate ?: ""
-        val end = item.finishedDate ?: ""
+        val start = item.startedDate?.take(10) ?: ""
+        val end = item.finishedDate?.take(10) ?: ""
         if (start.isNotEmpty()) "$start ~ $end" else ""
     }
 
@@ -202,7 +202,7 @@ private fun MyBookSearchResultItem(
                 text = "[$tag]",
                 style = Typography.labelSmall.copy(
                     fontSize = 10.sp,
-                    color = if (isWish) Color(0xFF4CAF50) else Color(0xFF2196F3)
+                    color = if (isTodo) Color(0xFF4CAF50) else Color(0xFF2196F3)
                 )
             )
             Spacer(modifier = Modifier.height(4.dp))
