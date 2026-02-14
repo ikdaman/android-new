@@ -138,8 +138,8 @@ class SearchBookViewModel @Inject constructor(
                 description = book.description.ifBlank { null },
                 coverImage = book.cover.ifBlank { null },
                 reason = reason,
-                startDate = startDate?.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE),
-                endDate = endDate?.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE)
+                startDate = startDate?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
+                endDate = endDate?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))
             )
 
             saveManualBookInfoUseCase(manual).collect { result ->

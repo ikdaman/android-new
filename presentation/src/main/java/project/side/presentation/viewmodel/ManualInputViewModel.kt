@@ -49,7 +49,7 @@ class ManualInputViewModel @Inject constructor(
         startDate: LocalDate? = null,
         endDate: LocalDate? = null
     ) {
-        val fmt = DateTimeFormatter.ISO_LOCAL_DATE
+        val utcFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
         saveManualBookInfo(
             ManualBookInfo(
                 source = "CUSTOM",
@@ -60,8 +60,8 @@ class ManualInputViewModel @Inject constructor(
                 isbn = isbn,
                 pageCount = pageCount?.toIntOrNull(),
                 reason = reason,
-                startDate = startDate?.format(fmt),
-                endDate = endDate?.format(fmt)
+                startDate = startDate?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(utcFmt),
+                endDate = endDate?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(utcFmt)
             )
         )
     }
