@@ -104,7 +104,7 @@ object RemoteModule {
         Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient().withNullSerialization())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
     @Provides

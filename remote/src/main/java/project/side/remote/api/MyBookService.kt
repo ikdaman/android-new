@@ -40,7 +40,7 @@ interface MyBookService {
     @PATCH("/mybooks/{mybookId}/reading-status")
     suspend fun updateReadingStatus(
         @Path("mybookId") mybookId: Int,
-        @Body request: ReadingStatusRequest
+        @Body request: Map<String, @JvmSuppressWildcards Any?>
     ): Response<MyBookIdResponse>
 
     @PATCH("/mybooks/{mybookId}")

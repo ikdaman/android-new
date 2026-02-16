@@ -81,7 +81,11 @@ class MyBookDataSourceImpl @Inject constructor(
 
     override suspend fun updateReadingStatus(mybookId: Int, startedDate: String?, finishedDate: String?): DataApiResult<Int> {
         return try {
-            val response = myBookService.updateReadingStatus(mybookId, ReadingStatusRequest(startedDate, finishedDate))
+            val body = mapOf<String, Any?>(
+                "startedDate" to startedDate,
+                "finishedDate" to finishedDate
+            )
+            val response = myBookService.updateReadingStatus(mybookId, body)
             if (response.isSuccessful) {
                 response.body()?.let {
                     DataApiResult.Success(it.mybookId)
