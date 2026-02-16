@@ -1,13 +1,13 @@
 package project.side.presentation.util
 
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
 object SnackbarManager {
-    private val _events = MutableSharedFlow<String>()
-    val events = _events.asSharedFlow()
+    private val _events = Channel<String>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     suspend fun show(message: String) {
-        _events.emit(message)
+        _events.send(message)
     }
 }

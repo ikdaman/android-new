@@ -3,6 +3,7 @@ package project.side.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +44,7 @@ class MainViewModel @Inject constructor(
     private var storeBooksPage = 0
     private var storeBooksLastPage = false
     private var storeBooksLoading = false
+    private var fetchJob: Job? = null
 
     companion object {
         private const val PAGE_SIZE = 5
@@ -68,14 +70,20 @@ class MainViewModel @Inject constructor(
     private fun fetchStoreBooks() {
         if (storeBooksLoading || storeBooksLastPage) return
         storeBooksLoading = true
-        viewModelScope.launch {
+        fetchJob = viewModelScope.launch {
             getStoreBooksUseCase(page = storeBooksPage, size = PAGE_SIZE).collect { result ->
-                if (result is DataResource.Success) {
-                    _storeBooks.value = _storeBooks.value + result.data.content
-                    storeBooksLastPage = result.data.last
-                    storeBooksPage++
+                when (result) {
+                    is DataResource.Success -> {
+                        _storeBooks.value = _storeBooks.value + result.data.content
+                        storeBooksLastPage = result.data.last
+                        storeBooksPage++
+                        storeBooksLoading = false
+                    }
+                    is DataResource.Error -> {
+                        storeBooksLoading = false
+                    }
+                    is DataResource.Loading -> {}
                 }
-                storeBooksLoading = false
             }
         }
     }
@@ -85,6 +93,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun refreshStoreBooks() {
+        fetchJob?.cancel()
         storeBooksPage = 0
         storeBooksLastPage = false
         storeBooksLoading = false

@@ -4,26 +4,21 @@ import project.side.data.model.StoreBookEntity
 import project.side.data.model.StoreBookItemEntity
 
 data class StoreBookResponse(
-    val content: List<StoreBookItemResponse>,
+    val books: List<StoreBookItemResponse>,
     val totalPages: Int,
-    val totalElements: Int,
-    val last: Boolean,
-    val first: Boolean,
-    val size: Int,
-    val number: Int,
-    val numberOfElements: Int,
-    val empty: Boolean
+    val nowPage: Int,
+    val totalElements: Int
 ) {
     fun toData(): StoreBookEntity = StoreBookEntity(
-        content = content.map { it.toData() },
+        content = books.map { it.toData() },
         totalPages = totalPages,
         totalElements = totalElements,
-        last = last,
-        first = first,
-        size = size,
-        number = number,
-        numberOfElements = numberOfElements,
-        empty = empty
+        last = nowPage >= totalPages - 1,
+        first = nowPage == 0,
+        size = books.size,
+        number = nowPage,
+        numberOfElements = books.size,
+        empty = books.isEmpty()
     )
 }
 
