@@ -3,7 +3,12 @@ package project.side.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.mockkObject
+import io.mockk.Runs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -24,6 +29,7 @@ import project.side.domain.model.MyBookDetailHistoryInfo
 import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.GetMyBookDetailUseCase
 import project.side.domain.usecase.mybook.UpdateMyBookUseCase
+import project.side.presentation.util.SnackbarManager
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookInfoViewModelTest {
@@ -43,6 +49,8 @@ class BookInfoViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
+        mockkObject(SnackbarManager)
+        coEvery { SnackbarManager.show(any()) } just Runs
     }
 
     @After
@@ -122,5 +130,159 @@ class BookInfoViewModelTest {
         // Then
         val state = viewModel.uiState.value
         assertTrue(state is BookInfoUiState.Error)
+    }
+
+    @Test
+    fun `updateMyBook success calls useCase and refreshes detail`() = runTest {
+        // Given
+        val detail = createDetail()
+        coEvery { getMyBookDetailUseCase(123) } returns flowOf(DataResource.Success(detail))
+        every { updateMyBookUseCase(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns flowOf(DataResource.Success(123))
+
+        val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        advanceUntilIdle()
+
+        // When
+        viewModel.updateMyBook(status = "READING")
+        advanceUntilIdle()
+
+        // Then
+        coVerify(exactly = 2) { getMyBookDetailUseCase(123) } // init + after update
+        coVerify { SnackbarManager.show("책 정보를 수정했어요") }
+    }
+
+    @Test
+    fun `updateMyBook error shows error snackbar`() = runTest {
+        // Given
+        val detail = createDetail()
+        val errorMessage = "Update failed"
+        coEvery { getMyBookDetailUseCase(123) } returns flowOf(DataResource.Success(detail))
+        every { updateMyBookUseCase(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns flowOf(DataResource.Error(errorMessage))
+
+        val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        advanceUntilIdle()
+
+        // When
+        viewModel.updateMyBook(status = "READING")
+        advanceUntilIdle()
+
+        // Then
+        coVerify { SnackbarManager.show(errorMessage) }
+    }
+
+    @Test
+    fun `updateMyBook with status and bookInfo passes all params`() = runTest {
+        // Given
+        val detail = createDetail()
+        coEvery { getMyBookDetailUseCase(123) } returns flowOf(DataResource.Success(detail))
+        every { updateMyBookUseCase(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns flowOf(DataResource.Success(123))
+
+        val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        advanceUntilIdle()
+
+        // When
+        viewModel.updateMyBook(
+            status = "READING",
+            reason = "Interesting",
+            startedDate = "2024-01-01",
+            finishedDate = "2024-02-01",
+            bookInfoTitle = "New Title",
+            bookInfoAuthor = "New Author",
+            bookInfoPublisher = "New Publisher",
+            bookInfoPublishDate = "2024-01-01",
+            bookInfoIsbn = "9876543210",
+            bookInfoTotalPage = 400
+        )
+        advanceUntilIdle()
+
+        // Then
+        coVerify {
+            updateMyBookUseCase(
+                mybookId = 123,
+                status = "READING",
+                reason = "Interesting",
+                startedDate = "2024-01-01",
+                finishedDate = "2024-02-01",
+                bookInfoTitle = "New Title",
+                bookInfoAuthor = "New Author",
+                bookInfoPublisher = "New Publisher",
+                bookInfoPublishDate = "2024-01-01",
+                bookInfoIsbn = "9876543210",
+                bookInfoTotalPage = 400
+            )
+        }
+    }
+
+    @Test
+    fun `updateMyBook does nothing when mybookId is invalid`() = runTest {
+        // Given
+        val savedStateHandle = SavedStateHandle()
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        advanceUntilIdle()
+
+        // When
+        viewModel.updateMyBook(status = "READING")
+        advanceUntilIdle()
+
+        // Then
+        coVerify(exactly = 0) { updateMyBookUseCase(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `deleteBook success sets deleteSuccess to true`() = runTest {
+        // Given
+        val detail = createDetail()
+        coEvery { getMyBookDetailUseCase(123) } returns flowOf(DataResource.Success(detail))
+        coEvery { deleteMyBookUseCase(123) } returns flowOf(DataResource.Success(Unit))
+
+        val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        advanceUntilIdle()
+
+        // When
+        viewModel.deleteBook()
+        advanceUntilIdle()
+
+        // Then
+        assertTrue(viewModel.deleteSuccess.value)
+        coVerify { SnackbarManager.show("책을 정리했어요.") }
+    }
+
+    @Test
+    fun `deleteBook error shows error snackbar`() = runTest {
+        // Given
+        val detail = createDetail()
+        val errorMessage = "Delete failed"
+        coEvery { getMyBookDetailUseCase(123) } returns flowOf(DataResource.Success(detail))
+        coEvery { deleteMyBookUseCase(123) } returns flowOf(DataResource.Error(errorMessage))
+
+        val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        advanceUntilIdle()
+
+        // When
+        viewModel.deleteBook()
+        advanceUntilIdle()
+
+        // Then
+        coVerify { SnackbarManager.show(errorMessage) }
+    }
+
+    @Test
+    fun `deleteBook does nothing when mybookId is invalid`() = runTest {
+        // Given
+        val savedStateHandle = SavedStateHandle()
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        advanceUntilIdle()
+
+        // When
+        viewModel.deleteBook()
+        advanceUntilIdle()
+
+        // Then
+        coVerify(exactly = 0) { deleteMyBookUseCase(any()) }
     }
 }

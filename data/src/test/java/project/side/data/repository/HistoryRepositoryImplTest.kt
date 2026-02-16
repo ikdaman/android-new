@@ -42,7 +42,9 @@ class HistoryRepositoryImplTest {
                 HistoryBookInfoEntity(
                     mybookId = 1,
                     title = "테스트 책",
+                    author = listOf("저자"),
                     coverImage = "http://example.com/cover.jpg",
+                    description = "설명",
                     startedDate = "2024-01-01",
                     finishedDate = "2024-01-31"
                 )

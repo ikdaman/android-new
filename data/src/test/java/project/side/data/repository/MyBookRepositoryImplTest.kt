@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import project.side.data.datasource.MyBookDataSource
 import project.side.data.model.BookInfoEntity
+import project.side.data.model.BookInfoUpdateEntity
 import project.side.data.model.DataApiResult
 import project.side.data.model.HistoryInfoEntity
 import project.side.data.model.MyBookDetailEntity
@@ -358,7 +359,19 @@ class MyBookRepositoryImplTest {
         coEvery { myBookDataSource.updateMyBook(mybookId, any()) } returns DataApiResult.Success(mybookId)
 
         // When
-        val flow = repository.updateMyBook(mybookId, reason, startedDate, finishedDate)
+        val flow = repository.updateMyBook(
+            mybookId = mybookId,
+            status = null,
+            reason = reason,
+            startedDate = startedDate,
+            finishedDate = finishedDate,
+            bookInfoTitle = null,
+            bookInfoAuthor = null,
+            bookInfoPublisher = null,
+            bookInfoPublishDate = null,
+            bookInfoIsbn = null,
+            bookInfoTotalPage = null
+        )
         val results = flow.toList()
 
         // Then
@@ -381,7 +394,19 @@ class MyBookRepositoryImplTest {
         coEvery { myBookDataSource.updateMyBook(mybookId, any()) } returns DataApiResult.Error(errorMessage)
 
         // When
-        val flow = repository.updateMyBook(mybookId, reason, startedDate, finishedDate)
+        val flow = repository.updateMyBook(
+            mybookId = mybookId,
+            status = null,
+            reason = reason,
+            startedDate = startedDate,
+            finishedDate = finishedDate,
+            bookInfoTitle = null,
+            bookInfoAuthor = null,
+            bookInfoPublisher = null,
+            bookInfoPublishDate = null,
+            bookInfoIsbn = null,
+            bookInfoTotalPage = null
+        )
         val results = flow.toList()
 
         // Then
@@ -402,7 +427,19 @@ class MyBookRepositoryImplTest {
         coEvery { myBookDataSource.updateMyBook(mybookId, any()) } throws RuntimeException(exceptionMessage)
 
         // When
-        val flow = repository.updateMyBook(mybookId, reason, startedDate, finishedDate)
+        val flow = repository.updateMyBook(
+            mybookId = mybookId,
+            status = null,
+            reason = reason,
+            startedDate = startedDate,
+            finishedDate = finishedDate,
+            bookInfoTitle = null,
+            bookInfoAuthor = null,
+            bookInfoPublisher = null,
+            bookInfoPublishDate = null,
+            bookInfoIsbn = null,
+            bookInfoTotalPage = null
+        )
         val results = flow.toList()
 
         // Then
@@ -410,5 +447,154 @@ class MyBookRepositoryImplTest {
         assertTrue(results[0] is DataResource.Loading)
         assertTrue(results[1] is DataResource.Error)
         assertEquals(exceptionMessage, (results[1] as DataResource.Error).message)
+    }
+
+    @Test
+    fun `updateMyBook with status passes status in entity`() = runTest {
+        // Given
+        val mybookId = 100
+        val status = "READING"
+        coEvery {
+            myBookDataSource.updateMyBook(eq(mybookId), any())
+        } returns DataApiResult.Success(mybookId)
+
+        // When
+        val flow = repository.updateMyBook(
+            mybookId = mybookId,
+            status = status,
+            reason = null,
+            startedDate = null,
+            finishedDate = null,
+            bookInfoTitle = null,
+            bookInfoAuthor = null,
+            bookInfoPublisher = null,
+            bookInfoPublishDate = null,
+            bookInfoIsbn = null,
+            bookInfoTotalPage = null
+        )
+        val results = flow.toList()
+
+        // Then
+        assertEquals(2, results.size)
+        assertTrue(results[1] is DataResource.Success)
+        coVerify(exactly = 1) {
+            myBookDataSource.updateMyBook(mybookId, withArg { entity ->
+                assertEquals(status, entity.status)
+            })
+        }
+    }
+
+    @Test
+    fun `updateMyBook with bookInfo creates BookInfoUpdateEntity`() = runTest {
+        // Given
+        val mybookId = 200
+        val title = "책 제목"
+        val author = "저자"
+        val publisher = "출판사"
+        coEvery {
+            myBookDataSource.updateMyBook(eq(mybookId), any())
+        } returns DataApiResult.Success(mybookId)
+
+        // When
+        val flow = repository.updateMyBook(
+            mybookId = mybookId,
+            status = null,
+            reason = null,
+            startedDate = null,
+            finishedDate = null,
+            bookInfoTitle = title,
+            bookInfoAuthor = author,
+            bookInfoPublisher = publisher,
+            bookInfoPublishDate = null,
+            bookInfoIsbn = null,
+            bookInfoTotalPage = null
+        )
+        val results = flow.toList()
+
+        // Then
+        assertEquals(2, results.size)
+        assertTrue(results[1] is DataResource.Success)
+        coVerify(exactly = 1) {
+            myBookDataSource.updateMyBook(mybookId, withArg { entity ->
+                assertTrue(entity.bookInfo != null)
+                assertEquals(title, entity.bookInfo?.title)
+                assertEquals(author, entity.bookInfo?.author)
+                assertEquals(publisher, entity.bookInfo?.publisher)
+            })
+        }
+    }
+
+    @Test
+    fun `updateMyBook without bookInfo params sets bookInfo to null in entity`() = runTest {
+        // Given
+        val mybookId = 300
+        val reason = "이유만 있음"
+        coEvery {
+            myBookDataSource.updateMyBook(eq(mybookId), any())
+        } returns DataApiResult.Success(mybookId)
+
+        // When
+        val flow = repository.updateMyBook(
+            mybookId = mybookId,
+            status = null,
+            reason = reason,
+            startedDate = null,
+            finishedDate = null,
+            bookInfoTitle = null,
+            bookInfoAuthor = null,
+            bookInfoPublisher = null,
+            bookInfoPublishDate = null,
+            bookInfoIsbn = null,
+            bookInfoTotalPage = null
+        )
+        val results = flow.toList()
+
+        // Then
+        assertEquals(2, results.size)
+        assertTrue(results[1] is DataResource.Success)
+        coVerify(exactly = 1) {
+            myBookDataSource.updateMyBook(mybookId, withArg { entity ->
+                assertEquals(reason, entity.reason)
+                assertEquals(null, entity.bookInfo)
+            })
+        }
+    }
+
+    @Test
+    fun `updateMyBook with only some bookInfo params still creates BookInfoUpdateEntity`() = runTest {
+        // Given
+        val mybookId = 400
+        val title = "제목만"
+        coEvery {
+            myBookDataSource.updateMyBook(eq(mybookId), any())
+        } returns DataApiResult.Success(mybookId)
+
+        // When
+        val flow = repository.updateMyBook(
+            mybookId = mybookId,
+            status = null,
+            reason = null,
+            startedDate = null,
+            finishedDate = null,
+            bookInfoTitle = title,
+            bookInfoAuthor = null,
+            bookInfoPublisher = null,
+            bookInfoPublishDate = null,
+            bookInfoIsbn = null,
+            bookInfoTotalPage = null
+        )
+        val results = flow.toList()
+
+        // Then
+        assertEquals(2, results.size)
+        assertTrue(results[1] is DataResource.Success)
+        coVerify(exactly = 1) {
+            myBookDataSource.updateMyBook(mybookId, withArg { entity ->
+                assertTrue(entity.bookInfo != null)
+                assertEquals(title, entity.bookInfo?.title)
+                assertEquals(null, entity.bookInfo?.author)
+                assertEquals(null, entity.bookInfo?.publisher)
+            })
+        }
     }
 }

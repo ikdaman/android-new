@@ -295,12 +295,12 @@ internal fun BookEditBottomSheetContent(
                             status = statusToSend,
                             reason = reasonToSend,
                             startedDate = null, finishedDate = null,
-                            bookInfoTitle = if (isCustom) title.value else null,
-                            bookInfoAuthor = if (isCustom) author.value else null,
-                            bookInfoPublisher = if (isCustom) publisher.value.ifBlank { null } else null,
-                            bookInfoPublishDate = if (isCustom) publishDate.value.ifBlank { null } else null,
-                            bookInfoIsbn = if (isCustom) isbn.value.ifBlank { null } else null,
-                            bookInfoTotalPage = if (isCustom) totalPage.value.toIntOrNull() else null
+                            bookInfoTitle = title.value,
+                            bookInfoAuthor = author.value,
+                            bookInfoPublisher = publisher.value.ifBlank { null },
+                            bookInfoPublishDate = publishDate.value.ifBlank { null },
+                            bookInfoIsbn = isbn.value.ifBlank { null },
+                            bookInfoTotalPage = totalPage.value.toIntOrNull()
                         )
                     } else {
                         BookEditResult(
@@ -308,12 +308,12 @@ internal fun BookEditBottomSheetContent(
                             reason = reasonToSend,
                             startedDate = startDate.value.atStartOfDay(java.time.ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
                             finishedDate = endDate.value?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
-                            bookInfoTitle = if (isCustom) title.value else null,
-                            bookInfoAuthor = if (isCustom) author.value else null,
-                            bookInfoPublisher = if (isCustom) publisher.value.ifBlank { null } else null,
-                            bookInfoPublishDate = if (isCustom) publishDate.value.ifBlank { null } else null,
-                            bookInfoIsbn = if (isCustom) isbn.value.ifBlank { null } else null,
-                            bookInfoTotalPage = if (isCustom) totalPage.value.toIntOrNull() else null
+                            bookInfoTitle = title.value,
+                            bookInfoAuthor = author.value,
+                            bookInfoPublisher = publisher.value.ifBlank { null },
+                            bookInfoPublishDate = publishDate.value.ifBlank { null },
+                            bookInfoIsbn = isbn.value.ifBlank { null },
+                            bookInfoTotalPage = totalPage.value.toIntOrNull()
                         )
                     }
                     onConfirm(result)

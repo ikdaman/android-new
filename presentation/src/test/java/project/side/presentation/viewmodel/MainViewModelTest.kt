@@ -1,8 +1,14 @@
 package project.side.presentation.viewmodel
 
 import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.mockkObject
+import io.mockk.Runs
+import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +29,7 @@ import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
 import project.side.domain.usecase.mybook.GetStoreBooksUseCase
 import project.side.domain.usecase.mybook.UpdateReadingStatusUseCase
+import project.side.presentation.util.SnackbarManager
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
@@ -51,6 +58,7 @@ class MainViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        unmockkObject(SnackbarManager)
     }
 
     private fun stubDefaultBooks() {
@@ -137,5 +145,64 @@ class MainViewModelTest {
         // Then
         assertEquals(1, viewModel.storeBooks.value.size)
         assertEquals("테스트 책", viewModel.storeBooks.value[0].title)
+    }
+
+    @Test
+    fun `startReading calls updateReadingStatusUseCase with mybookId and today's date`() = runTest {
+        // Given
+        every { getLoginStateUseCase() } returns flowOf(false)
+        stubDefaultBooks()
+        every { updateReadingStatusUseCase(any(), any(), any()) } returns flowOf(DataResource.success(123))
+        mockkObject(SnackbarManager)
+        coEvery { SnackbarManager.show(any()) } just Runs
+
+        // When
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel.startReading(mybookId = 123)
+
+        // Then
+        verify {
+            updateReadingStatusUseCase(
+                mybookId = 123,
+                startedDate = match { it.matches(Regex("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z")) },
+                finishedDate = null
+            )
+        }
+    }
+
+    @Test
+    fun `startReading success shows snackbar`() = runTest {
+        // Given
+        every { getLoginStateUseCase() } returns flowOf(false)
+        stubDefaultBooks()
+        every { updateReadingStatusUseCase(any(), any(), any()) } returns flowOf(DataResource.success(123))
+        mockkObject(SnackbarManager)
+        coEvery { SnackbarManager.show(any()) } just Runs
+
+        // When
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel.startReading(mybookId = 123)
+
+        // Then
+        coVerify { SnackbarManager.show("독서를 시작했어요") }
+    }
+
+    @Test
+    fun `startReading error shows error snackbar`() = runTest {
+        // Given
+        every { getLoginStateUseCase() } returns flowOf(false)
+        stubDefaultBooks()
+        every { updateReadingStatusUseCase(any(), any(), any()) } returns flowOf(
+            DataResource.error("네트워크 오류")
+        )
+        mockkObject(SnackbarManager)
+        coEvery { SnackbarManager.show(any()) } just Runs
+
+        // When
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel.startReading(mybookId = 123)
+
+        // Then
+        coVerify { SnackbarManager.show("네트워크 오류") }
     }
 }
