@@ -160,6 +160,7 @@ fun MainScreen(
                     SettingScreen(
                         logoutUseCase = logoutUseCase,
                         getProviderUseCase = getProviderUseCase,
+                        onBack = { navController.popBackStack() },
                         onLogoutComplete = {
                             appNavController.navigate(LOGIN_ROUTE) {
                                 popUpTo(MAIN_ROUTE) { inclusive = true }

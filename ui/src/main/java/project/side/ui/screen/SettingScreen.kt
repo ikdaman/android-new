@@ -47,6 +47,7 @@ import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.model.SettingUIState
 import project.side.presentation.viewmodel.SettingViewModel
 import project.side.ui.R
+import project.side.ui.component.TitleBar
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.Typography
 
@@ -58,6 +59,7 @@ fun SettingScreen(
     logoutUseCase: LogoutUseCase? = null,
     getProviderUseCase: GetProviderUseCase? = null,
     viewModel: SettingViewModel = hiltViewModel(),
+    onBack: () -> Unit = {},
     onLogoutComplete: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -76,10 +78,18 @@ fun SettingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        TitleBar(
+            title = "설정",
+            showBackButton = true,
+            onBackButtonClicked = onBack
+        )
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
         // 인사말
         Text(
             text = "${nickname.ifEmpty { "OO" }}님, 안녕하세요 :)",
@@ -221,6 +231,7 @@ fun SettingScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 

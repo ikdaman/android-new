@@ -124,7 +124,16 @@ fun SearchBookScreen(
                         keyboardActions = KeyboardActions(onSearch = {
                             keyboardController?.hide()
                             viewModel?.searchBook(text)
-                        })
+                        }),
+                        decorationBox = { innerTextField ->
+                            if (text.isEmpty()) {
+                                Text(
+                                    "추가하고 싶은 책을 입력해주세요.",
+                                    style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray.copy(alpha = 0.6f))
+                                )
+                            }
+                            innerTextField()
+                        }
                     )
 
                     // camera icon opens barcode screen
