@@ -45,18 +45,20 @@ import project.side.domain.model.MyBookDetailBookInfo
 import project.side.domain.model.MyBookDetailHistoryInfo
 import project.side.presentation.viewmodel.BookInfoUiState
 import project.side.presentation.viewmodel.BookInfoViewModel
+import project.side.ui.component.BookEditBottomSheet
 import project.side.ui.theme.IkdamanTheme
+import project.side.ui.util.rememberOneClickHandler
 
 @Composable
 fun BookInfoScreen(
     viewModel: BookInfoViewModel,
     onBack: () -> Unit = {},
-    onEdit: () -> Unit = {},
     onDeleteComplete: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val deleteSuccess by viewModel.deleteSuccess.collectAsState()
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showEditSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(deleteSuccess) {
         if (deleteSuccess) {
@@ -97,10 +99,29 @@ fun BookInfoScreen(
             }
         }
         is BookInfoUiState.Success -> {
+            BookEditBottomSheet(
+                show = showEditSheet,
+                detail = state.detail,
+                onDismiss = { showEditSheet = false },
+                onConfirm = { result ->
+                    showEditSheet = false
+                    viewModel.updateMyBook(
+                        reason = result.reason,
+                        startedDate = result.startedDate,
+                        finishedDate = result.finishedDate,
+                        bookInfoTitle = result.bookInfoTitle,
+                        bookInfoAuthor = result.bookInfoAuthor,
+                        bookInfoPublisher = result.bookInfoPublisher,
+                        bookInfoPublishDate = result.bookInfoPublishDate,
+                        bookInfoIsbn = result.bookInfoIsbn,
+                        bookInfoTotalPage = result.bookInfoTotalPage
+                    )
+                }
+            )
             BookInfoContent(
                 detail = state.detail,
                 onBack = onBack,
-                onEdit = onEdit,
+                onEdit = { showEditSheet = true },
                 onDelete = { showDeleteDialog = true }
             )
         }
@@ -116,6 +137,7 @@ private fun BookInfoContent(
 ) {
     val scrollState = rememberScrollState()
     val isHistory = detail.shelfType == "HISTORY"
+    val oneClickHandler = rememberOneClickHandler()
 
     Column(
         modifier = Modifier
@@ -130,7 +152,7 @@ private fun BookInfoContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = onBack) {
+            IconButton(onClick = { oneClickHandler { onBack() } }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = "뒤로가기"

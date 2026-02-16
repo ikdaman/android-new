@@ -50,6 +50,7 @@ import project.side.ui.component.BookRegisterBottomSheet
 import project.side.ui.component.CustomSnackbarHost
 import project.side.ui.MAIN_ROUTE
 import project.side.ui.theme.IkdamanTheme
+import project.side.ui.util.rememberOneClickHandler
 
 @Composable
 fun ManualBookInputScreen(
@@ -64,6 +65,7 @@ fun ManualBookInputScreen(
     var pageCount by remember { mutableStateOf("") }
 
     val showRegister = remember { mutableStateOf(false) }
+    val oneClickHandler = rememberOneClickHandler()
 
     val scrollState = rememberScrollState()
 
@@ -95,7 +97,7 @@ fun ManualBookInputScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(onClick = {
-                        appNavController.popBackStack()
+                        oneClickHandler { appNavController.popBackStack() }
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,

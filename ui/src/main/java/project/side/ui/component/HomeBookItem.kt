@@ -35,7 +35,8 @@ fun HomeBookItem(
     coverImage: String? = null,
     date: String = "",
     description: String? = null,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onStartReading: () -> Unit = {}
 ) {
     Row(modifier = Modifier.clickable { onClick() }) {
         Box(modifier = Modifier.height(200.dp)) {
@@ -64,7 +65,7 @@ fun HomeBookItem(
             Checkbox(
                 modifier = Modifier.offset(x = (-12).dp),
                 checked = false,
-                onCheckedChange = {}
+                onCheckedChange = { onStartReading() }
             )
             Text(
                 date,

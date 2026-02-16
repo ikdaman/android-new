@@ -18,13 +18,18 @@ import project.side.domain.model.StoreBookItem
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
 import project.side.domain.usecase.mybook.GetStoreBooksUseCase
+import project.side.domain.usecase.mybook.UpdateReadingStatusUseCase
+import project.side.presentation.util.SnackbarManager
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     getLoginStateUseCase: GetLoginStateUseCase,
     private val getMyInfoUseCase: GetMyInfoUseCase,
-    private val getStoreBooksUseCase: GetStoreBooksUseCase
+    private val getStoreBooksUseCase: GetStoreBooksUseCase,
+    private val updateReadingStatusUseCase: UpdateReadingStatusUseCase
 ): ViewModel() {
     val isLoggedIn: StateFlow<Boolean> = getLoginStateUseCase().stateIn(
         scope = viewModelScope,
@@ -103,5 +108,22 @@ class MainViewModel @Inject constructor(
 
     suspend fun showSnackbar(message: String) {
         _snackbarEvents.emit(message)
+    }
+
+    fun startReading(mybookId: Int) {
+        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        viewModelScope.launch {
+            updateReadingStatusUseCase(mybookId, startedDate = today).collect { result ->
+                when (result) {
+                    is DataResource.Success -> {
+                        SnackbarManager.show("독서를 시작했어요")
+                    }
+                    is DataResource.Error -> {
+                        SnackbarManager.show(result.message ?: "독서 시작에 실패했어요")
+                    }
+                    is DataResource.Loading -> {}
+                }
+            }
+        }
     }
 }

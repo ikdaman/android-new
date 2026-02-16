@@ -23,6 +23,7 @@ import project.side.domain.model.MyBookDetailBookInfo
 import project.side.domain.model.MyBookDetailHistoryInfo
 import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.GetMyBookDetailUseCase
+import project.side.domain.usecase.mybook.UpdateMyBookUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookInfoViewModelTest {
@@ -32,6 +33,9 @@ class BookInfoViewModelTest {
 
     @MockK
     private lateinit var deleteMyBookUseCase: DeleteMyBookUseCase
+
+    @MockK
+    private lateinit var updateMyBookUseCase: UpdateMyBookUseCase
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -79,7 +83,7 @@ class BookInfoViewModelTest {
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
 
         // When
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
         advanceUntilIdle()
 
         // Then
@@ -97,7 +101,7 @@ class BookInfoViewModelTest {
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
 
         // When
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
         advanceUntilIdle()
 
         // Then
@@ -112,7 +116,7 @@ class BookInfoViewModelTest {
         val savedStateHandle = SavedStateHandle()
 
         // When
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
         advanceUntilIdle()
 
         // Then

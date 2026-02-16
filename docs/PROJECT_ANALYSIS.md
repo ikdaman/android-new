@@ -306,10 +306,35 @@ App NavHost (MainActivity)
 - 무한 스크롤 페이지네이션 (페이지 크기 10)
 - 책 클릭 시 BookInfoScreen으로 이동
 
-### 8-7. 책 상세 / 설정
+### 8-7. 독서 시작
+
+- HomeScreen의 책 아이템 체크박스 클릭 → ReadingStartBottomSheet 표시
+- 오늘 날짜로 독서 시작, PATCH /mybooks/{mybookId}/reading-status API 호출
+- 성공 시 스낵바 + 내 서점 목록 새로고침
+
+### 8-8. 책 상세 / 수정
 
 - BookInfoScreen: 나의 책 상세 정보 조회, 삭제, 독서 상태 변경, 알라딘에서 보기
-- SettingScreen: 닉네임 변경, 로그아웃, 회원 탈퇴
+- 수정 버튼 → BookEditBottomSheet: 내 서점/히스토리 탭 전환, 읽고 싶은 이유, 날짜 수정
+- CUSTOM 책은 bookInfo (제목, 작가, 출판사 등) 수정 가능
+
+### 8-9. 설정
+
+- 인사말: "(닉네임)님, 안녕하세요 :)"
+- 닉네임 수정: 인라인 편집 (pencil 아이콘) + PATCH /members/me API
+- 닉네임 유효성 검사: 최대 10자, 한글/영어/숫자만 허용
+- 메뉴: 공지사항 (비활성화), 이용약관 (외부 브라우저), 개인정보처리방침 (외부 브라우저)
+- 로그아웃 버튼
+
+### 8-10. 빈 상태 UI
+
+- HomeScreen에 책 목록이 없을 때 "아직 담아둔 책이 없어요" 안내 표시
+- 클릭 시 책 추가 화면(SearchBook)으로 이동
+
+### 8-11. 뒤로가기 중복 클릭 방지
+
+- `rememberOneClickHandler()` 유틸리티로 500ms 내 중복 클릭 방지
+- AddBookScreen, ManualBookInputScreen, BookInfoScreen, MyBookSearchScreen에 적용
 
 ---
 

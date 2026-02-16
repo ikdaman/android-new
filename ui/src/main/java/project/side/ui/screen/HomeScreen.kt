@@ -39,6 +39,7 @@ fun HomeScreen(
     storeBooks: List<StoreBookItem> = emptyList(),
     onLoadMore: () -> Unit = {},
     onBookClick: (Int) -> Unit = {},
+    onStartReading: (Int) -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
     navigateToMyBookSearch: () -> Unit = {},
@@ -67,17 +68,42 @@ fun HomeScreen(
         item {
             HomeHeader(nickname, totalCount, navigateToSetting, navigateToSearchBook, navigateToMyBookSearch)
         }
-        items(storeBooks.size) { index ->
-            val book = storeBooks[index]
-            HomeBookItem(
-                title = book.title,
-                author = book.author.joinToString(", "),
-                coverImage = book.coverImage,
-                date = book.createdDate.take(10),
-                description = book.description,
-                onClick = { onBookClick(book.mybookId) }
-            )
-            Spacer(modifier = Modifier.height(55.dp))
+        if (storeBooks.isEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 60.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "아직 담아둔 책이 없어요",
+                        style = Typography.bodyMedium,
+                        color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "읽고 싶은 책을 추가해보세요",
+                        style = Typography.bodySmall,
+                        color = Color(0xFF1976D2),
+                        modifier = Modifier.clickable { navigateToSearchBook() }
+                    )
+                }
+            }
+        } else {
+            items(storeBooks.size) { index ->
+                val book = storeBooks[index]
+                HomeBookItem(
+                    title = book.title,
+                    author = book.author.joinToString(", "),
+                    coverImage = book.coverImage,
+                    date = book.createdDate.take(10),
+                    description = book.description,
+                    onClick = { onBookClick(book.mybookId) },
+                    onStartReading = { onStartReading(book.mybookId) }
+                )
+                Spacer(modifier = Modifier.height(55.dp))
+            }
         }
     }
 

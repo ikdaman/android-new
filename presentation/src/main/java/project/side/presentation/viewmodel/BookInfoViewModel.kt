@@ -11,6 +11,7 @@ import project.side.domain.DataResource
 import project.side.domain.model.MyBookDetail
 import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.GetMyBookDetailUseCase
+import project.side.domain.usecase.mybook.UpdateMyBookUseCase
 import project.side.presentation.util.SnackbarManager
 import javax.inject.Inject
 
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class BookInfoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getMyBookDetailUseCase: GetMyBookDetailUseCase,
-    private val deleteMyBookUseCase: DeleteMyBookUseCase
+    private val deleteMyBookUseCase: DeleteMyBookUseCase,
+    private val updateMyBookUseCase: UpdateMyBookUseCase
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<BookInfoUiState> = MutableStateFlow(BookInfoUiState.Loading)
@@ -50,6 +52,45 @@ class BookInfoViewModel @Inject constructor(
                     is DataResource.Loading -> {
                         _uiState.value = BookInfoUiState.Loading
                     }
+                }
+            }
+        }
+    }
+
+    fun updateMyBook(
+        reason: String? = null,
+        startedDate: String? = null,
+        finishedDate: String? = null,
+        bookInfoTitle: String? = null,
+        bookInfoAuthor: String? = null,
+        bookInfoPublisher: String? = null,
+        bookInfoPublishDate: String? = null,
+        bookInfoIsbn: String? = null,
+        bookInfoTotalPage: Int? = null
+    ) {
+        if (mybookId == -1) return
+        viewModelScope.launch {
+            updateMyBookUseCase(
+                mybookId = mybookId,
+                reason = reason,
+                startedDate = startedDate,
+                finishedDate = finishedDate,
+                bookInfoTitle = bookInfoTitle,
+                bookInfoAuthor = bookInfoAuthor,
+                bookInfoPublisher = bookInfoPublisher,
+                bookInfoPublishDate = bookInfoPublishDate,
+                bookInfoIsbn = bookInfoIsbn,
+                bookInfoTotalPage = bookInfoTotalPage
+            ).collect {
+                when (it) {
+                    is DataResource.Success -> {
+                        SnackbarManager.show("책 정보를 수정했어요")
+                        fetchDetail(mybookId)
+                    }
+                    is DataResource.Error -> {
+                        SnackbarManager.show(it.message ?: "수정에 실패했어요")
+                    }
+                    is DataResource.Loading -> { /* no-op */ }
                 }
             }
         }

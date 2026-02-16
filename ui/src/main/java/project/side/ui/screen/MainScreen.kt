@@ -7,6 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -36,10 +37,12 @@ import project.side.ui.SEARCH_MY_BOOK_ROUTE
 import project.side.ui.LOGIN_ROUTE
 import project.side.ui.MAIN_ROUTE
 import project.side.ui.SETTING_ROUTE
+import androidx.compose.runtime.mutableIntStateOf
 import project.side.domain.model.StoreBookItem
 import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.ui.component.BottomNavBar
+import project.side.ui.component.ReadingStartBottomSheet
 import project.side.ui.util.navigateIfLoggedIn
 
 @Composable
@@ -58,6 +61,18 @@ fun MainScreen(
     val storeBooks by mainViewModel.storeBooks.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val showReadingStartSheet = remember { mutableStateOf(false) }
+    val readingStartMybookId = remember { mutableIntStateOf(-1) }
+
+    ReadingStartBottomSheet(
+        show = showReadingStartSheet.value,
+        onDismiss = { showReadingStartSheet.value = false },
+        onConfirm = {
+            showReadingStartSheet.value = false
+            mainViewModel.startReading(readingStartMybookId.intValue)
+        }
+    )
+
     Scaffold(
         snackbarHost = {
             CustomSnackbarHost(snackbarHostState)
@@ -95,6 +110,10 @@ fun MainScreen(
                         onLoadMore = { mainViewModel.loadMore() },
                         onBookClick = { mybookId ->
                             navController.navigate("BookInfo/$mybookId")
+                        },
+                        onStartReading = { mybookId ->
+                            readingStartMybookId.intValue = mybookId
+                            showReadingStartSheet.value = true
                         },
                         navigateToSetting = {
                             appNavController.navigateIfLoggedIn(isLoggedIn.value) {

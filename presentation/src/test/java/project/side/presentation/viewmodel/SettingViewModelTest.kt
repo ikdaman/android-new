@@ -17,10 +17,14 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import project.side.domain.DataResource
 import project.side.domain.model.LogoutState
+import project.side.domain.model.Member
 import project.side.domain.model.SocialAuthType
 import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
+import project.side.domain.usecase.member.GetMyInfoUseCase
+import project.side.domain.usecase.member.UpdateNicknameUseCase
 import project.side.presentation.model.SettingUIState
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -31,6 +35,12 @@ class SettingViewModelTest {
     @MockK
     private lateinit var getProviderUseCase: GetProviderUseCase
 
+    @MockK
+    private lateinit var getMyInfoUseCase: GetMyInfoUseCase
+
+    @MockK
+    private lateinit var updateNicknameUseCase: UpdateNicknameUseCase
+
     private lateinit var viewModel: SettingViewModel
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -39,7 +49,10 @@ class SettingViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         MockKAnnotations.init(this)
-        viewModel = SettingViewModel()
+        every { getMyInfoUseCase() } returns flowOf(
+            DataResource.Success(Member(nickname = "테스트"))
+        )
+        viewModel = SettingViewModel(getMyInfoUseCase, updateNicknameUseCase)
     }
 
     @After

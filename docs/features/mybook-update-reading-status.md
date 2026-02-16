@@ -49,13 +49,15 @@ UI
 
 ## 화면 이동 플로우
 ```
-BookDetailScreen (예정)
-  └─ 독서 상태 변경 버튼 클릭
-      └─ 상태 선택 (TODO → INPROGRESS → DONE)
-          ├─ INPROGRESS 선택 → 시작일 입력
-          ├─ DONE 선택 → 완료일 입력
-          └─ API 호출
-              ├─ 성공 → BookDetailScreen (갱신된 상태 표시)
-              └─ 실패 → 에러 메시지 표시
+HomeScreen (내 서점)
+  └─ 책 아이템 체크박스 클릭
+      └─ ReadingStartBottomSheet (ModalBottomSheet)
+          ├─ 타이틀: "이 책을 시작할께요."
+          ├─ 독서 시작: 오늘 날짜 (읽기 전용)
+          ├─ 독서 종료: "읽는 중" (읽기 전용)
+          └─ 저장 버튼 클릭
+              → MainViewModel.startReading(mybookId)
+              → PATCH /mybooks/{mybookId}/reading-status (startedDate = 오늘)
+              ├─ 성공 → Sheet 닫기 + 스낵바 "독서를 시작했어요" + 내 서점 새로고침
+              └─ 실패 → 스낵바 에러 메시지
 ```
-※ 현재 API 레이어만 구현됨. UI 연동은 BookDetailScreen 구현 시 추가 예정.

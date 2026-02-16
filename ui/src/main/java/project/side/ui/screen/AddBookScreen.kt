@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import project.side.ui.component.BookRegisterBottomSheet
+import project.side.ui.util.rememberOneClickHandler
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -69,6 +70,7 @@ fun AddBookScreen(
     val showRegister = remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val oneClickHandler = rememberOneClickHandler()
 
     Scaffold(
         snackbarHost = {
@@ -92,7 +94,7 @@ fun AddBookScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(onClick = {
-                        appNavController.popBackStack()
+                        oneClickHandler { appNavController.popBackStack() }
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,

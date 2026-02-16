@@ -22,6 +22,7 @@ import project.side.domain.model.StoreBookItem
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
 import project.side.domain.usecase.mybook.GetStoreBooksUseCase
+import project.side.domain.usecase.mybook.UpdateReadingStatusUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
@@ -33,6 +34,9 @@ class MainViewModelTest {
 
     @MockK
     private lateinit var getStoreBooksUseCase: GetStoreBooksUseCase
+
+    @MockK
+    private lateinit var updateReadingStatusUseCase: UpdateReadingStatusUseCase
 
     private lateinit var viewModel: MainViewModel
 
@@ -71,7 +75,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
 
         // Then
         verify(exactly = 1) { getMyInfoUseCase() }
@@ -87,7 +91,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
 
         // Then
         assertEquals("홍길동", viewModel.nickname.value)
@@ -100,7 +104,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
 
         // Then
         verify(exactly = 0) { getMyInfoUseCase() }
@@ -127,7 +131,7 @@ class MainViewModelTest {
         )
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
         viewModel.refreshStoreBooks()
 
         // Then

@@ -8,6 +8,8 @@ import project.side.data.model.MyBookUpdateEntity
 import project.side.data.model.SaveMyBookEntity
 import project.side.data.model.StoreBookEntity
 import project.side.remote.api.MyBookService
+import project.side.remote.model.mybook.BookInfoRequest
+import project.side.remote.model.mybook.HistoryInfoRequest
 import project.side.remote.model.mybook.MyBookUpdateRequest
 import project.side.remote.model.mybook.ReadingStatusRequest
 import project.side.remote.model.mybook.SaveBookInfoRequest
@@ -94,12 +96,30 @@ class MyBookDataSourceImpl @Inject constructor(
 
     override suspend fun updateMyBook(mybookId: Int, request: MyBookUpdateEntity): DataApiResult<Int> {
         return try {
+            val historyInfo = if (request.startedDate != null || request.finishedDate != null) {
+                HistoryInfoRequest(
+                    startedDate = request.startedDate,
+                    endedDate = request.finishedDate
+                )
+            } else null
+
+            val bookInfo = request.bookInfo?.let {
+                BookInfoRequest(
+                    title = it.title,
+                    author = it.author,
+                    publisher = it.publisher,
+                    publishDate = it.publishDate,
+                    isbn = it.isbn,
+                    totalPage = it.totalPage
+                )
+            }
+
             val response = myBookService.updateMyBook(
                 mybookId,
                 MyBookUpdateRequest(
                     reason = request.reason,
-                    startedDate = request.startedDate,
-                    finishedDate = request.finishedDate
+                    historyInfo = historyInfo,
+                    bookInfo = bookInfo
                 )
             )
             if (response.isSuccessful) {

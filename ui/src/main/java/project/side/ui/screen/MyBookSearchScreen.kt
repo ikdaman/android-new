@@ -51,6 +51,7 @@ import project.side.ui.theme.TagHistory
 import project.side.ui.theme.TagStore
 import project.side.ui.theme.TextGray
 import project.side.ui.theme.Typography
+import project.side.ui.util.rememberOneClickHandler
 
 @Composable
 fun MyBookSearchScreen(
@@ -61,6 +62,7 @@ fun MyBookSearchScreen(
     val searchResults by viewModel.searchResults.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     var searchText by remember { mutableStateOf("") }
+    val oneClickHandler = rememberOneClickHandler()
 
     val listState = rememberLazyListState()
     val shouldLoadMore = remember(searchResults.size) {
@@ -81,7 +83,7 @@ fun MyBookSearchScreen(
         TitleBar(
             title = "내 책 검색",
             showBackButton = true,
-            onBackButtonClicked = onBack
+            onBackButtonClicked = { oneClickHandler { onBack() } }
         )
 
         // Search input
