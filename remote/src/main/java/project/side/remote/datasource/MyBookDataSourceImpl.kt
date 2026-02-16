@@ -103,7 +103,7 @@ class MyBookDataSourceImpl @Inject constructor(
             val historyInfo = if (request.startedDate != null || request.finishedDate != null) {
                 HistoryInfoRequest(
                     startedDate = request.startedDate,
-                    endedDate = request.finishedDate
+                    finishedDate = request.finishedDate
                 )
             } else null
 

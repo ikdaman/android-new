@@ -21,7 +21,7 @@
   "reason": "읽고싶은 이유",
   "historyInfo": {
     "startedDate": "2025-03-01",
-    "endedDate": "2025-04-01"
+    "finishedDate": "2025-04-01"
   },
   "bookInfo": {
     "title": "책제목",
@@ -35,7 +35,7 @@
 ```
 - ALADIN 책: `bookInfo` 필드는 null (수정 불가)
 - CUSTOM 책: `bookInfo` 필드로 책 기본 정보 수정 가능
-- `endedDate`: "읽는 중"인 경우 null
+- `finishedDate`: "읽는 중"인 경우 null
 - **Response Body:**
 ```json
 {
@@ -60,7 +60,7 @@ UI (BookEditBottomSheet)
 | status | String? | 선반 상태 ("STORE" 또는 "HISTORY") |
 | reason | String? | 읽고 싶은 이유 또는 독서 감상 |
 | historyInfo.startedDate | String? | 독서 시작일 (yyyy-MM-dd) |
-| historyInfo.endedDate | String? | 독서 완료일 (yyyy-MM-dd), "읽는 중"이면 null |
+| historyInfo.finishedDate | String? | 독서 완료일 (yyyy-MM-dd), "읽는 중"이면 null |
 | bookInfo.title | String? | 책 제목 (CUSTOM 전용) |
 | bookInfo.author | String? | 작가 (CUSTOM 전용) |
 | bookInfo.publisher | String? | 출판사 (CUSTOM 전용) |

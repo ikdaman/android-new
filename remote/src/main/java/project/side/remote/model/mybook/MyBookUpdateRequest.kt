@@ -11,7 +11,7 @@ data class MyBookUpdateRequest(
 
 data class HistoryInfoRequest(
     val startedDate: String?,
-    val endedDate: String?
+    val finishedDate: String?
 )
 
 data class BookInfoRequest(
