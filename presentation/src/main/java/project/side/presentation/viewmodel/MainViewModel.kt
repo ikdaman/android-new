@@ -111,7 +111,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun startReading(mybookId: Int) {
-        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val today = LocalDate.now().atStartOfDay(java.time.ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))
         viewModelScope.launch {
             updateReadingStatusUseCase(mybookId, startedDate = today).collect { result ->
                 when (result) {

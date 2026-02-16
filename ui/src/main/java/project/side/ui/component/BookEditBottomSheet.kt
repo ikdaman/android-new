@@ -306,8 +306,8 @@ internal fun BookEditBottomSheetContent(
                         BookEditResult(
                             status = statusToSend,
                             reason = reasonToSend,
-                            startedDate = startDate.value.format(dateFormatter),
-                            finishedDate = endDate.value?.format(dateFormatter),
+                            startedDate = startDate.value.atStartOfDay(java.time.ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
+                            finishedDate = endDate.value?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
                             bookInfoTitle = if (isCustom) title.value else null,
                             bookInfoAuthor = if (isCustom) author.value else null,
                             bookInfoPublisher = if (isCustom) publisher.value.ifBlank { null } else null,
