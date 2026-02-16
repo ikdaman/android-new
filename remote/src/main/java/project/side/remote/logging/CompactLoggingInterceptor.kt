@@ -3,6 +3,7 @@ package project.side.remote.logging
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.Buffer
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -17,6 +18,26 @@ class CompactLoggingInterceptor : Interceptor {
         val startNs = System.nanoTime()
 
         Timber.d("→ %s %s", request.method, request.url)
+
+        // 요청 body 로깅
+        val requestBody = request.body
+        if (requestBody != null && requestBody.contentType()?.subtype == "json") {
+            val buffer = Buffer()
+            requestBody.writeTo(buffer)
+            val bodyString = buffer.readUtf8()
+            if (bodyString.length <= MAX_LOG_LENGTH) {
+                Timber.d("   req body: %s", bodyString)
+            } else {
+                var offset = 0
+                var part = 1
+                while (offset < bodyString.length) {
+                    val end = minOf(offset + MAX_LOG_LENGTH, bodyString.length)
+                    Timber.d("   req body[%d]: %s", part, bodyString.substring(offset, end))
+                    offset = end
+                    part++
+                }
+            }
+        }
 
         val response: Response
         try {
