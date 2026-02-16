@@ -106,6 +106,7 @@ fun BookInfoScreen(
                 onConfirm = { result ->
                     showEditSheet = false
                     viewModel.updateMyBook(
+                        status = result.status,
                         reason = result.reason,
                         startedDate = result.startedDate,
                         finishedDate = result.finishedDate,

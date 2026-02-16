@@ -17,6 +17,7 @@
 - **Request Body:**
 ```json
 {
+  "status": "HISTORY",
   "reason": "읽고싶은 이유",
   "historyInfo": {
     "startedDate": "2025-03-01",
@@ -45,8 +46,8 @@
 ## 데이터 흐름
 ```
 UI (BookEditBottomSheet)
-  → BookInfoViewModel.updateMyBook(reason?, startedDate?, finishedDate?, bookInfo...)
-    → UpdateMyBookUseCase(mybookId, reason?, startedDate?, finishedDate?, bookInfo...)
+  → BookInfoViewModel.updateMyBook(status?, reason?, startedDate?, finishedDate?, bookInfo...)
+    → UpdateMyBookUseCase(mybookId, status?, reason?, startedDate?, finishedDate?, bookInfo...)
       → MyBookRepository.updateMyBook(mybookId, MyBookUpdateEntity)
         → MyBookDataSource.updateMyBook(mybookId, MyBookUpdateEntity)
           → MyBookService.updateMyBook(mybookId, MyBookUpdateRequest) [PATCH /mybooks/{id}]
@@ -56,6 +57,7 @@ UI (BookEditBottomSheet)
 ## 수정 가능한 필드
 | 필드 | 타입 | 설명 |
 |------|------|------|
+| status | String? | 선반 상태 ("STORE" 또는 "HISTORY") |
 | reason | String? | 읽고 싶은 이유 또는 독서 감상 |
 | historyInfo.startedDate | String? | 독서 시작일 (yyyy-MM-dd) |
 | historyInfo.endedDate | String? | 독서 완료일 (yyyy-MM-dd), "읽는 중"이면 null |

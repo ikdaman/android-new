@@ -52,6 +52,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 data class BookEditResult(
+    val status: String?,
     val reason: String?,
     val startedDate: String?,
     val finishedDate: String?,
@@ -288,8 +289,10 @@ internal fun BookEditBottomSheetContent(
             Button(
                 onClick = {
                     val reasonToSend = reason.value.takeIf { it.isNotBlank() }
+                    val statusToSend = if (selectedTab.value == 0) "STORE" else "HISTORY"
                     val result = if (selectedTab.value == 0) {
                         BookEditResult(
+                            status = statusToSend,
                             reason = reasonToSend,
                             startedDate = null, finishedDate = null,
                             bookInfoTitle = if (isCustom) title.value else null,
@@ -301,6 +304,7 @@ internal fun BookEditBottomSheetContent(
                         )
                     } else {
                         BookEditResult(
+                            status = statusToSend,
                             reason = reasonToSend,
                             startedDate = startDate.value.format(dateFormatter),
                             finishedDate = endDate.value?.format(dateFormatter),

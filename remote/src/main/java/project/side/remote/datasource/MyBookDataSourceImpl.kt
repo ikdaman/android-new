@@ -117,6 +117,7 @@ class MyBookDataSourceImpl @Inject constructor(
             val response = myBookService.updateMyBook(
                 mybookId,
                 MyBookUpdateRequest(
+                    status = request.status,
                     reason = request.reason,
                     historyInfo = historyInfo,
                     bookInfo = bookInfo

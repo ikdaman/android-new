@@ -3,6 +3,7 @@ package project.side.remote.model.mybook
 import com.squareup.moshi.Json
 
 data class MyBookUpdateRequest(
+    val status: String?,
     val reason: String?,
     val historyInfo: HistoryInfoRequest?,
     val bookInfo: BookInfoRequest?

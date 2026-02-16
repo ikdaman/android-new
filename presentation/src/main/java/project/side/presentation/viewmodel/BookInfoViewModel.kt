@@ -58,6 +58,7 @@ class BookInfoViewModel @Inject constructor(
     }
 
     fun updateMyBook(
+        status: String? = null,
         reason: String? = null,
         startedDate: String? = null,
         finishedDate: String? = null,
@@ -72,6 +73,7 @@ class BookInfoViewModel @Inject constructor(
         viewModelScope.launch {
             updateMyBookUseCase(
                 mybookId = mybookId,
+                status = status,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,
