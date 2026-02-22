@@ -35,7 +35,7 @@ coreSplashscreen = "1.2.0"
 coilCompose = "2.7.0"
 
 camerax = "1.5.3"
-mlkit_barcode = "17.2.0"
+mlkit_barcode = "17.3.0"
 
 uiAndroid = "1.6.6"
 
