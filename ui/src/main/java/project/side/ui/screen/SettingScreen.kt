@@ -51,8 +51,8 @@ import project.side.ui.component.TitleBar
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.Typography
 
-private const val TERMS_URL = "https://ikdaman.notion.site/1cd0fa30e02480a98b4bf9e6e1bdeb37?pvs=4"
-private const val PRIVACY_URL = "https://ikdaman.notion.site/1cd0fa30e0248028b3e4f28f8419f168?pvs=4"
+private const val TERMS_URL = "https://www.notion.so/19f4710961a980499b90cb88b2c2ec0d"
+private const val PRIVACY_URL = "https://www.notion.so/19f4710961a9807f98a8e1617d31b4bd"
 
 @Composable
 fun SettingScreen(

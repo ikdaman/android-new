@@ -81,8 +81,8 @@ private val LoginButtonText = TextStyle(
     color = Color.Black
 )
 
-private const val TERMS_URL = "https://scientific-ferryboat-eb1.notion.site/19f4710961a980499b90cb88b2c2ec0d?source=copy_link"
-private const val PRIVACY_URL = "https://scientific-ferryboat-eb1.notion.site/19f4710961a9807f98a8e1617d31b4bd?source=copy_link"
+private const val TERMS_URL = "https://www.notion.so/19f4710961a980499b90cb88b2c2ec0d"
+private const val PRIVACY_URL = "https://www.notion.so/19f4710961a9807f98a8e1617d31b4bd"
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
