@@ -1,5 +1,6 @@
 package project.side.ui.screen
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -187,17 +189,26 @@ private fun BookInfoContent(
         Text(
             text = detail.bookInfo.title,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 24.dp)
         )
 
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(10.dp))
 
         // 책 타입
         Text(
             text = if (isHistory) "히스토리" else "내 서점",
             style = MaterialTheme.typography.labelMedium,
             color = Color.Gray,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .border(
+                    width = 1.dp,
+                    color = Color.Gray.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 4.dp)
         )
 
         Spacer(Modifier.height(24.dp))
@@ -210,14 +221,14 @@ private fun BookInfoContent(
         ) {
             if (isHistory) {
                 // 히스토리: 시작일, 완독일, 이유
-                InfoRow("독서 시작일", detail.historyInfo.startedDate ?: "-")
+                InfoRow("독서 시작일", detail.historyInfo.startedDate?.take(10) ?: "-")
                 Spacer(Modifier.height(16.dp))
-                InfoRow("완독일", detail.historyInfo.finishedDate ?: "읽는 중")
+                InfoRow("완독일", detail.historyInfo.finishedDate?.take(10) ?: "읽는 중")
                 Spacer(Modifier.height(16.dp))
                 InfoRow("읽고 싶었던 이유", detail.reason ?: "-")
             } else {
                 // 내 서점: 담은 날, 이유
-                InfoRow("내 서점에 담은 날", detail.createdDate)
+                InfoRow("내 서점에 담은 날", detail.createdDate.take(10))
                 Spacer(Modifier.height(16.dp))
                 InfoRow("읽고 싶었던 이유", detail.reason ?: "-")
             }
@@ -252,7 +263,7 @@ private fun BookInfoContent(
             }
             InfoRow("페이지 수", if (detail.bookInfo.totalPage != null) "${detail.bookInfo.totalPage}p" else "-")
             Spacer(Modifier.height(16.dp))
-            InfoRow("출간일", detail.bookInfo.publishDate ?: "-")
+            InfoRow("출간일", detail.bookInfo.publishDate?.take(10) ?: "-")
             Spacer(Modifier.height(16.dp))
             InfoRow("ISBN", detail.bookInfo.isbn ?: "-")
             Spacer(Modifier.height(24.dp))

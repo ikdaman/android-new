@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -80,13 +82,14 @@ fun BookEditBottomSheet(
         containerColor = Color.Transparent,
         shape = RoundedCornerShape(0.dp)
     ) {
-        BookEditBottomSheetContent(detail = detail, onConfirm = onConfirm)
+        BookEditBottomSheetContent(detail = detail, onDismiss = onDismiss, onConfirm = onConfirm)
     }
 }
 
 @Composable
 internal fun BookEditBottomSheetContent(
     detail: MyBookDetail,
+    onDismiss: () -> Unit = {},
     onConfirm: (BookEditResult) -> Unit = {}
 ) {
     val isHistory = detail.shelfType == "HISTORY"
@@ -130,12 +133,24 @@ internal fun BookEditBottomSheetContent(
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                "책 정보 수정",
-                style = MaterialTheme.typography.titleMedium.copy(color = Color.Black),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "책 정보 수정",
+                    style = MaterialTheme.typography.titleMedium.copy(color = Color.Black),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(onClick = onDismiss) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "닫기",
+                        tint = Color.Black
+                    )
+                }
+            }
             Spacer(Modifier.height(32.dp))
 
             // 탭 선택
