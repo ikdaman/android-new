@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,12 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import project.side.domain.model.HistoryBookInfo
@@ -44,8 +44,14 @@ import project.side.presentation.model.HistoryViewType
 import project.side.presentation.viewmodel.HistoryViewModel
 import project.side.ui.R
 import project.side.ui.component.TitleBar
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundGray
+import project.side.ui.theme.DungGeunMoBody
+import project.side.ui.theme.DungGeunMoSubtitle
 import project.side.ui.theme.IkdamanTheme
-import project.side.ui.theme.Typography
+import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.TextWhite
+import project.side.ui.theme.WantedSansBodySmall
 
 @Composable
 fun HistoryScreen(
@@ -78,47 +84,38 @@ fun HistoryScreenUI(
     } else if (uiState.errorMessage != null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = uiState.errorMessage ?: "",
-                    style = Typography.bodyMedium,
-                    color = Color.Gray
-                )
+                Text(text = uiState.errorMessage ?: "", style = DungGeunMoBody, color = Color.Gray)
                 Spacer(modifier = Modifier.height(16.dp))
-                androidx.compose.material3.TextButton(onClick = onRetry) {
-                    Text("다시 시도", style = Typography.labelLarge)
+                TextButton(onClick = onRetry) {
+                    Text("다시 시도", style = DungGeunMoSubtitle)
                 }
             }
         }
     } else {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 20.dp)
+                .fillMaxSize()
+                .background(BackgroundDefault)
         ) {
             TitleBar("히스토리")
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
                     .height(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("최신 순 (${uiState.books.size}권)", style = Typography.bodyMedium.copy(fontSize = 16.sp))
+                Text("최신 순 (${uiState.books.size}권)", style = DungGeunMoSubtitle, color = TextPrimary)
                 Spacer(modifier = Modifier.weight(1f))
                 Image(
                     modifier = Modifier
                         .padding(end = 16.dp)
                         .size(20.dp)
-                        .clickable {
-                            onViewTypeChanged()
-                        },
+                        .clickable { onViewTypeChanged() },
                     painter = painterResource(
-                        if (uiState.viewType == HistoryViewType.DATASET) {
-                            R.drawable.list_view
-                        } else {
-                            R.drawable.dataset_view
-                        }
+                        if (uiState.viewType == HistoryViewType.DATASET) R.drawable.list_view
+                        else R.drawable.dataset_view
                     ),
                     contentDescription = null
                 )
@@ -134,20 +131,18 @@ fun HistoryScreenUI(
             when (uiState.viewType) {
                 HistoryViewType.DATASET -> {
                     val gridState = rememberLazyGridState()
-                    val shouldLoadMoreGrid = remember {
+                    val shouldLoadMore = remember {
                         derivedStateOf {
-                            val lastVisibleItem = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                            val totalItems = gridState.layoutInfo.totalItemsCount
-                            lastVisibleItem >= totalItems - 2 && totalItems > 0
+                            val last = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                            val total = gridState.layoutInfo.totalItemsCount
+                            last >= total - 2 && total > 0
                         }
                     }
-                    LaunchedEffect(shouldLoadMoreGrid.value) {
-                        if (shouldLoadMoreGrid.value) onLoadMore()
-                    }
+                    LaunchedEffect(shouldLoadMore.value) { if (shouldLoadMore.value) onLoadMore() }
                     LazyVerticalGrid(
                         state = gridState,
                         modifier = Modifier
-                            .background(Color(0xFFEDEDED))
+                            .background(BackgroundGray)
                             .padding(12.dp),
                         columns = GridCells.Fixed(3),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -155,27 +150,26 @@ fun HistoryScreenUI(
                     ) {
                         items(uiState.books.size) { index ->
                             val book = uiState.books[index]
-                            HistoryDataSetBookItem(
-                                book = book,
-                                onClick = { onBookClick(book.mybookId) }
-                            )
+                            HistoryDataSetBookItem(book = book, onClick = { onBookClick(book.mybookId) })
                         }
                     }
                 }
-
                 HistoryViewType.LIST -> {
                     val listState = rememberLazyListState()
-                    val shouldLoadMoreList = remember {
+                    val shouldLoadMore = remember {
                         derivedStateOf {
-                            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                            val totalItems = listState.layoutInfo.totalItemsCount
-                            lastVisibleItem >= totalItems - 2 && totalItems > 0
+                            val last = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                            val total = listState.layoutInfo.totalItemsCount
+                            last >= total - 2 && total > 0
                         }
                     }
-                    LaunchedEffect(shouldLoadMoreList.value) {
-                        if (shouldLoadMoreList.value) onLoadMore()
-                    }
-                    LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
+                    LaunchedEffect(shouldLoadMore.value) { if (shouldLoadMore.value) onLoadMore() }
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    ) {
                         item {
                             Row(
                                 modifier = Modifier
@@ -184,44 +178,21 @@ fun HistoryScreenUI(
                                     .background(Color.Black),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    modifier = Modifier.weight(1f),
-                                    text = "START",
-                                    style = Typography.bodyMedium.copy(color = Color.White),
-                                    textAlign = TextAlign.Center
-                                )
-                                Text(
-                                    modifier = Modifier.weight(1f),
-                                    text = "FINISH",
-                                    style = Typography.bodyMedium.copy(color = Color.White),
-                                    textAlign = TextAlign.Center
-                                )
-                                Text(
-                                    modifier = Modifier.weight(2f),
-                                    text = "BOOK NAME",
-                                    style = Typography.bodyMedium.copy(color = Color.White),
-                                    textAlign = TextAlign.Center
-                                )
+                                Text(modifier = Modifier.weight(1f), text = "START", style = DungGeunMoSubtitle, color = TextWhite, textAlign = TextAlign.Center)
+                                Text(modifier = Modifier.weight(1f), text = "FINISH", style = DungGeunMoSubtitle, color = TextWhite, textAlign = TextAlign.Center)
+                                Text(modifier = Modifier.weight(2f), text = "BOOK NAME", style = DungGeunMoSubtitle, color = TextWhite, textAlign = TextAlign.Center)
                             }
                         }
                         items(uiState.books.size) { index ->
                             val book = uiState.books[index]
-                            HistoryListBookItem(
-                                book = book,
-                                onClick = { onBookClick(book.mybookId) }
-                            )
-                            HorizontalDivider(
-                                color = Color.Black,
-                                thickness = 1.dp,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            HistoryListBookItem(book = book, onClick = { onBookClick(book.mybookId) })
+                            HorizontalDivider(color = Color.Black, thickness = 1.dp)
                         }
                     }
                 }
             }
         }
     }
-
 }
 
 @Composable
@@ -233,34 +204,11 @@ fun HistoryListBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}) {
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        VerticalDivider(
-            color = Color.Black,
-            thickness = 1.dp,
-            modifier = Modifier.fillMaxHeight()
-        )
-        Text(
-            modifier = Modifier.weight(1f),
-            text = book.startedDate,
-            style = Typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-        Text(
-            modifier = Modifier.weight(1f),
-            text = book.finishedDate ?: "-",
-            style = Typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-        Text(
-            modifier = Modifier.weight(2f),
-            text = book.title,
-            style = Typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-        VerticalDivider(
-            color = Color.Black,
-            thickness = 1.dp,
-            modifier = Modifier.fillMaxHeight()
-        )
+        VerticalDivider(color = Color.Black, thickness = 1.dp, modifier = Modifier.fillMaxHeight())
+        Text(modifier = Modifier.weight(1f), text = book.startedDate, style = WantedSansBodySmall, color = TextPrimary, textAlign = TextAlign.Center)
+        Text(modifier = Modifier.weight(1f), text = book.finishedDate ?: "-", style = WantedSansBodySmall, color = TextPrimary, textAlign = TextAlign.Center)
+        Text(modifier = Modifier.weight(2f), text = book.title, style = WantedSansBodySmall, color = TextPrimary, textAlign = TextAlign.Center)
+        VerticalDivider(color = Color.Black, thickness = 1.dp, modifier = Modifier.fillMaxHeight())
     }
 }
 
@@ -269,7 +217,7 @@ fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .height(150.dp)
-            .background(Color(0xFFD9D9D9))
+            .background(BackgroundGray)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -285,7 +233,5 @@ fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun HistoryScreenPreview() {
-    IkdamanTheme {
-        HistoryScreenUI()
-    }
+    IkdamanTheme { HistoryScreenUI() }
 }

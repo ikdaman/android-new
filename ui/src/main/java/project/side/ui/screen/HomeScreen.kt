@@ -3,6 +3,8 @@ package project.side.ui.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,17 +25,19 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import project.side.domain.model.StoreBookItem
 import project.side.ui.R
 import project.side.ui.component.HomeBookItem
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundGray
+import project.side.ui.theme.DungGeunMoEtc
+import project.side.ui.theme.DungGeunMoHomeTitle
+import project.side.ui.theme.DungGeunMoSubtitle
 import project.side.ui.theme.IkdamanTheme
-import project.side.ui.theme.Typography
+import project.side.ui.theme.TextPrimary
 
 @Composable
 fun HomeScreen(
@@ -40,11 +46,11 @@ fun HomeScreen(
     onLoadMore: () -> Unit = {},
     onBookClick: (Int) -> Unit = {},
     onStartReading: (Int) -> Unit = {},
+    onDelete: (Int) -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
     navigateToMyBookSearch: () -> Unit = {},
 ) {
-    val totalCount = storeBooks.size
     val listState = rememberLazyListState()
 
     val shouldLoadMore = remember(storeBooks.size) {
@@ -63,105 +69,119 @@ fun HomeScreen(
 
     LazyColumn(
         state = listState,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BackgroundDefault)
+            .padding(horizontal = 16.dp)
     ) {
         item {
-            HomeHeader(nickname, totalCount, navigateToSetting, navigateToSearchBook, navigateToMyBookSearch)
+            HomeHeader(
+                navigateToSetting = navigateToSetting,
+                navigateToSearchBook = navigateToSearchBook
+            )
         }
+
         if (storeBooks.isEmpty()) {
             item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 60.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "아직 담아둔 책이 없어요",
-                        style = Typography.bodyMedium,
-                        color = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "읽고 싶은 책을 추가해보세요",
-                        style = Typography.bodySmall,
-                        color = Color(0xFF1976D2),
-                        modifier = Modifier.clickable { navigateToSearchBook() }
-                    )
-                }
+                // Empty state - no content, just the header with ADD BOOK button
             }
         } else {
+            item {
+                // Sort bar
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { /* toggle sort */ }
+                    ) {
+                        Text(
+                            text = "최신순",
+                            style = DungGeunMoSubtitle,
+                            color = TextPrimary
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "정렬",
+                            tint = TextPrimary,
+                            modifier = Modifier
+                                .padding(start = 2.dp)
+                                .size(14.dp)
+                        )
+                    }
+                }
+            }
+
             items(storeBooks.size) { index ->
                 val book = storeBooks[index]
                 HomeBookItem(
+                    index = storeBooks.size - index,
                     title = book.title,
-                    author = book.author.joinToString(", "),
                     coverImage = book.coverImage,
-                    date = book.createdDate.take(10),
+                    date = book.createdDate.take(10).replace("-", "."),
                     description = book.description,
                     onClick = { onBookClick(book.mybookId) },
-                    onStartReading = { onStartReading(book.mybookId) }
+                    onStartReading = { onStartReading(book.mybookId) },
+                    onDelete = { onDelete(book.mybookId) }
                 )
-                Spacer(modifier = Modifier.height(55.dp))
+                Spacer(modifier = Modifier.height(30.dp))
             }
         }
     }
-
 }
 
 @Composable
-fun HomeHeader(nickname: String = "", totalCount: Int = 0, navigateToSetting: () -> Unit = {}, navigateToBookInfo: () -> Unit = {}, navigateToMyBookSearch: () -> Unit = {}) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Image(
-            modifier = Modifier
-                .padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
-                .size(24.dp)
-                .align(Alignment.End)
-                .clickable { navigateToSetting() },
-            painter = painterResource(R.drawable.settings),
-            contentDescription = null
-        )
-        Text(
-            modifier = Modifier.padding(bottom = 27.dp),
-            text = "오늘 " + "${nickname.ifEmpty { "OO" }}님의\n" + "눈에 꽂힌 책은\n" + "무엇이었나요?",
-            style = Typography.bodyLarge.copy(fontSize = 22.sp)
-        )
-
-        Row(
+private fun HomeHeader(
+    navigateToSetting: () -> Unit = {},
+    navigateToSearchBook: () -> Unit = {}
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // Settings icon
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(42.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xFFF7F6EF))
-                .clickable { navigateToBookInfo() },
-            verticalAlignment = Alignment.CenterVertically
+                .padding(top = 16.dp)
         ) {
-            Image(
-                modifier = Modifier.padding(start = 9.dp, end = 10.dp),
-                painter = painterResource(R.drawable.arrow_right),
-                contentDescription = null
-            )
-            Text(text = "읽고 싶은 책 적어두기", style = Typography.bodyMedium)
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 35.dp, bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(modifier = Modifier.padding(end = 8.dp), text = "최신 순", style = Typography.bodyMedium)
-            Text("(${totalCount}권)", style = Typography.bodySmall)
-            Spacer(modifier = Modifier.weight(1f))
             Image(
                 modifier = Modifier
-                    .size(16.dp)
-                    .clickable { navigateToMyBookSearch() },
-                painter = painterResource(R.drawable.search),
-                contentDescription = "내 책 검색",
+                    .size(24.dp)
+                    .align(Alignment.CenterEnd)
+                    .clickable { navigateToSetting() },
+                painter = painterResource(R.drawable.settings),
+                contentDescription = "설정"
             )
+        }
+
+        // Title
+        Text(
+            text = "지금 떠오르는\n책이 있나요...!\n",
+            style = DungGeunMoHomeTitle,
+            color = TextPrimary,
+            modifier = Modifier.padding(top = 20.dp)
+        )
+
+        // [+] ADD BOOK button
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 40.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(BackgroundGray)
+                    .clickable { navigateToSearchBook() }
+                    .padding(horizontal = 7.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = "[+] ADD BOOK",
+                    style = DungGeunMoEtc,
+                    color = TextPrimary
+                )
+            }
         }
     }
 }

@@ -1,10 +1,10 @@
 package project.side.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,17 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -34,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -53,7 +50,16 @@ import project.side.presentation.model.SearchBookState
 import project.side.presentation.viewmodel.SearchBookViewModel
 import project.side.ui.BARCODE_ROUTE
 import project.side.ui.R
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundWhite
+import project.side.ui.theme.BorderBlack
+import project.side.ui.theme.DungGeunMoBody
+import project.side.ui.theme.DungGeunMoSubtitle
 import project.side.ui.theme.IkdamanTheme
+import project.side.ui.theme.TextHint
+import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.WantedSansBodySmall
+import project.side.ui.theme.WantedSansBookTitle
 import project.side.ui.util.noEffectClick
 import project.side.ui.util.oneClick
 
@@ -70,14 +76,11 @@ fun SearchBookScreen(
 
     LaunchedEffect(searchResult) {
         when (searchResult) {
-            is DomainResult.Success -> {
-                onNavigateToAddBookScreen()
-            }
+            is DomainResult.Success -> onNavigateToAddBookScreen()
             else -> {}
         }
     }
 
-    // Infinite scroll detection
     val listState = rememberLazyListState()
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -91,23 +94,28 @@ fun SearchBookScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BackgroundDefault)
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp),
         ) {
-            // Text Input Fields for Book Search
+            // Search field
             Box(
                 Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Black.copy(alpha = 0.05f))
-                    .height(32.dp),
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .background(BackgroundWhite)
+                    .border(1.dp, BorderBlack),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Row(
-                    modifier = Modifier.align(Alignment.CenterEnd),
+                    modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val keyboardController = LocalSoftwareKeyboardController.current
@@ -116,10 +124,10 @@ fun SearchBookScreen(
                     BasicTextField(
                         value = text,
                         onValueChange = { text = it },
-                        textStyle = MaterialTheme.typography.labelMedium.copy(color = Color.Black),
+                        textStyle = DungGeunMoBody.copy(color = TextPrimary),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = 16.dp),
+                            .padding(start = 10.dp),
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(onSearch = {
                             keyboardController?.hide()
@@ -128,22 +136,22 @@ fun SearchBookScreen(
                         decorationBox = { innerTextField ->
                             if (text.isEmpty()) {
                                 Text(
-                                    "추가하고 싶은 책을 입력해주세요.",
-                                    style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray.copy(alpha = 0.6f))
+                                    "책 제목을 검색해주세요.",
+                                    style = DungGeunMoBody,
+                                    color = TextHint
                                 )
                             }
                             innerTextField()
                         }
                     )
 
-                    // camera icon opens barcode screen
                     Box(modifier = Modifier.oneClick {
                         appNavController?.navigate(BARCODE_ROUTE)
                     }) {
                         Icon(
                             painter = painterResource(R.drawable.camera),
-                            contentDescription = "camera",
-                            tint = Color.Black,
+                            contentDescription = "barcode",
+                            tint = TextPrimary,
                             modifier = Modifier.padding(8.dp)
                         )
                     }
@@ -153,12 +161,14 @@ fun SearchBookScreen(
                         Icon(
                             painter = painterResource(R.drawable.search),
                             contentDescription = "search",
-                            tint = Color.Black,
+                            tint = TextPrimary,
                             modifier = Modifier.padding(8.dp)
                         )
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             when {
                 searchState.isLoading -> {
@@ -181,66 +191,74 @@ fun SearchBookScreen(
                     ) {
                         Text(
                             text = searchState.errorMessage ?: "",
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = DungGeunMoBody,
                             color = Color.Gray
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        TextButton(
-                            onClick = { onNavigateToManualInputScreen() }
-                        ) {
+                        TextButton(onClick = { onNavigateToManualInputScreen() }) {
                             Text(
                                 text = "책 직접 입력하기",
-                                style = MaterialTheme.typography.bodyMedium
+                                style = DungGeunMoSubtitle
                             )
                         }
                     }
                 }
                 searchState.books.isNotEmpty() -> {
-                    // Total count
-                    if (searchState.totalBookCount > 0) {
-                        Text(
-                            text = "총 ${searchState.totalBookCount}건",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray,
-                            modifier = Modifier
-                                .align(Alignment.Start)
-                                .padding(top = 8.dp, bottom = 4.dp)
-                        )
-                    }
-
                     LazyColumn(state = listState) {
                         items(searchState.books, key = { it.isbn.ifBlank { it.title + it.author } }) { book ->
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .height(IntrinsicSize.Max)
-                                    .padding(vertical = 16.dp)
+                                    .height(120.dp)
+                                    .padding(vertical = 10.dp)
                                     .noEffectClick {
                                         viewModel?.searchBookByIsbn(book.isbn)
-                                    }) {
-                                AsyncImage(
-                                    model = book.cover,
-                                    contentDescription = "book cover",
-                                    modifier = Modifier
-                                        .size(94.dp, 130.dp)
-                                        .align(Alignment.CenterVertically),
-                                    placeholder = ColorPainter(Color.Gray),
-                                    error = ColorPainter(Color.Red)
-                                )
-                                Column(Modifier.padding(vertical = 12.dp, horizontal = 16.dp)) {
+                                    }
+                            ) {
+                                // Book cover
+                                Box(
+                                    modifier = Modifier.width(86.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AsyncImage(
+                                        model = book.cover,
+                                        contentDescription = "book cover",
+                                        modifier = Modifier
+                                            .size(84.dp, 100.dp),
+                                        placeholder = ColorPainter(Color.Gray),
+                                        error = ColorPainter(Color.Red)
+                                    )
+                                }
+                                Column(
+                                    Modifier.padding(start = 18.dp, top = 8.dp)
+                                ) {
                                     Text(
                                         book.title,
-                                        style = MaterialTheme.typography.titleMedium,
+                                        style = WantedSansBookTitle,
+                                        color = TextPrimary,
                                         maxLines = 2,
                                         overflow = TextOverflow.Ellipsis
                                     )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(book.author, style = MaterialTheme.typography.labelMedium)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        book.author,
+                                        style = WantedSansBodySmall,
+                                        color = TextPrimary,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        book.publisher,
+                                        style = WantedSansBodySmall,
+                                        color = TextPrimary,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
                                 }
                             }
                         }
 
-                        // Loading more indicator
                         if (searchState.isLoadingMore) {
                             item {
                                 Box(
@@ -272,11 +290,6 @@ fun SearchBookScreenPreview() {
                         title = "책 제목1",
                         link = "https://picsum.photos/200/300",
                         author = "작가 1"
-                    ),
-                    BookItem(
-                        title = "책 제목2",
-                        link = "https://picsum.photos/200/300",
-                        author = "작가 2"
                     ),
                 )
             )

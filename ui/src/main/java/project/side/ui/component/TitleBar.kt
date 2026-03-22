@@ -1,9 +1,9 @@
 package project.side.ui.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,47 +17,79 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import project.side.ui.R
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.DungGeunMoBody
+import project.side.ui.theme.DungGeunMoHeader
 import project.side.ui.theme.IkdamanTheme
-import project.side.ui.theme.Typography
+import project.side.ui.theme.TextPrimary
 
 @Composable
 fun TitleBar(
     title: String = "",
     showBackButton: Boolean = false,
-    onBackButtonClicked: () -> Unit = {}
+    onBackButtonClicked: () -> Unit = {},
+    rightText: String? = null,
+    onRightClick: (() -> Unit)? = null,
+    rightText2: String? = null,
+    onRightClick2: (() -> Unit)? = null
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (showBackButton) {
-                Box(
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable { onBackButtonClicked() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.arrow_left),
-                        contentDescription = null,
-                        modifier = Modifier.height(24.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(BackgroundDefault)
+            .height(58.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Back button (left)
+        if (showBackButton) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .size(30.dp)
+                    .clickable { onBackButtonClicked() },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.arrow_left),
+                    contentDescription = null,
+                    modifier = Modifier.height(24.dp)
+                )
+            }
+        }
+
+        // Title (center)
+        Text(
+            text = title,
+            style = DungGeunMoHeader,
+            color = TextPrimary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.Center)
+        )
+
+        // Right actions
+        if (rightText != null || rightText2 != null) {
+            Row(modifier = Modifier.align(Alignment.CenterEnd)) {
+                if (rightText2 != null) {
+                    Text(
+                        text = rightText2,
+                        style = DungGeunMoBody,
+                        color = TextPrimary,
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .clickable { onRightClick2?.invoke() }
+                    )
+                }
+                if (rightText != null) {
+                    Text(
+                        text = rightText,
+                        style = DungGeunMoBody,
+                        color = TextPrimary,
+                        modifier = Modifier.clickable { onRightClick?.invoke() }
                     )
                 }
             }
-            Text(
-                modifier = Modifier
-                    .padding(end = if (showBackButton) 30.dp else 0.dp)
-                    .weight(1f),
-                text = title,
-                style = Typography.titleSmall.copy(fontSize = 24.sp),
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
@@ -67,5 +99,19 @@ fun TitleBar(
 fun TitleBarPreview() {
     IkdamanTheme {
         TitleBar(title = "내 책 검색", showBackButton = true)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TitleBarWithActionPreview() {
+    IkdamanTheme {
+        TitleBar(
+            title = "책 추가하기",
+            showBackButton = true,
+            onBackButtonClicked = {},
+            rightText = "저장",
+            onRightClick = {}
+        )
     }
 }

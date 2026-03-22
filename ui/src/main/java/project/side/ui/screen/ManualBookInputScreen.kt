@@ -2,7 +2,6 @@ package project.side.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,29 +12,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -48,8 +38,17 @@ import project.side.presentation.viewmodel.ManualInputViewModel
 import project.side.ui.R
 import project.side.ui.component.BookRegisterBottomSheet
 import project.side.ui.component.CustomSnackbarHost
+import project.side.ui.component.TitleBar
 import project.side.ui.MAIN_ROUTE
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundWhite
+import project.side.ui.theme.DungGeunMoSubtitle
+import project.side.ui.theme.DungGeunMoTag
 import project.side.ui.theme.IkdamanTheme
+import project.side.ui.theme.Primary
+import project.side.ui.theme.TextHint
+import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.WantedSansBody
 import project.side.ui.util.rememberOneClickHandler
 
 @Composable
@@ -66,63 +65,38 @@ fun ManualBookInputScreen(
 
     val showRegister = remember { mutableStateOf(false) }
     val oneClickHandler = rememberOneClickHandler()
-
     val scrollState = rememberScrollState()
-
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        snackbarHost = {
-            CustomSnackbarHost(snackbarHostState)
-        }
-    ) {
-        Box(
+        snackbarHost = { CustomSnackbarHost(snackbarHostState) }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
-            contentAlignment = Alignment.Center
+                .padding(innerPadding)
+                .background(BackgroundDefault)
         ) {
+            TitleBar(
+                title = "직접 입력",
+                showBackButton = true,
+                onBackButtonClicked = { oneClickHandler { appNavController.popBackStack() } },
+                rightText = "저장",
+                onRightClick = {
+                    if (title.isNotBlank() && author.isNotBlank()) {
+                        showRegister.value = true
+                    }
+                }
+            )
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .fillMaxWidth()
-                        .height(70.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = {
-                        oneClickHandler { appNavController.popBackStack() }
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = null,
-                        )
-                    }
-                    Text(
-                        "직접 입력",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    val saveEnabled = title.isNotBlank() && author.isNotBlank()
-                    TextButton(
-                        onClick = {
-                            showRegister.value = true
-                        },
-                        enabled = saveEnabled
-                    ) {
-                        Text(
-                            "저장",
-                            color = if (saveEnabled) MaterialTheme.colorScheme.primary else Color.Gray
-                        )
-                    }
-                }
-                Spacer(Modifier.height(16.dp))
-                // observe save events from ViewModel
+                // Save events
                 if (viewModel != null) {
                     LaunchedEffect(Unit) {
                         viewModel.saveEvent.collect { event ->
@@ -143,7 +117,6 @@ fun ManualBookInputScreen(
                     show = showRegister.value,
                     onDismiss = { showRegister.value = false },
                     onConfirm = { reason, startDate, endDate ->
-                        // trigger the actual save with additional data from sheet
                         showRegister.value = false
                         viewModel?.saveManualBookInfoFromUi(
                             title = title,
@@ -159,6 +132,8 @@ fun ManualBookInputScreen(
                     }
                 )
 
+                Spacer(Modifier.height(16.dp))
+
                 Image(
                     painter = painterResource(R.drawable.book_default),
                     contentDescription = "book cover",
@@ -168,109 +143,57 @@ fun ManualBookInputScreen(
                 )
                 Spacer(Modifier.height(16.dp))
 
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    // 제목
-                    Row(modifier = Modifier.padding(bottom = 8.dp), verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            text = "제목",
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            text = "필수",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF1976D2)
-                        )
-                    }
-                    BookInputField(
-                        value = title,
-                        onValueChange = { title = it },
-                        placeholder = "책 제목을 입력하세요"
-                    )
-                    Spacer(Modifier.height(22.dp))
-
-                    // 작가
-                    Row(modifier = Modifier.padding(bottom = 8.dp), verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            text = "작가",
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            text = "필수",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF1976D2)
-                        )
-                    }
-                    BookInputField(
-                        value = author,
-                        onValueChange = { author = it },
-                        placeholder = "작가를 입력하세요"
-                    )
-                    Spacer(Modifier.height(22.dp))
-
-                    // 출판사
-                    Text(
-                        text = "출판사",
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    BookInputField(
-                        value = publisher,
-                        onValueChange = { publisher = it },
-                        placeholder = "출판사를 입력하세요"
-                    )
-                    Spacer(Modifier.height(22.dp))
-
-                    // 출간일
-                    Text(
-                        text = "출간일",
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    BookInputField(
-                        value = pubDate,
-                        onValueChange = { pubDate = it },
-                        placeholder = "YYYY-MM-DD",
-                        keyboardType = KeyboardType.Number
-                    )
-                    Spacer(Modifier.height(22.dp))
-
-                    // ISBN
-                    Text(
-                        text = "ISBN",
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    BookInputField(
-                        value = isbn,
-                        onValueChange = { isbn = it },
-                        placeholder = "ISBN을 입력하세요",
-                        keyboardType = KeyboardType.Number
-                    )
-                    Spacer(Modifier.height(22.dp))
-
-                    // 페이지 수
-                    Text(
-                        text = "페이지 수",
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    BookInputField(
-                        value = pageCount,
-                        onValueChange = { pageCount = it },
-                        placeholder = "페이지 수를 입력하세요",
-                        keyboardType = KeyboardType.Number
-                    )
-                    Spacer(Modifier.height(32.dp))
+                // Input fields
+                InputFieldWithLabel("제목", required = true) {
+                    BookInputField(title, { title = it }, "책 제목을 입력하세요")
                 }
+                Spacer(Modifier.height(20.dp))
+
+                InputFieldWithLabel("작가", required = true) {
+                    BookInputField(author, { author = it }, "작가를 입력하세요")
+                }
+                Spacer(Modifier.height(20.dp))
+
+                InputFieldWithLabel("출판사") {
+                    BookInputField(publisher, { publisher = it }, "출판사를 입력하세요")
+                }
+                Spacer(Modifier.height(20.dp))
+
+                InputFieldWithLabel("출간일") {
+                    BookInputField(pubDate, { pubDate = it }, "YYYY-MM-DD", KeyboardType.Number)
+                }
+                Spacer(Modifier.height(20.dp))
+
+                InputFieldWithLabel("ISBN") {
+                    BookInputField(isbn, { isbn = it }, "ISBN을 입력하세요", KeyboardType.Number)
+                }
+                Spacer(Modifier.height(20.dp))
+
+                InputFieldWithLabel("페이지 수") {
+                    BookInputField(pageCount, { pageCount = it }, "페이지 수를 입력하세요", KeyboardType.Number)
+                }
+                Spacer(Modifier.height(32.dp))
             }
         }
+    }
+}
+
+@Composable
+private fun InputFieldWithLabel(
+    label: String,
+    required: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text(text = label, style = DungGeunMoSubtitle, color = TextPrimary)
+            if (required) {
+                Spacer(Modifier.width(4.dp))
+                Text(text = "필수", style = DungGeunMoTag, color = Primary)
+            }
+        }
+        Spacer(Modifier.height(6.dp))
+        content()
     }
 }
 
@@ -284,21 +207,20 @@ private fun BookInputField(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.Black.copy(alpha = 0.05f))
+            .background(BackgroundWhite)
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         if (value.isEmpty()) {
             Text(
                 text = placeholder,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                style = WantedSansBody,
+                color = TextHint
             )
         }
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
+            textStyle = WantedSansBody.copy(color = TextPrimary),
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             singleLine = true

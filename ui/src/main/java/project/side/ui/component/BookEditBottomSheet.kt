@@ -48,7 +48,15 @@ import androidx.compose.ui.unit.dp
 import project.side.domain.model.MyBookDetail
 import project.side.domain.model.MyBookDetailBookInfo
 import project.side.domain.model.MyBookDetailHistoryInfo
+import project.side.ui.theme.DungGeunMoBody
+import project.side.ui.theme.DungGeunMoPopupTitle
+import project.side.ui.theme.DungGeunMoSubtitle
+import project.side.ui.theme.DungGeunMoTag
 import project.side.ui.theme.IkdamanTheme
+import project.side.ui.theme.TextHint
+import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.WantedSansBody
+import project.side.ui.theme.WantedSansBodySmall
 import project.side.ui.util.noEffectClick
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -139,7 +147,7 @@ internal fun BookEditBottomSheetContent(
             ) {
                 Text(
                     "책 정보 수정",
-                    style = MaterialTheme.typography.titleMedium.copy(color = Color.Black),
+                    style = DungGeunMoPopupTitle,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f)
                 )
@@ -173,9 +181,9 @@ internal fun BookEditBottomSheetContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("내 서점", style = MaterialTheme.typography.labelLarge.copy(color = Color.Black))
+                    Text("내 서점", style = DungGeunMoSubtitle)
                     Spacer(Modifier.height(4.dp))
-                    Text("읽고 싶은 책", style = MaterialTheme.typography.labelSmall.copy(color = Color.Black))
+                    Text("읽고 싶은 책", style = DungGeunMoTag)
                 }
 
                 Column(
@@ -192,9 +200,9 @@ internal fun BookEditBottomSheetContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("히스토리", style = MaterialTheme.typography.labelLarge.copy(color = Color.Black))
+                    Text("히스토리", style = DungGeunMoSubtitle)
                     Spacer(Modifier.height(4.dp))
-                    Text("독서 시작/완료한 책", style = MaterialTheme.typography.labelSmall.copy(color = Color.Black))
+                    Text("독서 시작/완료한 책", style = DungGeunMoTag)
                 }
             }
 
@@ -202,12 +210,12 @@ internal fun BookEditBottomSheetContent(
 
             if (selectedTab.value == 0) {
                 // 내 서점 탭: 읽고 싶은 이유
-                Text("읽고 싶은 이유", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Text("읽고 싶은 이유", style = DungGeunMoSubtitle)
                 Spacer(Modifier.height(8.dp))
                 BasicTextField(
                     value = reason.value,
                     onValueChange = { if (it.length <= 500) reason.value = it },
-                    textStyle = TextStyle(color = Color.Black),
+                    textStyle = WantedSansBody.copy(color = TextPrimary),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp)
@@ -215,10 +223,10 @@ internal fun BookEditBottomSheetContent(
                         .padding(8.dp)
                 )
                 Spacer(Modifier.height(4.dp))
-                Text("${reason.value.length}/500", style = TextStyle(color = Color.Gray))
+                Text("${reason.value.length}/500", style = DungGeunMoTag.copy(color = TextHint))
             } else {
                 // 히스토리 탭: 독서 시작/종료 + 이유
-                Text("독서 시작", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Text("독서 시작", style = DungGeunMoSubtitle)
                 Spacer(Modifier.height(8.dp))
                 DateRow(date = startDate, dateFormatter = dateFormatter) {
                     DatePickerDialog(
@@ -233,7 +241,7 @@ internal fun BookEditBottomSheetContent(
                 }
 
                 Spacer(Modifier.height(32.dp))
-                Text("독서 종료", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Text("독서 종료", style = DungGeunMoSubtitle)
                 Spacer(Modifier.height(8.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -258,19 +266,19 @@ internal fun BookEditBottomSheetContent(
                     Icon(imageVector = Icons.Filled.DateRange, contentDescription = "calendar-end", tint = Color.Black)
                     Spacer(Modifier.width(8.dp))
                     if (endDate.value == null) {
-                        Text("읽는 중", style = MaterialTheme.typography.bodyMedium, color = Color.Black)
+                        Text("읽는 중", style = WantedSansBodySmall, color = Color.Black)
                     } else {
-                        Text(endDate.value!!.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
+                        Text(endDate.value!!.format(dateFormatter), style = WantedSansBodySmall)
                     }
                 }
 
                 Spacer(Modifier.height(32.dp))
-                Text("읽고 싶은 이유", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Text("읽고 싶은 이유", style = DungGeunMoSubtitle)
                 Spacer(Modifier.height(8.dp))
                 BasicTextField(
                     value = reason.value,
                     onValueChange = { if (it.length <= 500) reason.value = it },
-                    textStyle = TextStyle(color = Color.Black),
+                    textStyle = WantedSansBody.copy(color = TextPrimary),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp)
@@ -278,13 +286,13 @@ internal fun BookEditBottomSheetContent(
                         .padding(8.dp)
                 )
                 Spacer(Modifier.height(4.dp))
-                Text("${reason.value.length}/500", style = TextStyle(color = Color.Gray))
+                Text("${reason.value.length}/500", style = DungGeunMoTag.copy(color = TextHint))
             }
 
             // CUSTOM 책: bookInfo 편집 필드
             if (isCustom) {
                 Spacer(Modifier.height(24.dp))
-                Text("책 정보", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Text("책 정보", style = DungGeunMoSubtitle)
                 Spacer(Modifier.height(8.dp))
 
                 EditInputField(label = "제목", value = title.value, onValueChange = { title.value = it })
@@ -336,7 +344,7 @@ internal fun BookEditBottomSheetContent(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black)
             ) {
-                Text("저장", style = MaterialTheme.typography.labelLarge)
+                Text("저장", style = DungGeunMoBody)
             }
         }
     }
@@ -359,7 +367,7 @@ private fun DateRow(
     ) {
         Icon(imageVector = Icons.Filled.DateRange, contentDescription = "calendar", tint = Color.Black)
         Spacer(Modifier.width(8.dp))
-        Text(text = date.value.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
+        Text(text = date.value.format(dateFormatter), style = WantedSansBodySmall)
     }
 }
 
@@ -372,12 +380,12 @@ private fun EditInputField(
     keyboardType: KeyboardType = KeyboardType.Text
 ) {
     Column {
-        Text(label, style = MaterialTheme.typography.labelMedium)
+        Text(label, style = DungGeunMoSubtitle)
         Spacer(Modifier.height(4.dp))
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
+            textStyle = WantedSansBodySmall.copy(color = Color.Black),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
@@ -387,7 +395,7 @@ private fun EditInputField(
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             decorationBox = { innerTextField ->
                 if (value.isEmpty() && placeholder.isNotEmpty()) {
-                    Text(placeholder, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                    Text(placeholder, style = WantedSansBodySmall, color = Color.Gray)
                 }
                 innerTextField()
             }

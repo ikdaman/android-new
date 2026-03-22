@@ -3,9 +3,7 @@ package project.side.ui.screen
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -35,51 +31,20 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.presentation.model.LoginUIState
 import project.side.presentation.viewmodel.LoginViewModel
-import project.side.ui.R
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundWhite
+import project.side.ui.theme.DungGeunMoHomeTitle
 import project.side.ui.theme.IkdamanTheme
-
-private val MainDescText = TextStyle(
-    fontWeight = FontWeight.Bold,
-    fontSize = 24.sp,
-    color = Color.Black,
-    letterSpacing = (-0.4).sp
-)
-
-private val SubDescText = TextStyle(
-    fontWeight = FontWeight.Normal,
-    fontSize = 16.sp,
-    color = Color.Black,
-    letterSpacing = (-0.4).sp
-)
-
-private val TermsRegularText = TextStyle(
-    fontWeight = FontWeight.Normal,
-    fontSize = 14.sp,
-    color = Color.Black,
-    letterSpacing = (-0.32).sp
-)
-
-private val TermsBoldText = TermsRegularText.copy(
-    fontWeight = FontWeight.Bold
-)
-
-private val LoginButtonText = TextStyle(
-    fontWeight = FontWeight.Bold,
-    fontSize = 19.sp,
-    letterSpacing = (-0.4).sp,
-    color = Color.Black
-)
+import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.WantedSansBody
+import project.side.ui.theme.WantedSansBodySmall
 
 private const val TERMS_URL = "https://www.notion.so/19f4710961a980499b90cb88b2c2ec0d"
 private const val PRIVACY_URL = "https://www.notion.so/19f4710961a9807f98a8e1617d31b4bd"
@@ -119,82 +84,92 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.White)
+                .background(BackgroundDefault)
         ) {
             if (uiState is LoginUIState.Loading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
             Column(
                 Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(Modifier.height(111.dp))
-                Image(
-                    painter = painterResource(R.drawable.book),
-                    contentDescription = null,
-                    modifier = Modifier.size(90.dp)
-                )
-                Spacer(Modifier.height(36.dp))
-                Text(
-                    text = "마음가는 대로 읽는 즐거움\n읽다만.",
-                    style = MainDescText,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(Modifier.height(19.dp))
-                Text(
-                    text = "읽다만에 로그인하고\n더 즐거운 독서를 시작해보세요 \u263A\uFE0F",
-                    style = SubDescText,
-                    textAlign = TextAlign.Center
-                )
-                Box(Modifier.weight(1f))
-                Row {
-                    Text(text = "가입 시 ", style = TermsRegularText)
+                // App intro
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 60.dp)
+                        .clip(RoundedCornerShape(0.dp))
+                        .background(BackgroundWhite),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "읽고 싶은 책\n앱 소개",
+                        style = DungGeunMoHomeTitle,
+                        color = TextPrimary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                // Terms
+                Spacer(Modifier.height(20.dp))
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(text = "가입시 ", style = WantedSansBodySmall, color = TextPrimary)
                     TermText("이용약관") {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_URL)))
                     }
-                    Text(text = " 및 ", style = TermsRegularText)
+                    Text(text = " 및 ", style = WantedSansBodySmall, color = TextPrimary)
                     TermText("개인정보처리방침") {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_URL)))
                     }
-                    Text(text = "에 동의하게 됩니다.", style = TermsRegularText)
+                    Text(text = "에 동의하게 됩니다.", style = WantedSansBodySmall, color = TextPrimary)
                 }
+
+                // Social login buttons
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .padding(top = 15.dp)
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 10.dp, bottom = 40.dp)
                 ) {
-                    SocialButton(
-                        text = "구글로 시작하기",
-                        backgroundColor = Color(0xFFFFFFFF),
-                        textColor = Color(0xFF1F1F1F),
-                        borderColor = Color(0xFF747775),
-                        imageResId = R.drawable.google_logo
-                    ) {
+                    LoginButton("구글 로그인") {
                         if (loginUseCase != null) viewModel?.googleLogin(loginUseCase)
                     }
-                    Spacer(Modifier.height(10.dp))
-                    SocialButton(
-                        text = "네이버로 시작하기",
-                        backgroundColor = Color(0xFF03C75A),
-                        textColor = Color(0xFFFFFFFF),
-                        imageResId = R.drawable.naver_logo
-                    ) {
+                    Spacer(Modifier.height(9.dp))
+                    LoginButton("네이버 로그인") {
                         if (loginUseCase != null) viewModel?.naverLogin(loginUseCase)
                     }
-                    Spacer(Modifier.height(10.dp))
-                    SocialButton(
-                        text = "카카오로 시작하기",
-                        backgroundColor = Color(0xFFFEE500),
-                        textColor = Color(0xD9000000),
-                        imageResId = R.drawable.kakao_logo
-                    ) {
+                    Spacer(Modifier.height(9.dp))
+                    LoginButton("카카오 로그인") {
                         if (loginUseCase != null) viewModel?.kakaoLogin(loginUseCase)
                     }
+                    Spacer(Modifier.height(9.dp))
+                    LoginButton("애플 로그인") {
+                        // Apple login - TODO
+                    }
                 }
-                Spacer(Modifier.height(40.dp))
             }
         }
+    }
+}
+
+@Composable
+private fun LoginButton(text: String, onClick: () -> Unit = {}) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color(0xFFD9D9D9))
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = WantedSansBody,
+            color = TextPrimary,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -203,7 +178,7 @@ private fun TermText(text: String, onClick: () -> Unit = {}) {
     Column {
         Text(
             text = text,
-            style = TermsBoldText,
+            style = WantedSansBodySmall.copy(color = TextPrimary),
             modifier = Modifier
                 .drawBehind {
                     val y = size.height + 1.dp.toPx()
@@ -216,40 +191,6 @@ private fun TermText(text: String, onClick: () -> Unit = {}) {
                 }
                 .clickable { onClick() }
         )
-    }
-}
-
-@Composable
-private fun SocialButton(
-    text: String,
-    backgroundColor: Color,
-    textColor: Color,
-    borderColor: Color? = null,
-    imageResId: Int,
-    onClick: () -> Unit = {}
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(backgroundColor)
-            .then(
-                if (borderColor == null) Modifier
-                else Modifier.border(1.dp, borderColor, RoundedCornerShape(10.dp))
-            )
-            .clickable { onClick() }
-            .padding(vertical = 11.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(imageResId),
-            contentDescription = null,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(Modifier.width(10.dp))
-        Text(text = text, style = LoginButtonText.copy(color = textColor))
     }
 }
 

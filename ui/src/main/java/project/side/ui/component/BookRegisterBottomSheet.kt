@@ -44,7 +44,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import project.side.ui.theme.DungGeunMoBody
+import project.side.ui.theme.DungGeunMoPopupTitle
+import project.side.ui.theme.DungGeunMoSubtitle
+import project.side.ui.theme.DungGeunMoTag
 import project.side.ui.theme.IkdamanTheme
+import project.side.ui.theme.TextHint
+import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.WantedSansBody
+import project.side.ui.theme.WantedSansBodySmall
 import project.side.ui.util.noEffectClick
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -110,7 +118,7 @@ private fun RegisterBottomSheetUI(
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 "책 등록",
-                style = MaterialTheme.typography.titleMedium.copy(color = Color.Black),
+                style = DungGeunMoPopupTitle,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -137,12 +145,12 @@ private fun RegisterBottomSheetUI(
                 ) {
                     Text(
                         "내 서점",
-                        style = MaterialTheme.typography.labelLarge.copy(color = Color.Black)
+                        style = DungGeunMoSubtitle
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         "읽고 싶은 책",
-                        style = MaterialTheme.typography.labelSmall.copy(color = Color.Black)
+                        style = DungGeunMoTag
                     )
                 }
 
@@ -162,12 +170,12 @@ private fun RegisterBottomSheetUI(
                 ) {
                     Text(
                         "히스토리",
-                        style = MaterialTheme.typography.labelLarge.copy(color = Color.Black)
+                        style = DungGeunMoSubtitle
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         "독서 시작/완료한 책",
-                        style = MaterialTheme.typography.labelSmall.copy(color = Color.Black)
+                        style = DungGeunMoTag
                     )
                 }
             }
@@ -177,13 +185,13 @@ private fun RegisterBottomSheetUI(
             if (selectedTab.value == 0) {
                 Text(
                     "읽고 싶은 이유",
-                    style = MaterialTheme.typography.titleSmall.copy(color = Color.Black)
+                    style = DungGeunMoSubtitle
                 )
                 Spacer(Modifier.height(8.dp))
                 BasicTextField(
                     value = reason.value,
                     onValueChange = { if (it.length <= 500) reason.value = it },
-                    textStyle = TextStyle(color = Color.Black),
+                    textStyle = WantedSansBody.copy(color = TextPrimary),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp)
@@ -191,9 +199,9 @@ private fun RegisterBottomSheetUI(
                         .padding(8.dp)
                 )
                 Spacer(Modifier.height(4.dp))
-                Text("${reason.value.length}/500", style = TextStyle(color = Color.Gray))
+                Text("${reason.value.length}/500", style = DungGeunMoTag.copy(color = TextHint))
             } else {
-                Text("독서 시작", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Text("독서 시작", style = DungGeunMoSubtitle)
                 Spacer(Modifier.height(8.dp))
                 val cal = Calendar.getInstance()
                 cal.set(
@@ -229,11 +237,11 @@ private fun RegisterBottomSheetUI(
                         tint = Color.Black
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(text = selectedDate.value.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
+                    Text(text = selectedDate.value.format(dateFormatter), style = WantedSansBodySmall)
                 }
 
                 Spacer(Modifier.height(32.dp))
-                Text("독서 종료", style = MaterialTheme.typography.titleSmall.copy(color = Color.Black))
+                Text("독서 종료", style = DungGeunMoSubtitle)
                 Spacer(Modifier.height(8.dp))
                 // end date row (optional). initially null -> show "읽는 중"
                 Row(
@@ -265,9 +273,9 @@ private fun RegisterBottomSheetUI(
                     )
                     Spacer(Modifier.width(8.dp))
                     if (selectedEndDate.value == null) {
-                        Text(text = "읽는 중", style = MaterialTheme.typography.bodyMedium, color = Color.Black)
+                        Text(text = "읽는 중", style = WantedSansBodySmall, color = Color.Black)
                     } else {
-                        Text(text = selectedEndDate.value!!.format(dateFormatter), style = MaterialTheme.typography.bodyMedium)
+                        Text(text = selectedEndDate.value!!.format(dateFormatter), style = WantedSansBodySmall)
                     }
                 }
             }
@@ -291,7 +299,7 @@ private fun RegisterBottomSheetUI(
                     containerColor = Color.LightGray,
                     contentColor = Color.Black,
                 )
-            ) { Text("저장", style = MaterialTheme.typography.labelLarge) }
+            ) { Text("저장", style = DungGeunMoBody) }
         }
     }
 }

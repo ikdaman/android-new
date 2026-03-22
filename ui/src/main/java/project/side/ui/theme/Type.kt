@@ -2,81 +2,129 @@ package project.side.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import project.side.ui.R
 
-// Set of Material typography styles to start with
+val DungGeunMo = FontFamily(
+    Font(R.font.dunggeunmo, FontWeight.Normal)
+)
+
+val WantedSans = FontFamily(
+    Font(R.font.wanted_sans_regular, FontWeight.Normal),
+    Font(R.font.wanted_sans_semibold, FontWeight.SemiBold)
+)
+
+// Figma Typography tokens
+// DungGeunMo styles
+val DungGeunMoHomeTitle = TextStyle(
+    fontFamily = DungGeunMo,
+    fontWeight = FontWeight.Normal,
+    fontSize = 28.sp,
+    lineHeight = 48.sp
+)
+
+val DungGeunMoHeader = TextStyle(
+    fontFamily = DungGeunMo,
+    fontWeight = FontWeight.Normal,
+    fontSize = 22.sp,
+    lineHeight = 18.sp
+)
+
+val DungGeunMoPopupTitle = TextStyle(
+    fontFamily = DungGeunMo,
+    fontWeight = FontWeight.Normal,
+    fontSize = 18.sp
+)
+
+val DungGeunMoBody = TextStyle(
+    fontFamily = DungGeunMo,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp,
+    lineHeight = 16.sp
+)
+
+val DungGeunMoSubtitle = TextStyle(
+    fontFamily = DungGeunMo,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp,
+    lineHeight = 14.sp
+)
+
+val DungGeunMoTag = TextStyle(
+    fontFamily = DungGeunMo,
+    fontWeight = FontWeight.Normal,
+    fontSize = 12.sp,
+    lineHeight = 16.8.sp
+)
+
+val DungGeunMoEtc = TextStyle(
+    fontFamily = DungGeunMo,
+    fontWeight = FontWeight.Normal,
+    fontSize = 20.sp,
+    lineHeight = 20.sp
+)
+
+// Wanted Sans styles
+val WantedSansBookTitle = TextStyle(
+    fontFamily = WantedSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 16.sp,
+    lineHeight = 18.sp
+)
+
+val WantedSansBookTitleLarge = TextStyle(
+    fontFamily = WantedSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 20.sp
+)
+
+val WantedSansSubtitleBold = TextStyle(
+    fontFamily = WantedSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 16.sp,
+    lineHeight = 18.sp
+)
+
+val WantedSansBody = TextStyle(
+    fontFamily = WantedSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp,
+    lineHeight = 22.4.sp
+)
+
+val WantedSansBodySmall = TextStyle(
+    fontFamily = WantedSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp
+)
+
+val WantedSansCaption = TextStyle(
+    fontFamily = WantedSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 10.sp
+)
+
+// Material3 Typography mapping
 val Typography = Typography(
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
+    // DungGeunMo mappings
+    displayLarge = DungGeunMoHomeTitle,
+    headlineLarge = DungGeunMoHeader,
+    headlineMedium = DungGeunMoPopupTitle,
 
-    titleMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 18.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.sp
-    ),
+    // Wanted Sans mappings
+    titleLarge = WantedSansBookTitleLarge,
+    titleMedium = WantedSansBookTitle,
+    titleSmall = WantedSansSubtitleBold,
 
-    titleSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
-        lineHeight = 22.sp,
-        letterSpacing = 0.sp
-    ),
+    bodyLarge = WantedSansBody,
+    bodyMedium = WantedSansBodySmall,
+    bodySmall = WantedSansCaption,
 
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
-
-    bodyMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
-    ),
-
-    bodySmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.4.sp
-    ),
-
-    labelLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 14.sp,
-        lineHeight = 18.sp,
-        letterSpacing = 0.1.sp
-    ),
-
-    labelMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontSize = 13.sp,
-        lineHeight = 15.sp,
-        letterSpacing = 0.5.sp
-    ),
-
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 14.sp,
-        letterSpacing = 0.5.sp
-    )
+    // DungGeunMo for labels (buttons, nav, tags)
+    labelLarge = DungGeunMoBody,
+    labelMedium = DungGeunMoSubtitle,
+    labelSmall = DungGeunMoTag
 )

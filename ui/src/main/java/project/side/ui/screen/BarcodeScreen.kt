@@ -36,10 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.DungGeunMoHeader
+import project.side.ui.theme.TextPrimary
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -133,21 +133,22 @@ private fun BarcodeScreenUI(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.Black)
+                    .background(BackgroundDefault)
                     .statusBarsPadding()
             ) {
                 IconButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterStart)) {
-                    Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
                 }
                 Text(
-                    text = "바코드 스캔하기",
+                    text = "바코드 스캔",
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(vertical = 15.dp),
-                    style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 18.sp, color = Color.White)
+                    style = DungGeunMoHeader,
+                    color = TextPrimary
                 )
                 IconButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterEnd)) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "Back", tint = Color.White)
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = TextPrimary)
                 }
             }
         }

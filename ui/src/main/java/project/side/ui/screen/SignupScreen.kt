@@ -1,20 +1,18 @@
 package project.side.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,13 +23,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import project.side.domain.usecase.SignupUseCase
 import project.side.presentation.model.SignupUIState
 import project.side.presentation.viewmodel.SignupViewModel
+import project.side.ui.component.TitleBar
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundWhite
+import project.side.ui.theme.DungGeunMoHeader
+import project.side.ui.theme.DungGeunMoTag
+import project.side.ui.theme.Primary
+import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.WantedSansBody
 
 @Composable
 fun SignupScreen(
@@ -51,70 +56,72 @@ fun SignupScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .background(Color.White)
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 20.dp)
+                .background(BackgroundDefault)
         ) {
-            Text(
-                "회원가입",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                "사용할 닉네임을 입력해주세요",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 24.dp)
+            TitleBar(
+                title = "책 추가하기",
+                showBackButton = true,
+                onBackButtonClicked = {},
+                rightText = "완료",
+                onRightClick = {
+                    viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
+                }
             )
 
-            OutlinedTextField(
-                value = nickname,
-                onValueChange = { nickname = it },
-                label = { Text("닉네임", style = MaterialTheme.typography.bodyMedium) },
-                singleLine = true,
+            Spacer(modifier = Modifier.height(60.dp))
+
+            // Title
+            Text(
+                text = "닉네임을 입력해주세요.",
+                style = DungGeunMoHeader,
+                color = TextPrimary,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Text(
-                text = "최대 10자/한글영어숫자가능",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 4.dp, top = 4.dp)
-            )
+            Spacer(modifier = Modifier.height(60.dp))
 
-            if (showDuplicateError) {
-                Text(
-                    text = "중복된 닉네임이에요.\n닉네임을 다시 확인해주세요.",
-                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error),
+            // Nickname input
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                TextField(
+                    value = nickname,
+                    onValueChange = { nickname = it },
+                    singleLine = true,
+                    textStyle = WantedSansBody.copy(color = TextPrimary),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = BackgroundWhite,
+                        unfocusedContainerColor = BackgroundWhite,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 4.dp, top = 4.dp)
+                        .height(45.dp)
                 )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname) },
-                enabled = nickname.isNotBlank() && uiState !is SignupUIState.Loading,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("완료", style = MaterialTheme.typography.labelLarge)
+                if (showDuplicateError) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "중복된 닉네임이에요.",
+                        style = DungGeunMoTag,
+                        color = Primary
+                    )
+                    Text(
+                        text = "닉네임을 다시 확인해주세요.",
+                        style = DungGeunMoTag,
+                        color = Primary
+                    )
+                }
             }
         }
 
         LaunchedEffect(uiState) {
             when (val state = uiState) {
-                is SignupUIState.Success -> {
-                    onSignupComplete()
-                }
-                is SignupUIState.Error -> {
-                    snackbarHostState.showSnackbar(state.message)
-                }
+                is SignupUIState.Success -> onSignupComplete()
+                is SignupUIState.Error -> snackbarHostState.showSnackbar(state.message)
                 else -> {}
             }
         }
