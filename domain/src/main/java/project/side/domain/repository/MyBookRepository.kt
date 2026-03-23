@@ -11,7 +11,7 @@ interface MyBookRepository {
     fun getMyBookDetail(mybookId: Int): Flow<DataResource<MyBookDetail>>
     fun deleteMyBook(mybookId: Int): Flow<DataResource<Unit>>
     fun searchMyBooks(query: String, page: Int?, size: Int?): Flow<DataResource<MyBookSearch>>
-    fun getStoreBooks(keyword: String?, page: Int?, size: Int?, direction: String? = null): Flow<DataResource<StoreBook>>
+    fun getStoreBooks(keyword: String?, page: Int?, size: Int?, sort: String? = null): Flow<DataResource<StoreBook>>
     fun updateReadingStatus(mybookId: Int, startedDate: String?, finishedDate: String?): Flow<DataResource<Int>>
     fun updateMyBook(
         mybookId: Int,

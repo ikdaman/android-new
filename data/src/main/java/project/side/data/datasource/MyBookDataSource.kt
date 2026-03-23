@@ -11,7 +11,7 @@ interface MyBookDataSource {
     suspend fun getMyBookDetail(mybookId: Int): DataApiResult<MyBookDetailEntity>
     suspend fun deleteMyBook(mybookId: Int): DataApiResult<Unit>
     suspend fun searchMyBooks(query: String, page: Int?, size: Int?): DataApiResult<MyBookSearchEntity>
-    suspend fun getStoreBooks(keyword: String?, page: Int?, size: Int?, direction: String? = null): DataApiResult<StoreBookEntity>
+    suspend fun getStoreBooks(keyword: String?, page: Int?, size: Int?, sort: String? = null): DataApiResult<StoreBookEntity>
     suspend fun updateReadingStatus(mybookId: Int, startedDate: String?, finishedDate: String?): DataApiResult<Int>
     suspend fun updateMyBook(mybookId: Int, request: MyBookUpdateEntity): DataApiResult<Int>
     suspend fun saveMyBook(request: SaveMyBookEntity): DataApiResult<Int>
