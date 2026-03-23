@@ -35,7 +35,7 @@ interface MyBookService {
         @Query("keyword") keyword: String?,
         @Query("page") page: Int?,
         @Query("size") size: Int?,
-        @Query("sort") sort: String?
+        @Query("direction") direction: String?
     ): Response<StoreBookResponse>
 
     @PATCH("/mybooks/{mybookId}/reading-status")

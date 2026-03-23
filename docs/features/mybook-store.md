@@ -44,7 +44,7 @@
   - `keyword` (String, 선택): 검색 키워드
   - `page` (Int, 선택): 페이지 번호 (0-indexed)
   - `size` (Int, 선택): 페이지 크기 (기본 5)
-  - `sort` (String, 선택): 정렬 기준 (`desc` = 최신순, `createdAt` = 오래된순, 기본 desc)
+  - `direction` (String, 선택): 정렬 방향 (`desc` = 최신순, `asc` = 오래된순, 기본 desc)
 - **Response Body (Spring Page 형식):**
 ```json
 {
@@ -75,10 +75,10 @@
 ```
 HomeScreen
   → MainViewModel.refreshStoreBooks() (LaunchedEffect on composable entry)
-    → GetStoreBooksUseCase(keyword?, page?, size?, sort?)
-      → MyBookRepository.getStoreBooks(keyword, page, size, sort)
-        → MyBookDataSource.getStoreBooks(keyword, page, size, sort)
-          → MyBookService.getStoreBooks(keyword, page, size, sort) [GET /mybooks/store?page=0&size=5&sort=desc]
+    → GetStoreBooksUseCase(keyword?, page?, size?, direction?)
+      → MyBookRepository.getStoreBooks(keyword, page, size, direction)
+        → MyBookDataSource.getStoreBooks(keyword, page, size, direction)
+          → MyBookService.getStoreBooks(keyword, page, size, direction) [GET /mybooks/store?page=0&size=5&direction=desc]
         → StoreBookEntity.toDomain() → StoreBook
     ← Flow<DataResource<StoreBook>> (Loading → Success | Error)
   ← storeBooks: StateFlow<List<StoreBookItem>>
