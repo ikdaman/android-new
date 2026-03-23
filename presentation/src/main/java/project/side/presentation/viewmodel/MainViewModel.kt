@@ -79,7 +79,7 @@ class MainViewModel @Inject constructor(
         if (storeBooksLoading || storeBooksLastPage) return
         storeBooksLoading = true
         fetchJob = viewModelScope.launch {
-            val sort = if (_sortDescending.value) "desc" else "createdDate"
+            val sort = if (_sortDescending.value) "desc" else "createdAt"
             getStoreBooksUseCase(page = storeBooksPage, size = PAGE_SIZE, sort = sort).collect { result ->
                 when (result) {
                     is DataResource.Success -> {

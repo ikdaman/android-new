@@ -44,14 +44,14 @@
   - `keyword` (String, 선택): 검색 키워드
   - `page` (Int, 선택): 페이지 번호 (0-indexed)
   - `size` (Int, 선택): 페이지 크기 (기본 5)
-  - `sort` (String, 선택): 정렬 기준 (`desc` = 최신순, `createdDate` = 오래된순, 기본 desc)
+  - `sort` (String, 선택): 정렬 기준 (`desc` = 최신순, `createdAt` = 오래된순, 기본 desc)
 - **Response Body (Spring Page 형식):**
 ```json
 {
   "content": [
     {
       "mybookId": 1,
-      "createdDate": "2024-01-01",
+      "createdAt": "2024-01-01",
       "bookInfo": {
         "title": "책 제목",
         "author": ["저자"],
