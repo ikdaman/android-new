@@ -36,8 +36,9 @@ class HistoryViewModel @Inject constructor(
         size: Int? = PAGE_SIZE,
         isLoadMore: Boolean = false
     ) {
+        val sort = if (_uiState.value.sortDescending) "createdAt,desc" else "createdAt,asc"
         viewModelScope.launch {
-            getHistoryBooksUseCase(keyword, page, size).collect {
+            getHistoryBooksUseCase(keyword, page, size, sort).collect {
                 when (it) {
                     is DataResource.Success -> {
                         _uiState.value = _uiState.value.copy(
@@ -77,5 +78,12 @@ class HistoryViewModel @Inject constructor(
 
     fun onViewTypeChanged() {
         _uiState.value = _uiState.value.copy(viewType = _uiState.value.viewType.toggle())
+    }
+
+    fun toggleSort() {
+        _uiState.value = _uiState.value.copy(sortDescending = !_uiState.value.sortDescending)
+        currentPage = 0
+        isLastPage = false
+        getBooks()
     }
 }

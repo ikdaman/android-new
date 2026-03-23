@@ -12,10 +12,11 @@ class HistoryDataSourceImpl @Inject constructor(
     override suspend fun getHistoryBooks(
         keyword: String?,
         page: Int?,
-        size: Int?
+        size: Int?,
+        sort: String?
     ): DataApiResult<HistoryBookEntity> {
         return try {
-            val response = historyService.getHistoryBooks(keyword, page, size)
+            val response = historyService.getHistoryBooks(keyword, page, size, sort)
             if (response.isSuccessful) {
                 response.body()?.let {
                     DataApiResult.Success(it.toData())

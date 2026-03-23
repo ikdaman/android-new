@@ -12,7 +12,8 @@ class GetHistoryBooksUseCase @Inject constructor(
     suspend operator fun invoke(
         keyword: String? = null,
         page: Int? = null,
-        size: Int? = null
+        size: Int? = null,
+        sort: String? = null
     ): Flow<DataResource<HistoryBook>> =
-        historyRepository.getHistoryBooks(keyword, page, size)
+        historyRepository.getHistoryBooks(keyword, page, size, sort)
 }

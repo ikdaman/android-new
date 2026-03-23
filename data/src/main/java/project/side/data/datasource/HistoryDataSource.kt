@@ -4,5 +4,5 @@ import project.side.data.model.DataApiResult
 import project.side.data.model.HistoryBookEntity
 
 interface HistoryDataSource {
-    suspend fun getHistoryBooks(keyword: String?, page: Int?, size: Int?): DataApiResult<HistoryBookEntity>
+    suspend fun getHistoryBooks(keyword: String?, page: Int?, size: Int?, sort: String? = null): DataApiResult<HistoryBookEntity>
 }

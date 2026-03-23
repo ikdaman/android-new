@@ -5,5 +5,5 @@ import project.side.domain.DataResource
 import project.side.domain.model.HistoryBook
 
 interface HistoryRepository {
-    suspend fun getHistoryBooks(keyword: String?, page: Int?, size: Int?): Flow<DataResource<HistoryBook>>
+    suspend fun getHistoryBooks(keyword: String?, page: Int?, size: Int?, sort: String? = null): Flow<DataResource<HistoryBook>>
 }

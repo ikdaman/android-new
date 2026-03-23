@@ -5,6 +5,7 @@ import project.side.domain.model.HistoryBookInfo
 data class HistoryBookState(
     val isLoading: Boolean = true,
     val viewType: HistoryViewType = HistoryViewType.LIST,
+    val sortDescending: Boolean = true,
     val totalPages: Int = 1,
     val nowPage: Int = 1,
     val books: List<HistoryBookInfo> = emptyList(),

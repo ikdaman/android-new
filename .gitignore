@@ -17,3 +17,5 @@ key.properties
 release.keystore
 .idea
 .omc
+.claude
+claude-talk-to-figma-mcp

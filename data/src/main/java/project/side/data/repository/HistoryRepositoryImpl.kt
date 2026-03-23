@@ -16,10 +16,11 @@ class HistoryRepositoryImpl @Inject constructor(
     override suspend fun getHistoryBooks(
         keyword: String?,
         page: Int?,
-        size: Int?
+        size: Int?,
+        sort: String?
     ): Flow<DataResource<HistoryBook>> = flow {
         emit(DataResource.Loading())
-        val result = historyDataSource.getHistoryBooks(keyword, page, size)
+        val result = historyDataSource.getHistoryBooks(keyword, page, size, sort)
         if (result is DataApiResult.Success) {
             emit(DataResource.Success(result.data.toDomain()))
         } else if (result is DataApiResult.Error) {
