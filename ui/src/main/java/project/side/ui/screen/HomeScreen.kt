@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import project.side.domain.model.StoreBookItem
 import project.side.ui.R
 import project.side.ui.component.HomeBookItem
+import project.side.ui.component.PixelShadowButton
 import project.side.ui.theme.BackgroundDefault
 import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.DungGeunMoEtc
@@ -43,6 +45,8 @@ import project.side.ui.theme.TextPrimary
 fun HomeScreen(
     nickname: String = "",
     storeBooks: List<StoreBookItem> = emptyList(),
+    sortDescending: Boolean = true,
+    onToggleSort: () -> Unit = {},
     onLoadMore: () -> Unit = {},
     onBookClick: (Int) -> Unit = {},
     onStartReading: (Int) -> Unit = {},
@@ -96,15 +100,15 @@ fun HomeScreen(
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { /* toggle sort */ }
+                        modifier = Modifier.clickable { onToggleSort() }
                     ) {
                         Text(
-                            text = "최신순",
+                            text = if (sortDescending) "최신순" else "오래된순",
                             style = DungGeunMoSubtitle,
                             color = TextPrimary
                         )
                         Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
+                            imageVector = if (sortDescending) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
                             contentDescription = "정렬",
                             tint = TextPrimary,
                             modifier = Modifier
@@ -170,16 +174,15 @@ private fun HomeHeader(
                 .padding(bottom = 40.dp),
             horizontalArrangement = Arrangement.End
         ) {
-            Box(
-                modifier = Modifier
-                    .background(BackgroundGray)
-                    .clickable { navigateToSearchBook() }
-                    .padding(horizontal = 7.dp, vertical = 4.dp)
+            PixelShadowButton(
+                onClick = { navigateToSearchBook() },
+                backgroundColor = BackgroundGray
             ) {
                 Text(
                     text = "[+] ADD BOOK",
                     style = DungGeunMoEtc,
-                    color = TextPrimary
+                    color = TextPrimary,
+                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)
                 )
             }
         }

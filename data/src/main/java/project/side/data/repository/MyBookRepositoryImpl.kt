@@ -46,9 +46,9 @@ class MyBookRepositoryImpl @Inject constructor(
         }
     }.catch { emit(DataResource.Error(it.message ?: "네트워크 오류")) }
 
-    override fun getStoreBooks(keyword: String?, page: Int?, size: Int?) = flow<DataResource<StoreBook>> {
+    override fun getStoreBooks(keyword: String?, page: Int?, size: Int?, sort: String?) = flow<DataResource<StoreBook>> {
         emit(DataResource.Loading())
-        when (val result = myBookDataSource.getStoreBooks(keyword, page, size)) {
+        when (val result = myBookDataSource.getStoreBooks(keyword, page, size, sort)) {
             is DataApiResult.Success -> emit(DataResource.Success(result.data.toDomain()))
             is DataApiResult.Error -> emit(DataResource.Error(result.message))
             is DataApiResult.Loading -> {}

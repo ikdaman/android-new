@@ -34,8 +34,7 @@ class SocialAuthDataSourceImpl @Inject constructor(
 
     override suspend fun naverLogout(): Boolean {
         try {
-            NaverAuth.logout()
-            return true
+            return NaverAuth.unlink()
         } catch (e: Exception) {
             return false
         }
@@ -43,8 +42,7 @@ class SocialAuthDataSourceImpl @Inject constructor(
 
     override suspend fun kakaoLogout(): Boolean {
         try {
-            KakaoAuth.logout()
-            return true
+            return KakaoAuth.unlink()
         } catch (e: Exception) {
             return false
         }

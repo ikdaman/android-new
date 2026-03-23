@@ -64,9 +64,9 @@ class MyBookDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getStoreBooks(keyword: String?, page: Int?, size: Int?): DataApiResult<StoreBookEntity> {
+    override suspend fun getStoreBooks(keyword: String?, page: Int?, size: Int?, sort: String?): DataApiResult<StoreBookEntity> {
         return try {
-            val response = myBookService.getStoreBooks(keyword, page, size)
+            val response = myBookService.getStoreBooks(keyword, page, size, sort)
             if (response.isSuccessful) {
                 response.body()?.let {
                     DataApiResult.Success(it.toData())

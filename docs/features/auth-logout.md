@@ -4,11 +4,11 @@
 서버 로그아웃 및 소셜 SDK 로그아웃을 함께 수행
 
 ## Flow
-1. 사용자가 SettingScreen에서 로그아웃 버튼 클릭
+1. 사용자가 SettingScreen에서 로그아웃 버튼(PixelShadowButton) 클릭
 2. 저장된 provider 정보 조회 (GetProviderUseCase)
 3. provider에 맞는 소셜 로그아웃 타입 결정
-4. 서버 로그아웃 API 호출 (Bearer 토큰 사용)
-5. 서버 로그아웃 성공 시 소셜 SDK 로그아웃 수행
+4. 서버 로그아웃 API 호출 (실패해도 계속 진행)
+5. 소셜 SDK 연동 해제 수행 (네이버: unlink, 카카오: unlink, 구글: clearCredentialState)
 6. 로컬 DataStore의 토큰 및 인증 정보 삭제
 7. UI에 로그아웃 성공 상태 전달
 8. LoginScreen으로 이동
@@ -53,6 +53,7 @@ SettingScreen (로그아웃 버튼 클릭)
 | Error(message) | 로그아웃 실패 |
 
 ## 주의사항
-- 서버 로그아웃이 성공해야 소셜 로그아웃을 진행
-- 소셜 로그아웃 실패 시에도 서버 로그아웃은 이미 완료된 상태
+- 서버 로그아웃이 실패해도 소셜 연동 해제 + 로컬 토큰 삭제는 항상 수행 (서버 토큰은 만료 시 자연 무효화)
+- 소셜 로그아웃은 `logout()`이 아닌 `unlink()`(연동 해제)를 사용하여 재로그인 시 아이디/비밀번호 입력 필요
 - provider 정보가 없는 경우 에러 처리
+- 로그인 API 404 응답(미가입 유저) 시에도 소셜 연동 해제 후 SignupRequired 상태 전달

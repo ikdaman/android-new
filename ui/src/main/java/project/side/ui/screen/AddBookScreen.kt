@@ -38,6 +38,8 @@ import project.side.presentation.viewmodel.SearchBookViewModel
 import project.side.ui.MAIN_ROUTE
 import project.side.ui.component.BookRegisterBottomSheet
 import project.side.ui.component.CustomSnackbarHost
+import project.side.ui.component.PixelShadowBox
+import project.side.ui.component.PixelShadowButton
 import project.side.ui.component.TitleBar
 import project.side.ui.theme.BackgroundDefault
 import project.side.ui.theme.BackgroundWhite
@@ -144,21 +146,21 @@ fun AddBookScreen(
                 if (selectedBookResolved.itemId != 0L) {
                     val context = LocalContext.current
                     val aladinUrl = "https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=${selectedBookResolved.itemId}&partner=openAPI&start=api"
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(46.dp)
-                            .background(BackgroundWhite)
-                            .clickable {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(aladinUrl)))
-                            },
-                        contentAlignment = Alignment.Center
+                    PixelShadowButton(
+                        onClick = {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(aladinUrl)))
+                        },
+                        backgroundColor = BackgroundWhite,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             text = "알라딘에서 더보기",
                             style = WantedSansBody,
                             color = TextPrimary,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp)
                         )
                     }
                 }
@@ -204,16 +206,16 @@ private fun InfoField(label: String, value: String) {
             color = TextPrimary
         )
         Spacer(modifier = Modifier.height(6.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(BackgroundWhite)
-                .padding(horizontal = 20.dp, vertical = 12.dp)
+        PixelShadowBox(
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = BackgroundWhite,
+            contentAlignment = Alignment.CenterStart
         ) {
             Text(
                 text = value,
                 style = WantedSansBody,
-                color = TextPrimary
+                color = TextPrimary,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
             )
         }
     }

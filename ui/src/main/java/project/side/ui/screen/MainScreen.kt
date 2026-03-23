@@ -104,9 +104,12 @@ fun MainScreen(
                     LaunchedEffect(backStackEntry) {
                         mainViewModel.refreshStoreBooks()
                     }
+                    val sortDescending by mainViewModel.sortDescending.collectAsState()
                     HomeScreen(
                         nickname = nickname,
                         storeBooks = storeBooks,
+                        sortDescending = sortDescending,
+                        onToggleSort = { mainViewModel.toggleSort() },
                         onLoadMore = { mainViewModel.loadMore() },
                         onBookClick = { mybookId ->
                             navController.navigate("BookInfo/$mybookId")

@@ -1,5 +1,6 @@
 package project.side.ui
 
+const val SPLASH_ROUTE = "Splash"
 const val MAIN_ROUTE = "Main"
 const val HOME_ROUTE = "Home"
 const val LOGIN_ROUTE = "Login"

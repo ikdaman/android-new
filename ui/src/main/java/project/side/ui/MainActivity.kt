@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import project.side.domain.model.DomainAuthEvent
 import project.side.domain.usecase.GetAuthEventUseCase
+import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.SignupUseCase
 import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LoginUseCase
@@ -21,12 +22,14 @@ import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.viewmodel.SearchBookViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import android.net.Uri
 import project.side.ui.screen.AddBookScreen
 import project.side.ui.screen.BarcodeScreen
 import project.side.ui.screen.LoginScreen
 import project.side.ui.screen.MainScreen
 import project.side.ui.screen.ManualBookInputScreen
 import project.side.ui.screen.SignupScreen
+import project.side.ui.screen.SplashScreen
 import project.side.ui.theme.IkdamanTheme
 import javax.inject.Inject
 
@@ -46,6 +49,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var getAuthEventUseCase: GetAuthEventUseCase
+
+    @Inject
+    lateinit var getLoginStateUseCase: GetLoginStateUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +77,22 @@ class MainActivity : ComponentActivity() {
                         .launchIn(this)
                 }
 
-                NavHost(navController = navController, startDestination = MAIN_ROUTE) {
+                NavHost(navController = navController, startDestination = SPLASH_ROUTE) {
+                    composable(SPLASH_ROUTE) {
+                        SplashScreen(
+                            getLoginStateUseCase = getLoginStateUseCase,
+                            navigateToHome = {
+                                navController.navigate(MAIN_ROUTE) {
+                                    popUpTo(SPLASH_ROUTE) { inclusive = true }
+                                }
+                            },
+                            navigateToLogin = {
+                                navController.navigate(LOGIN_ROUTE) {
+                                    popUpTo(SPLASH_ROUTE) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
                     composable(MAIN_ROUTE) {
                         MainScreen(
                             navController,
@@ -102,7 +123,7 @@ class MainActivity : ComponentActivity() {
                             },
                             navigateToSignup = { socialToken, provider, providerId ->
                                 navController.navigate(
-                                    "Signup/$socialToken/$provider/$providerId"
+                                    "Signup/${Uri.encode(socialToken)}/${Uri.encode(provider)}/${Uri.encode(providerId)}"
                                 )
                             }
                         )

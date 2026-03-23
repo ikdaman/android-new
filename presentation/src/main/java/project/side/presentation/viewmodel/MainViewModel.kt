@@ -46,6 +46,9 @@ class MainViewModel @Inject constructor(
     private val _snackbarEvents = MutableSharedFlow<String>()
     val snackbarEvents = _snackbarEvents.asSharedFlow()
 
+    private val _sortDescending = MutableStateFlow(true)
+    val sortDescending: StateFlow<Boolean> = _sortDescending.asStateFlow()
+
     private var storeBooksPage = 0
     private var storeBooksLastPage = false
     private var storeBooksLoading = false
@@ -76,7 +79,8 @@ class MainViewModel @Inject constructor(
         if (storeBooksLoading || storeBooksLastPage) return
         storeBooksLoading = true
         fetchJob = viewModelScope.launch {
-            getStoreBooksUseCase(page = storeBooksPage, size = PAGE_SIZE).collect { result ->
+            val sort = if (_sortDescending.value) "createdDate,desc" else "createdDate,asc"
+            getStoreBooksUseCase(page = storeBooksPage, size = PAGE_SIZE, sort = sort).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
                         _storeBooks.value = _storeBooks.value + result.data.content
@@ -95,6 +99,11 @@ class MainViewModel @Inject constructor(
 
     fun loadMore() {
         fetchStoreBooks()
+    }
+
+    fun toggleSort() {
+        _sortDescending.value = !_sortDescending.value
+        refreshStoreBooks()
     }
 
     fun refreshStoreBooks() {

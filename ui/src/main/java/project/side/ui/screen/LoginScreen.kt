@@ -143,10 +143,6 @@ fun LoginScreen(
                     LoginButton("카카오 로그인") {
                         if (loginUseCase != null) viewModel?.kakaoLogin(loginUseCase)
                     }
-                    Spacer(Modifier.height(9.dp))
-                    LoginButton("애플 로그인") {
-                        // Apple login - TODO
-                    }
                 }
             }
         }

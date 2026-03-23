@@ -11,14 +11,9 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
 import project.side.remote.BuildConfig
 import project.side.data.model.SocialLoginResult
-import kotlin.coroutines.resume
 
 object GoogleAuth {
     private val signInWithGoogleOption: GetSignInWithGoogleOption =
@@ -28,24 +23,18 @@ object GoogleAuth {
         .addCredentialOption(signInWithGoogleOption)
         .build()
 
-    suspend fun login(context: Context): SocialLoginResult =
-        suspendCancellableCoroutine { continuation ->
-            val credentialManager = CredentialManager.create(context)
-
-            CoroutineScope(Dispatchers.Main).launch {
-                try {
-                    val result = credentialManager.getCredential(context, request)
-                    continuation.resume(handleSignIn(result))
-                } catch (e: GetCredentialException) {
-                    continuation.resume(
-                        SocialLoginResult(
-                            isSuccess = false,
-                            errorMessage = e.message
-                        )
-                    )
-                }
-            }
+    suspend fun login(context: Context): SocialLoginResult {
+        val credentialManager = CredentialManager.create(context)
+        return try {
+            val result = credentialManager.getCredential(context, request)
+            handleSignIn(result)
+        } catch (e: GetCredentialException) {
+            SocialLoginResult(
+                isSuccess = false,
+                errorMessage = e.message
+            )
         }
+    }
 
     suspend fun logout(context: Context) {
         val credentialManager = CredentialManager.create(context)

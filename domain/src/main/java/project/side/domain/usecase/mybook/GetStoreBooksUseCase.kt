@@ -9,6 +9,6 @@ import javax.inject.Inject
 class GetStoreBooksUseCase @Inject constructor(
     private val myBookRepository: MyBookRepository
 ) {
-    operator fun invoke(keyword: String? = null, page: Int? = null, size: Int? = null): Flow<DataResource<StoreBook>> =
-        myBookRepository.getStoreBooks(keyword, page, size)
+    operator fun invoke(keyword: String? = null, page: Int? = null, size: Int? = null, sort: String? = null): Flow<DataResource<StoreBook>> =
+        myBookRepository.getStoreBooks(keyword, page, size, sort)
 }

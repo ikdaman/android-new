@@ -2,11 +2,10 @@
 
 package project.side.ui.component
 
-import android.app.DatePickerDialog
-import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,37 +16,31 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import project.side.domain.model.MyBookDetail
 import project.side.domain.model.MyBookDetailBookInfo
 import project.side.domain.model.MyBookDetailHistoryInfo
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundGray
+import project.side.ui.theme.BackgroundWhite
+import project.side.ui.theme.BorderBlack
 import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoPopupTitle
 import project.side.ui.theme.DungGeunMoSubtitle
@@ -131,243 +124,270 @@ internal fun BookEditBottomSheetContent(
     val isbn = remember { mutableStateOf(detail.bookInfo.isbn ?: "") }
     val totalPage = remember { mutableStateOf(detail.bookInfo.totalPage?.toString() ?: "") }
 
-    val context = LocalContext.current
+    var showStartCalendar by remember { mutableStateOf(false) }
+    var showEndCalendar by remember { mutableStateOf(false) }
 
-    Card(
+    CalendarBottomSheet(
+        show = showStartCalendar,
+        initialDate = startDate.value,
+        onDismiss = { showStartCalendar = false },
+        onDateConfirmed = { date ->
+            startDate.value = date
+            showStartCalendar = false
+        }
+    )
+
+    CalendarBottomSheet(
+        show = showEndCalendar,
+        initialDate = endDate.value ?: LocalDate.now(),
+        onDismiss = { showEndCalendar = false },
+        onDateConfirmed = { date ->
+            endDate.value = date
+            showEndCalendar = false
+        }
+    )
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+            .padding(horizontal = 16.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "책 정보 수정",
-                    style = DungGeunMoPopupTitle,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(onClick = onDismiss) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "닫기",
-                        tint = Color.Black
+        PixelShadowBox(
+            backgroundColor = BackgroundWhite,
+            shadowOffset = 3.dp,
+            contentAlignment = Alignment.TopStart
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // 상단바: 타이틀 바 + X 닫기 버튼
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(28.dp)
+                            .background(BackgroundGray)
+                            .border(1.dp, BorderBlack)
                     )
+                    Box(
+                        modifier = Modifier
+                            .width(29.dp)
+                            .height(28.dp)
+                            .background(BackgroundGray)
+                            .border(1.dp, BorderBlack)
+                            .noEffectClick { onDismiss() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("X", style = DungGeunMoBody, color = TextPrimary)
+                    }
                 }
-            }
-            Spacer(Modifier.height(32.dp))
 
-            // 탭 선택
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                val tabShape = RoundedCornerShape(6.dp)
-                val selectedBg = Color(0xFFEEEEEE)
-                val unselectedBg = Color.White
-
+                // 본문 영역
                 Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .height(64.dp)
-                        .border(width = 1.dp, color = Color.Black, shape = tabShape)
-                        .background(
-                            if (selectedTab.value == 0) selectedBg else unselectedBg,
-                            shape = tabShape
-                        )
-                        .noEffectClick { selectedTab.value = 0 }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text("내 서점", style = DungGeunMoSubtitle)
-                    Spacer(Modifier.height(4.dp))
-                    Text("읽고 싶은 책", style = DungGeunMoTag)
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(64.dp)
-                        .border(width = 1.dp, color = Color.Black, shape = tabShape)
-                        .background(
-                            if (selectedTab.value == 1) selectedBg else unselectedBg,
-                            shape = tabShape
-                        )
-                        .noEffectClick { selectedTab.value = 1 }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text("히스토리", style = DungGeunMoSubtitle)
-                    Spacer(Modifier.height(4.dp))
-                    Text("독서 시작/완료한 책", style = DungGeunMoTag)
-                }
-            }
-
-            Spacer(Modifier.height(32.dp))
-
-            if (selectedTab.value == 0) {
-                // 내 서점 탭: 읽고 싶은 이유
-                Text("읽고 싶은 이유", style = DungGeunMoSubtitle)
-                Spacer(Modifier.height(8.dp))
-                BasicTextField(
-                    value = reason.value,
-                    onValueChange = { if (it.length <= 500) reason.value = it },
-                    textStyle = WantedSansBody.copy(color = TextPrimary),
-                    modifier = Modifier
                         .fillMaxWidth()
-                        .height(120.dp)
-                        .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(8.dp))
-                        .padding(8.dp)
-                )
-                Spacer(Modifier.height(4.dp))
-                Text("${reason.value.length}/500", style = DungGeunMoTag.copy(color = TextHint))
-            } else {
-                // 히스토리 탭: 독서 시작/종료 + 이유
-                Text("독서 시작", style = DungGeunMoSubtitle)
-                Spacer(Modifier.height(8.dp))
-                DateRow(date = startDate, dateFormatter = dateFormatter) {
-                    DatePickerDialog(
-                        context,
-                        { _: DatePicker, y: Int, m: Int, d: Int ->
-                            startDate.value = LocalDate.of(y, m + 1, d)
-                        },
-                        startDate.value.year,
-                        startDate.value.monthValue - 1,
-                        startDate.value.dayOfMonth
-                    ).show()
-                }
+                        .background(BackgroundDefault)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        "책 정보 수정",
+                        style = DungGeunMoPopupTitle,
+                    )
+                    Spacer(Modifier.height(16.dp))
 
-                Spacer(Modifier.height(32.dp))
-                Text("독서 종료", style = DungGeunMoSubtitle)
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .noEffectClick {
-                            val initial = endDate.value ?: LocalDate.now()
-                            DatePickerDialog(
-                                context,
-                                { _: DatePicker, y: Int, m: Int, d: Int ->
-                                    endDate.value = LocalDate.of(y, m + 1, d)
-                                },
-                                initial.year,
-                                initial.monthValue - 1,
-                                initial.dayOfMonth
-                            ).show()
+                    // 탭 선택 (pill 스타일)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        val selectedBg = Color(0xFFE4E4E4)
+                        val unselectedBg = BackgroundGray
+                        PixelShadowButton(
+                            onClick = { selectedTab.value = 0 },
+                            backgroundColor = if (selectedTab.value == 0) selectedBg else unselectedBg,
+                            isSelected = selectedTab.value == 0,
+                        ) {
+                            Text(
+                                "내 서점",
+                                style = DungGeunMoSubtitle,
+                                color = TextPrimary,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                            )
                         }
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.LightGray.copy(alpha = 0.2f))
-                        .padding(8.dp)
-                ) {
-                    Icon(imageVector = Icons.Filled.DateRange, contentDescription = "calendar-end", tint = Color.Black)
-                    Spacer(Modifier.width(8.dp))
-                    if (endDate.value == null) {
-                        Text("읽는 중", style = WantedSansBodySmall, color = Color.Black)
+                        PixelShadowButton(
+                            onClick = { selectedTab.value = 1 },
+                            backgroundColor = if (selectedTab.value == 1) selectedBg else unselectedBg,
+                            isSelected = selectedTab.value == 1,
+                        ) {
+                            Text(
+                                "히스토리",
+                                style = DungGeunMoSubtitle,
+                                color = TextPrimary,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    if (selectedTab.value == 0) {
+                        // 내 서점 탭: 읽고 싶은 이유
+                        Text("*읽고 싶은 책이에요.", style = DungGeunMoSubtitle)
+                        Spacer(Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(188.dp)
+                                .background(BackgroundWhite)
+                                .border(1.dp, BorderBlack)
+                                .padding(8.dp)
+                        ) {
+                            if (reason.value.isEmpty()) {
+                                Text(
+                                    "읽고 싶은 이유를 작성해주세요.",
+                                    style = WantedSansBody,
+                                    color = TextHint
+                                )
+                            }
+                            BasicTextField(
+                                value = reason.value,
+                                onValueChange = { if (it.length <= 400) reason.value = it },
+                                textStyle = WantedSansBody.copy(color = TextPrimary),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text("${reason.value.length}/400", style = DungGeunMoTag.copy(color = TextHint))
                     } else {
-                        Text(endDate.value!!.format(dateFormatter), style = WantedSansBodySmall)
+                        // 히스토리 탭: 독서 시작/종료 + 이유
+                        Text("독서 시작", style = DungGeunMoSubtitle)
+                        Spacer(Modifier.height(8.dp))
+                        PixelShadowButton(
+                            onClick = { showStartCalendar = true },
+                            backgroundColor = BackgroundWhite,
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                startDate.value.format(dateFormatter),
+                                style = DungGeunMoBody,
+                                color = TextPrimary,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+
+                        Spacer(Modifier.height(20.dp))
+                        Text("독서 종료", style = DungGeunMoSubtitle)
+                        Spacer(Modifier.height(8.dp))
+                        PixelShadowButton(
+                            onClick = { showEndCalendar = true },
+                            backgroundColor = BackgroundWhite,
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                endDate.value?.format(dateFormatter) ?: "읽는 중",
+                                style = DungGeunMoBody,
+                                color = if (endDate.value != null) TextPrimary else TextHint,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+
+                        Spacer(Modifier.height(32.dp))
+                        Text("읽고 싶은 이유", style = DungGeunMoSubtitle)
+                        Spacer(Modifier.height(8.dp))
+                        BasicTextField(
+                            value = reason.value,
+                            onValueChange = { if (it.length <= 400) reason.value = it },
+                            textStyle = WantedSansBody.copy(color = TextPrimary),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
+                                .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(8.dp))
+                                .padding(8.dp)
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text("${reason.value.length}/400", style = DungGeunMoTag.copy(color = TextHint))
+                    }
+
+                    // CUSTOM 책: bookInfo 편집 필드
+                    if (isCustom) {
+                        Spacer(Modifier.height(24.dp))
+                        Text("책 정보", style = DungGeunMoSubtitle)
+                        Spacer(Modifier.height(8.dp))
+
+                        EditInputField(label = "제목", value = title.value, onValueChange = { title.value = it })
+                        Spacer(Modifier.height(12.dp))
+                        EditInputField(label = "작가", value = author.value, onValueChange = { author.value = it })
+                        Spacer(Modifier.height(12.dp))
+                        EditInputField(label = "출판사", value = publisher.value, onValueChange = { publisher.value = it })
+                        Spacer(Modifier.height(12.dp))
+                        EditInputField(label = "출간일", value = publishDate.value, onValueChange = { publishDate.value = it }, placeholder = "YYYY-MM-DD")
+                        Spacer(Modifier.height(12.dp))
+                        EditInputField(label = "ISBN", value = isbn.value, onValueChange = { isbn.value = it }, keyboardType = KeyboardType.Number)
+                        Spacer(Modifier.height(12.dp))
+                        EditInputField(label = "페이지 수", value = totalPage.value, onValueChange = { totalPage.value = it }, keyboardType = KeyboardType.Number)
+                    }
+
+                    Spacer(Modifier.height(32.dp))
+
+                    // NO / YES 버튼
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        PixelShadowButton(
+                            onClick = { onDismiss() },
+                            backgroundColor = BackgroundGray,
+                        ) {
+                            Text(
+                                "NO",
+                                style = DungGeunMoBody,
+                                color = TextPrimary,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                            )
+                        }
+                        Spacer(Modifier.width(50.dp))
+                        PixelShadowButton(
+                            onClick = {
+                                val reasonToSend = reason.value.takeIf { it.isNotBlank() }
+                                val statusToSend = if (selectedTab.value == 0) "STORE" else "HISTORY"
+                                val result = if (selectedTab.value == 0) {
+                                    BookEditResult(
+                                        status = statusToSend,
+                                        reason = reasonToSend,
+                                        startedDate = null, finishedDate = null,
+                                        bookInfoTitle = title.value,
+                                        bookInfoAuthor = author.value,
+                                        bookInfoPublisher = publisher.value.ifBlank { null },
+                                        bookInfoPublishDate = publishDate.value.ifBlank { null },
+                                        bookInfoIsbn = isbn.value.ifBlank { null },
+                                        bookInfoTotalPage = totalPage.value.toIntOrNull()
+                                    )
+                                } else {
+                                    BookEditResult(
+                                        status = statusToSend,
+                                        reason = reasonToSend,
+                                        startedDate = startDate.value.atStartOfDay(java.time.ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
+                                        finishedDate = endDate.value?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
+                                        bookInfoTitle = title.value,
+                                        bookInfoAuthor = author.value,
+                                        bookInfoPublisher = publisher.value.ifBlank { null },
+                                        bookInfoPublishDate = publishDate.value.ifBlank { null },
+                                        bookInfoIsbn = isbn.value.ifBlank { null },
+                                        bookInfoTotalPage = totalPage.value.toIntOrNull()
+                                    )
+                                }
+                                onConfirm(result)
+                            },
+                            backgroundColor = BackgroundGray,
+                        ) {
+                            Text(
+                                "YES",
+                                style = DungGeunMoBody,
+                                color = TextPrimary,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                            )
+                        }
                     }
                 }
-
-                Spacer(Modifier.height(32.dp))
-                Text("읽고 싶은 이유", style = DungGeunMoSubtitle)
-                Spacer(Modifier.height(8.dp))
-                BasicTextField(
-                    value = reason.value,
-                    onValueChange = { if (it.length <= 500) reason.value = it },
-                    textStyle = WantedSansBody.copy(color = TextPrimary),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(8.dp))
-                        .padding(8.dp)
-                )
-                Spacer(Modifier.height(4.dp))
-                Text("${reason.value.length}/500", style = DungGeunMoTag.copy(color = TextHint))
-            }
-
-            // CUSTOM 책: bookInfo 편집 필드
-            if (isCustom) {
-                Spacer(Modifier.height(24.dp))
-                Text("책 정보", style = DungGeunMoSubtitle)
-                Spacer(Modifier.height(8.dp))
-
-                EditInputField(label = "제목", value = title.value, onValueChange = { title.value = it })
-                Spacer(Modifier.height(12.dp))
-                EditInputField(label = "작가", value = author.value, onValueChange = { author.value = it })
-                Spacer(Modifier.height(12.dp))
-                EditInputField(label = "출판사", value = publisher.value, onValueChange = { publisher.value = it })
-                Spacer(Modifier.height(12.dp))
-                EditInputField(label = "출간일", value = publishDate.value, onValueChange = { publishDate.value = it }, placeholder = "YYYY-MM-DD")
-                Spacer(Modifier.height(12.dp))
-                EditInputField(label = "ISBN", value = isbn.value, onValueChange = { isbn.value = it }, keyboardType = KeyboardType.Number)
-                Spacer(Modifier.height(12.dp))
-                EditInputField(label = "페이지 수", value = totalPage.value, onValueChange = { totalPage.value = it }, keyboardType = KeyboardType.Number)
-            }
-
-            Spacer(Modifier.height(32.dp))
-            Button(
-                onClick = {
-                    val reasonToSend = reason.value.takeIf { it.isNotBlank() }
-                    val statusToSend = if (selectedTab.value == 0) "STORE" else "HISTORY"
-                    val result = if (selectedTab.value == 0) {
-                        BookEditResult(
-                            status = statusToSend,
-                            reason = reasonToSend,
-                            startedDate = null, finishedDate = null,
-                            bookInfoTitle = title.value,
-                            bookInfoAuthor = author.value,
-                            bookInfoPublisher = publisher.value.ifBlank { null },
-                            bookInfoPublishDate = publishDate.value.ifBlank { null },
-                            bookInfoIsbn = isbn.value.ifBlank { null },
-                            bookInfoTotalPage = totalPage.value.toIntOrNull()
-                        )
-                    } else {
-                        BookEditResult(
-                            status = statusToSend,
-                            reason = reasonToSend,
-                            startedDate = startDate.value.atStartOfDay(java.time.ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
-                            finishedDate = endDate.value?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
-                            bookInfoTitle = title.value,
-                            bookInfoAuthor = author.value,
-                            bookInfoPublisher = publisher.value.ifBlank { null },
-                            bookInfoPublishDate = publishDate.value.ifBlank { null },
-                            bookInfoIsbn = isbn.value.ifBlank { null },
-                            bookInfoTotalPage = totalPage.value.toIntOrNull()
-                        )
-                    }
-                    onConfirm(result)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Black)
-            ) {
-                Text("저장", style = DungGeunMoBody)
             }
         }
-    }
-}
-
-@Composable
-private fun DateRow(
-    date: MutableState<LocalDate>,
-    dateFormatter: DateTimeFormatter,
-    onClick: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .noEffectClick { onClick() }
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.LightGray.copy(alpha = 0.5f))
-            .padding(8.dp)
-    ) {
-        Icon(imageVector = Icons.Filled.DateRange, contentDescription = "calendar", tint = Color.Black)
-        Spacer(Modifier.width(8.dp))
-        Text(text = date.value.format(dateFormatter), style = WantedSansBodySmall)
     }
 }
 

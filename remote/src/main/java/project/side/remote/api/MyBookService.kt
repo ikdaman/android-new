@@ -34,7 +34,8 @@ interface MyBookService {
     suspend fun getStoreBooks(
         @Query("keyword") keyword: String?,
         @Query("page") page: Int?,
-        @Query("size") size: Int?
+        @Query("size") size: Int?,
+        @Query("sort") sort: String?
     ): Response<StoreBookResponse>
 
     @PATCH("/mybooks/{mybookId}/reading-status")

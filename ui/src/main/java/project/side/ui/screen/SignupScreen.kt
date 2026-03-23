@@ -62,7 +62,7 @@ fun SignupScreen(
                 .background(BackgroundDefault)
         ) {
             TitleBar(
-                title = "책 추가하기",
+                title = "닉네임 입력",
                 showBackButton = true,
                 onBackButtonClicked = {},
                 rightText = "완료",
@@ -99,7 +99,6 @@ fun SignupScreen(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(45.dp)
                 )
 
                 if (showDuplicateError) {

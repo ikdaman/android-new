@@ -47,11 +47,17 @@ UI (LoginViewModel)
 
 ## 화면 이동 플로우
 ```
+SplashScreen (앱 시작)
+  ├─ 로그인 상태 확인 (GetLoginStateUseCase)
+  │   ├─ 로그인됨 → MainScreen (popUpTo Splash inclusive)
+  │   └─ 로그인 안됨 → LoginScreen (popUpTo Splash inclusive)
+
 LoginScreen
   ├─ 로그인 성공 (LoginState.Success)
   │   └─ → MainScreen (popUpTo LoginScreen inclusive)
   ├─ 신규 사용자 (LoginState.SignupRequired, HTTP 404)
-  │   └─ → SignupScreen (socialToken/provider/providerId 전달)
+  │   ├─ 소셜 연동 해제 수행
+  │   └─ → SignupScreen (socialToken/provider/providerId URL 인코딩하여 전달)
   └─ 로그인 실패 (LoginState.Error)
       └─ → LoginScreen (Snackbar 에러 메시지 표시)
 

@@ -42,108 +42,113 @@ fun HomeBookItem(
     onStartReading: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
-    Column(
+    PixelShadowBox(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onClick() },
+        backgroundColor = BackgroundWhite,
+        showBorder = false,
+        contentAlignment = Alignment.TopStart
     ) {
-        // Top bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(30.dp)
-                .background(BackgroundGray)
-                .border(1.dp, BorderBlack)
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "NO.${index} ($date)",
-                style = DungGeunMoSubtitle,
-                color = TextPrimary
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "독서 시작",
-                style = DungGeunMoSubtitle,
-                color = TextPrimary,
-                modifier = Modifier.clickable { onStartReading() }
-            )
-            Text(
-                text = " ㅣ ",
-                style = DungGeunMoSubtitle,
-                color = TextPrimary
-            )
-            Text(
-                text = "삭제",
-                style = DungGeunMoSubtitle,
-                color = TextPrimary,
-                modifier = Modifier.clickable { onDelete() }
-            )
-        }
-
-        // Content
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(BackgroundWhite)
-                .padding(top = 25.dp, bottom = 25.dp)
-        ) {
-            // Book cover
-            Box(
-                modifier = Modifier.width(110.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (coverImage != null) {
-                    AsyncImage(
-                        model = coverImage,
-                        contentDescription = title,
-                        modifier = Modifier
-                            .width(81.dp)
-                            .height(114.dp)
-                            .border(1.dp, BorderBlack),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .width(81.dp)
-                            .height(114.dp)
-                            .background(Color.LightGray)
-                            .border(1.dp, BorderBlack)
-                    )
-                }
-            }
-
-            // Book info
-            Column(
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // Top bar
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 10.dp)
+                    .fillMaxWidth()
+                    .height(30.dp)
+                    .background(BackgroundGray)
+                    .border(1.dp, BorderBlack)
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = title,
-                    style = WantedSansBookTitle,
-                    color = TextPrimary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    text = "NO.${index} ($date)",
+                    style = DungGeunMoSubtitle,
+                    color = TextPrimary
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                if (!description.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "독서 시작",
+                    style = DungGeunMoSubtitle,
+                    color = TextPrimary,
+                    modifier = Modifier.clickable { onStartReading() }
+                )
+                Text(
+                    text = " ㅣ ",
+                    style = DungGeunMoSubtitle,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "삭제",
+                    style = DungGeunMoSubtitle,
+                    color = TextPrimary,
+                    modifier = Modifier.clickable { onDelete() }
+                )
+            }
+
+            // Content
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(BackgroundWhite)
+                    .padding(top = 25.dp, bottom = 25.dp)
+            ) {
+                // Book cover
+                Box(
+                    modifier = Modifier.width(110.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (coverImage != null) {
+                        AsyncImage(
+                            model = coverImage,
+                            contentDescription = title,
+                            modifier = Modifier
+                                .width(81.dp)
+                                .height(114.dp)
+                                .border(1.dp, BorderBlack),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .width(81.dp)
+                                .height(114.dp)
+                                .background(Color.LightGray)
+                                .border(1.dp, BorderBlack)
+                        )
+                    }
+                }
+
+                // Book info
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 10.dp)
+                ) {
                     Text(
-                        text = description,
-                        style = WantedSansBodySmall,
+                        text = title,
+                        style = WantedSansBookTitle,
                         color = TextPrimary,
-                        maxLines = 3,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                } else {
-                    Text(
-                        text = "이 책을 읽고 싶은 이유는 무엇인가요?",
-                        style = WantedSansBodySmall,
-                        color = TextPrimary.copy(alpha = 0.6f),
-                        maxLines = 1
-                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    if (!description.isNullOrEmpty()) {
+                        Text(
+                            text = description,
+                            style = WantedSansBodySmall,
+                            color = TextPrimary,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        Text(
+                            text = "이 책을 읽고 싶은 이유는 무엇인가요?",
+                            style = WantedSansBodySmall,
+                            color = TextPrimary.copy(alpha = 0.6f),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }

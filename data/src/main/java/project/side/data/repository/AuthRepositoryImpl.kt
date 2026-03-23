@@ -20,19 +20,19 @@ class AuthRepositoryImpl @Inject constructor(
     override fun googleLogin() = flow {
         emit(LoginState.Loading)
         val socialResult = socialAuthDataSource.googleLogin()
-        processLogin(socialResult)
+        processLogin(socialResult, socialAuthDataSource::googleLogout)
     }
 
     override fun naverLogin() = flow {
         emit(LoginState.Loading)
         val socialResult = socialAuthDataSource.naverLogin()
-        processLogin(socialResult)
+        processLogin(socialResult, socialAuthDataSource::naverLogout)
     }
 
     override fun kakaoLogin() = flow {
         emit(LoginState.Loading)
         val socialResult = socialAuthDataSource.kakaoLogin()
-        processLogin(socialResult)
+        processLogin(socialResult, socialAuthDataSource::kakaoLogout)
     }
 
     override fun googleLogout() = flow {
@@ -49,18 +49,10 @@ class AuthRepositoryImpl @Inject constructor(
 
     private suspend fun FlowCollector<LogoutState>.processLogout(logout: suspend () -> Boolean) {
         emit(LogoutState.Loading)
-        val result = authDataSource.logout()
-        if (result is DataApiResult.Success) {
-            val socialResult = logout()
-            if (socialResult) {
-                authDataStoreSource.clear()
-                emit(LogoutState.Success)
-            } else {
-                emit(LogoutState.Error("로그아웃 실패"))
-            }
-        } else {
-            emit(LogoutState.Error("로그아웃 실패"))
-        }
+        authDataSource.logout()
+        logout()
+        authDataStoreSource.clear()
+        emit(LogoutState.Success)
     }
 
     override fun signup(
@@ -90,7 +82,8 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     private suspend fun FlowCollector<LoginState>.processLogin(
-        socialResult: SocialLoginResult
+        socialResult: SocialLoginResult,
+        socialLogout: suspend () -> Boolean
     ) {
         if (socialResult.isSuccess) {
             val provider = socialResult.provider
@@ -117,6 +110,7 @@ class AuthRepositoryImpl @Inject constructor(
                 )
                 emit(LoginState.Success)
             } else if (loginResult is DataApiResult.Error && loginResult.code == 404) {
+                socialLogout()
                 emit(LoginState.SignupRequired(accessToken, provider, providerId))
             } else {
                 emit(LoginState.Error("로그인 실패"))

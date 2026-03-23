@@ -17,10 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,8 +42,12 @@ import project.side.domain.model.MyBookDetailBookInfo
 import project.side.domain.model.MyBookDetailHistoryInfo
 import project.side.presentation.viewmodel.BookInfoUiState
 import project.side.presentation.viewmodel.BookInfoViewModel
+import androidx.compose.ui.window.Dialog
 import project.side.ui.component.BookEditBottomSheet
+import project.side.ui.component.PixelShadowBox
+import project.side.ui.component.PixelShadowButton
 import project.side.ui.component.TitleBar
+import project.side.ui.util.noEffectClick
 import project.side.ui.theme.BackgroundDefault
 import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BackgroundWhite
@@ -78,22 +81,80 @@ fun BookInfoScreen(
     }
 
     if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("책 삭제", style = DungGeunMoPopupTitle, color = TextPrimary) },
-            text = { Text("책을 삭제하면 모든 기록이 사라져요.\n삭제하시겠어요?", style = WantedSansBody, color = TextPrimary) },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDeleteDialog = false
-                    viewModel.deleteBook()
-                }) { Text("삭제", color = Primary) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("취소", color = TextPrimary)
+        Dialog(onDismissRequest = { showDeleteDialog = false }) {
+            PixelShadowBox(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = BackgroundWhite,
+                shadowOffset = 3.dp,
+                contentAlignment = Alignment.TopStart
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(28.dp)
+                                .background(BackgroundGray)
+                                .border(1.dp, BorderBlack)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(29.dp)
+                                .height(28.dp)
+                                .background(BackgroundGray)
+                                .border(1.dp, BorderBlack)
+                                .noEffectClick { showDeleteDialog = false },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("X", style = DungGeunMoBody, color = TextPrimary)
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(BackgroundDefault)
+                            .padding(20.dp)
+                    ) {
+                        Text("책 삭제", style = DungGeunMoPopupTitle, color = TextPrimary)
+                        Spacer(Modifier.height(20.dp))
+                        Text(
+                            "책을 삭제하면 모든 기록이 사라져요.\n정말로 삭제하시겠어요?",
+                            style = WantedSansBody,
+                            color = TextPrimary
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            PixelShadowButton(
+                                onClick = { showDeleteDialog = false },
+                                backgroundColor = BackgroundGray
+                            ) {
+                                Text(
+                                    "NO", style = DungGeunMoBody, color = TextPrimary,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(50.dp))
+                            PixelShadowButton(
+                                onClick = {
+                                    showDeleteDialog = false
+                                    viewModel.deleteBook()
+                                },
+                                backgroundColor = BackgroundGray
+                            ) {
+                                Text(
+                                    "YES", style = DungGeunMoBody, color = TextPrimary,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
-        )
+        }
     }
 
     when (val state = uiState) {

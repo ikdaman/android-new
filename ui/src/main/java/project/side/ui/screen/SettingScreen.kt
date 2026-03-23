@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,15 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,8 +33,11 @@ import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.model.SettingUIState
 import project.side.presentation.viewmodel.SettingViewModel
+import project.side.ui.component.PixelShadowBox
+import project.side.ui.component.PixelShadowButton
 import project.side.ui.component.TitleBar
 import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BackgroundWhite
 import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoHomeTitle
@@ -115,9 +112,10 @@ fun SettingScreen(
 
             // Nickname field
             if (isEditing) {
-                Row(
+                PixelShadowBox(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    backgroundColor = BackgroundWhite,
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     BasicTextField(
                         value = editText,
@@ -127,55 +125,83 @@ fun SettingScreen(
                         },
                         textStyle = WantedSansBody.copy(color = TextPrimary),
                         modifier = Modifier
-                            .weight(1f)
-                            .height(45.dp)
-                            .background(BackgroundWhite)
+                            .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         singleLine = true
                     )
-                    IconButton(onClick = { viewModel.updateNickname(editText) }) {
-                        Icon(imageVector = Icons.Default.Check, contentDescription = "저장", modifier = Modifier.size(20.dp), tint = TextPrimary)
+                }
+
+                if (nicknameError != null) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = nicknameError ?: "",
+                        color = Primary,
+                        style = DungGeunMoTag
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PixelShadowButton(
+                        onClick = {
+                            viewModel.cancelEditingNickname()
+                            editText = nickname
+                        },
+                        backgroundColor = BackgroundGray
+                    ) {
+                        Text(
+                            "취소",
+                            style = DungGeunMoBody,
+                            color = TextPrimary,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        )
                     }
-                    IconButton(onClick = {
-                        viewModel.cancelEditingNickname()
-                        editText = nickname
-                    }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "취소", modifier = Modifier.size(20.dp), tint = TextPrimary)
+                    Spacer(modifier = Modifier.width(10.dp))
+                    PixelShadowButton(
+                        onClick = { viewModel.updateNickname(editText) },
+                        backgroundColor = Primary
+                    ) {
+                        Text(
+                            "저장",
+                            style = DungGeunMoBody,
+                            color = TextWhite,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        )
                     }
                 }
             } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(45.dp)
-                        .background(BackgroundWhite)
-                        .clickable {
-                            editText = nickname
-                            viewModel.startEditingNickname()
-                        }
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                PixelShadowButton(
+                    onClick = {
+                        editText = nickname
+                        viewModel.startEditingNickname()
+                    },
+                    backgroundColor = BackgroundWhite,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = nickname.ifEmpty { "닉네임 없음" },
-                        style = WantedSansBody,
-                        color = TextPrimary
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = nickname.ifEmpty { "닉네임 없음" },
+                            style = WantedSansBody,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = "수정",
+                            style = DungGeunMoTag,
+                            color = TextPrimary.copy(alpha = 0.5f)
+                        )
+                    }
                 }
-            }
-
-            // Error messages - 2 separate lines
-            if (nicknameError != null) {
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "중복된 닉네임이에요.",
-                    color = Primary,
-                    style = DungGeunMoTag
-                )
-                Text(
-                    text = "닉네임을 다시 확인해주세요.",
-                    color = Primary,
-                    style = DungGeunMoTag
-                )
             }
 
             Spacer(modifier = Modifier.height(60.dp))
@@ -192,16 +218,16 @@ fun SettingScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             // Logout
-            Button(
+            PixelShadowButton(
                 onClick = { if (logoutUseCase != null && getProviderUseCase != null) viewModel.logout(logoutUseCase, getProviderUseCase) },
-                enabled = uiState !is SettingUIState.Loading,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Primary)
+                backgroundColor = Primary,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     if (uiState is SettingUIState.Loading) "로그아웃 중..." else "로그아웃",
                     style = DungGeunMoBody,
-                    color = TextWhite
+                    color = TextWhite,
+                    modifier = Modifier.padding(vertical = 10.dp)
                 )
             }
 
