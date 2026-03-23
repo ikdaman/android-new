@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -116,6 +117,14 @@ fun HomeScreen(
                                 .size(14.dp)
                         )
                     }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Image(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .clickable { navigateToMyBookSearch() },
+                        painter = painterResource(R.drawable.search),
+                        contentDescription = "내 책 검색"
+                    )
                 }
             }
 

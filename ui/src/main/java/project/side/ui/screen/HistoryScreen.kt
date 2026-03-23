@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,7 +49,6 @@ import project.side.presentation.model.HistoryBookState
 import project.side.presentation.model.HistoryViewType
 import project.side.presentation.viewmodel.HistoryViewModel
 import project.side.ui.R
-import project.side.ui.component.PixelShadowBox
 import project.side.ui.component.TitleBar
 import project.side.ui.theme.BackgroundDefault
 import project.side.ui.theme.BackgroundGray
@@ -62,7 +62,8 @@ import project.side.ui.theme.WantedSansBodySmall
 @Composable
 fun HistoryScreen(
     viewModel: HistoryViewModel,
-    onBookClick: (Int) -> Unit = {}
+    onBookClick: (Int) -> Unit = {},
+    onSearchClick: () -> Unit = {}
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
@@ -72,7 +73,8 @@ fun HistoryScreen(
         onToggleSort = viewModel::toggleSort,
         onLoadMore = { viewModel.loadMore() },
         onRetry = { viewModel.getBooks() },
-        onBookClick = onBookClick
+        onBookClick = onBookClick,
+        onSearchClick = onSearchClick
     )
 }
 
@@ -83,7 +85,8 @@ fun HistoryScreenUI(
     onToggleSort: () -> Unit = {},
     onLoadMore: () -> Unit = {},
     onRetry: () -> Unit = {},
-    onBookClick: (Int) -> Unit = {}
+    onBookClick: (Int) -> Unit = {},
+    onSearchClick: () -> Unit = {}
 ) {
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -118,7 +121,10 @@ fun HistoryScreenUI(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // View toggle buttons
-                Row {
+                Row(
+                    modifier = Modifier
+                        .border(1.dp, BorderBlack)
+                ) {
                     Box(
                         modifier = Modifier
                             .size(36.dp)
@@ -132,6 +138,12 @@ fun HistoryScreenUI(
                             contentDescription = "리스트 뷰"
                         )
                     }
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(36.dp)
+                            .background(BorderBlack)
+                    )
                     Box(
                         modifier = Modifier
                             .size(36.dp)
@@ -163,6 +175,14 @@ fun HistoryScreenUI(
                         modifier = Modifier.padding(start = 2.dp).size(14.dp)
                     )
                 }
+                Spacer(modifier = Modifier.width(16.dp))
+                Image(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clickable { onSearchClick() },
+                    painter = painterResource(R.drawable.search),
+                    contentDescription = "내 책 검색"
+                )
             }
 
             when (uiState.viewType) {
@@ -200,15 +220,25 @@ fun HistoryScreenUI(
                         }
                     }
                     LaunchedEffect(shouldLoadMore.value) { if (shouldLoadMore.value) onLoadMore() }
-                    PixelShadowBox(
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        backgroundColor = Color.White,
-                        contentAlignment = Alignment.TopStart
+                            .padding(start = 16.dp, end = 18.dp, bottom = 4.dp)
                     ) {
-                        Column(modifier = Modifier.fillMaxSize()) {
+                        // Shadow
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .offset(x = 2.dp, y = 2.dp)
+                                .background(BorderBlack)
+                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.White)
+                                .border(1.dp, BorderBlack)
+                        ) {
                             // Table header
                             Row(
                                 modifier = Modifier

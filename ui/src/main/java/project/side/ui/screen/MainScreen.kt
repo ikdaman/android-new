@@ -156,6 +156,9 @@ fun MainScreen(
                         viewModel = hiltViewModel(),
                         onBookClick = { mybookId ->
                             navController.navigate("BookInfo/$mybookId")
+                        },
+                        onSearchClick = {
+                            navController.navigate(SEARCH_MY_BOOK_ROUTE)
                         }
                     )
                 }

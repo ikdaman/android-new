@@ -14,6 +14,7 @@ import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
 import project.side.domain.usecase.member.UpdateNicknameUseCase
+import project.side.domain.usecase.member.WithdrawUseCase
 import project.side.presentation.model.SettingUIState
 import project.side.presentation.util.SnackbarManager
 import javax.inject.Inject
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val getMyInfoUseCase: GetMyInfoUseCase,
-    private val updateNicknameUseCase: UpdateNicknameUseCase
+    private val updateNicknameUseCase: UpdateNicknameUseCase,
+    private val withdrawUseCase: WithdrawUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingUIState>(SettingUIState.Init)
@@ -95,6 +97,19 @@ class SettingViewModel @Inject constructor(
                         _nicknameError.value = result.message ?: "닉네임 변경에 실패했어요"
                     }
                     is DataResource.Loading -> {}
+                }
+            }
+        }
+    }
+
+    fun withdraw() {
+        viewModelScope.launch {
+            _uiState.value = SettingUIState.Loading
+            withdrawUseCase().collect { result ->
+                when (result) {
+                    is DataResource.Success -> _uiState.value = SettingUIState.WithdrawSuccess
+                    is DataResource.Error -> _uiState.value = SettingUIState.Error(result.message ?: "회원탈퇴에 실패했어요")
+                    is DataResource.Loading -> _uiState.value = SettingUIState.Loading
                 }
             }
         }

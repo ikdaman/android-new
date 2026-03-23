@@ -25,7 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.border
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.window.Dialog
+import project.side.ui.theme.BorderBlack
+import project.side.ui.theme.DungGeunMoPopupTitle
+import project.side.ui.util.noEffectClick
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -64,10 +69,87 @@ fun SettingScreen(
     val isEditing by viewModel.isEditingNickname.collectAsState()
     val nicknameError by viewModel.nicknameError.collectAsState()
     var editText by remember(nickname) { mutableStateOf(nickname) }
+    var showWithdrawDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     LaunchedEffect(uiState) {
-        if (uiState is SettingUIState.LogoutSuccess) onLogoutComplete()
+        if (uiState is SettingUIState.LogoutSuccess || uiState is SettingUIState.WithdrawSuccess) onLogoutComplete()
+    }
+
+    if (showWithdrawDialog) {
+        Dialog(onDismissRequest = { showWithdrawDialog = false }) {
+            PixelShadowBox(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = BackgroundWhite,
+                shadowOffset = 3.dp,
+                contentAlignment = Alignment.TopStart
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(28.dp)
+                                .background(BackgroundGray)
+                                .border(1.dp, BorderBlack)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(29.dp)
+                                .height(28.dp)
+                                .background(BackgroundGray)
+                                .border(1.dp, BorderBlack)
+                                .noEffectClick { showWithdrawDialog = false },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("X", style = DungGeunMoBody, color = TextPrimary)
+                        }
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(BackgroundDefault)
+                            .padding(20.dp)
+                    ) {
+                        Text("회원탈퇴", style = DungGeunMoPopupTitle, color = TextPrimary)
+                        Spacer(Modifier.height(20.dp))
+                        Text(
+                            "탈퇴하면 모든 데이터가 삭제되며\n복구할 수 없어요.\n정말로 탈퇴하시겠어요?",
+                            style = WantedSansBody,
+                            color = TextPrimary
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            PixelShadowButton(
+                                onClick = { showWithdrawDialog = false },
+                                backgroundColor = BackgroundGray
+                            ) {
+                                Text(
+                                    "NO", style = DungGeunMoBody, color = TextPrimary,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(50.dp))
+                            PixelShadowButton(
+                                onClick = {
+                                    showWithdrawDialog = false
+                                    viewModel.withdraw()
+                                },
+                                backgroundColor = BackgroundGray
+                            ) {
+                                Text(
+                                    "YES", style = DungGeunMoBody, color = TextPrimary,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Column(
@@ -228,6 +310,23 @@ fun SettingScreen(
                     style = DungGeunMoBody,
                     color = TextWhite,
                     modifier = Modifier.padding(vertical = 10.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 회원탈퇴
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showWithdrawDialog = true },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "회원탈퇴",
+                    style = DungGeunMoTag,
+                    color = TextPrimary.copy(alpha = 0.5f),
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
 
