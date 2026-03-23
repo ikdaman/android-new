@@ -41,6 +41,7 @@ class AuthTokenProvider @Inject constructor(
         return runBlocking {
             authDataStoreSource.getAuthorization().also {
                 cachedToken = it
+                timber.log.Timber.d("Auth Token: $it")
             }
         }
     }

@@ -122,7 +122,7 @@ fun HomeScreen(
             items(storeBooks.size) { index ->
                 val book = storeBooks[index]
                 HomeBookItem(
-                    index = storeBooks.size - index,
+                    index = if (sortDescending) storeBooks.size - index else index + 1,
                     title = book.title,
                     coverImage = book.coverImage,
                     date = book.createdDate.take(10).replace("-", "."),
