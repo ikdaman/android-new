@@ -325,10 +325,7 @@ private fun BookInfoContent(
             Spacer(Modifier.height(20.dp))
             ShadowInfoField("ISBN", detail.bookInfo.isbn ?: "-")
             Spacer(Modifier.height(20.dp))
-            ShadowInfoField("책 소개", detail.bookInfo.let {
-                // description is not in MyBookDetailBookInfo, use "-" as fallback
-                "-"
-            })
+            ShadowInfoField("책 소개", detail.bookInfo.description ?: "-")
 
             Spacer(Modifier.height(20.dp))
 
@@ -365,38 +362,57 @@ private fun SectionWithHeader(
     onEditClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        // Gray header bar
-        Row(
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // Shadow
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(22.dp)
+                .matchParentSize()
+                .offset(x = 3.dp, y = 3.dp)
+                .background(BorderBlack)
+        )
+        // Foreground
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(BackgroundWhite)
+                .border(1.dp, BorderBlack)
         ) {
-            Box(
+            // Gray header bar
+            Row(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
                     .height(22.dp)
                     .background(BackgroundGray)
-                    .border(1.dp, BorderBlack)
-                    .padding(start = 10.dp),
-                contentAlignment = Alignment.CenterStart
             ) {
-                Text(text = title, style = DungGeunMoSubtitle, color = TextPrimary)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(22.dp)
+                        .padding(start = 10.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(text = title, style = DungGeunMoSubtitle, color = TextPrimary)
+                }
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(22.dp)
+                        .background(BorderBlack)
+                )
+                Box(
+                    modifier = Modifier
+                        .width(44.dp)
+                        .height(22.dp)
+                        .clickable { onEditClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "수정", style = DungGeunMoSubtitle, color = TextPrimary)
+                }
             }
-            Box(
-                modifier = Modifier
-                    .width(44.dp)
-                    .height(22.dp)
-                    .background(BackgroundGray)
-                    .border(1.dp, BorderBlack)
-                    .clickable { onEditClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "수정", style = DungGeunMoSubtitle, color = TextPrimary)
-            }
-        }
-        // White content with shadow
-        ShadowBox {
+            // Separator
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(BorderBlack))
+            // Content
             content()
         }
     }
@@ -469,7 +485,7 @@ private val dummyStoreDetail = MyBookDetail(
     reason = "나는 왜냐하면 이 책을 읽고 싶었기 때문이다.",
     bookInfo = MyBookDetailBookInfo(bookId = "100", source = "ALADIN", title = "소년과 두더지와 여우와 말", author = "찰리 맥커시",
         coverImage = null, publisher = "상상의 힘", totalPage = 234, publishDate = "2020-04-20",
-        isbn = "9788997381678", aladinId = "123456789"),
+        isbn = "9788997381678", aladinId = "123456789", description = "이 책은 소년과 두더지와 여우와 말의 이야기입니다."),
     historyInfo = MyBookDetailHistoryInfo(startedDate = "2025-01-25", finishedDate = null)
 )
 

@@ -74,7 +74,8 @@ class BookInfoViewModelTest {
             totalPage = 300,
             publishDate = "2024-01-01",
             isbn = "1234567890",
-            aladinId = "A12345"
+            aladinId = "A12345",
+            description = null
         ),
         historyInfo = MyBookDetailHistoryInfo(
             startedDate = "2024-01-15",

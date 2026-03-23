@@ -120,19 +120,26 @@ internal fun BookEditBottomSheetContent(
     val title = remember { mutableStateOf(detail.bookInfo.title) }
     val author = remember { mutableStateOf(detail.bookInfo.author) }
     val publisher = remember { mutableStateOf(detail.bookInfo.publisher ?: "") }
-    val publishDate = remember { mutableStateOf(detail.bookInfo.publishDate ?: "") }
+    val publishDate = remember {
+        mutableStateOf(
+            detail.bookInfo.publishDate?.let {
+                try { LocalDate.parse(it.take(10)) } catch (_: Exception) { null }
+            }
+        )
+    }
     val isbn = remember { mutableStateOf(detail.bookInfo.isbn ?: "") }
     val totalPage = remember { mutableStateOf(detail.bookInfo.totalPage?.toString() ?: "") }
 
     var showStartCalendar by remember { mutableStateOf(false) }
     var showEndCalendar by remember { mutableStateOf(false) }
+    var showPublishDateCalendar by remember { mutableStateOf(false) }
 
     CalendarBottomSheet(
         show = showStartCalendar,
         initialDate = startDate.value,
         onDismiss = { showStartCalendar = false },
         onDateConfirmed = { date ->
-            startDate.value = date
+            if (date != null) startDate.value = date
             showStartCalendar = false
         }
     )
@@ -140,10 +147,21 @@ internal fun BookEditBottomSheetContent(
     CalendarBottomSheet(
         show = showEndCalendar,
         initialDate = endDate.value ?: LocalDate.now(),
+        allowDeselect = true,
         onDismiss = { showEndCalendar = false },
         onDateConfirmed = { date ->
             endDate.value = date
             showEndCalendar = false
+        }
+    )
+
+    CalendarBottomSheet(
+        show = showPublishDateCalendar,
+        initialDate = publishDate.value ?: LocalDate.now(),
+        onDismiss = { showPublishDateCalendar = false },
+        onDateConfirmed = { date ->
+            publishDate.value = date
+            showPublishDateCalendar = false
         }
     )
 
@@ -317,7 +335,23 @@ internal fun BookEditBottomSheetContent(
                         Spacer(Modifier.height(12.dp))
                         EditInputField(label = "출판사", value = publisher.value, onValueChange = { publisher.value = it })
                         Spacer(Modifier.height(12.dp))
-                        EditInputField(label = "출간일", value = publishDate.value, onValueChange = { publishDate.value = it }, placeholder = "YYYY-MM-DD")
+                        Column {
+                            Text("출간일", style = DungGeunMoSubtitle)
+                            Spacer(Modifier.height(4.dp))
+                            PixelShadowButton(
+                                onClick = { showPublishDateCalendar = true },
+                                backgroundColor = BackgroundWhite,
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Text(
+                                    publishDate.value?.format(dateFormatter) ?: "YYYY-MM-DD",
+                                    style = WantedSansBodySmall,
+                                    color = if (publishDate.value != null) Color.Black else Color.Gray,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                                )
+                            }
+                        }
                         Spacer(Modifier.height(12.dp))
                         EditInputField(label = "ISBN", value = isbn.value, onValueChange = { isbn.value = it }, keyboardType = KeyboardType.Number)
                         Spacer(Modifier.height(12.dp))
@@ -355,7 +389,7 @@ internal fun BookEditBottomSheetContent(
                                         bookInfoTitle = title.value,
                                         bookInfoAuthor = author.value,
                                         bookInfoPublisher = publisher.value.ifBlank { null },
-                                        bookInfoPublishDate = publishDate.value.ifBlank { null },
+                                        bookInfoPublishDate = publishDate.value?.format(dateFormatter),
                                         bookInfoIsbn = isbn.value.ifBlank { null },
                                         bookInfoTotalPage = totalPage.value.toIntOrNull()
                                     )
@@ -368,7 +402,7 @@ internal fun BookEditBottomSheetContent(
                                         bookInfoTitle = title.value,
                                         bookInfoAuthor = author.value,
                                         bookInfoPublisher = publisher.value.ifBlank { null },
-                                        bookInfoPublishDate = publishDate.value.ifBlank { null },
+                                        bookInfoPublishDate = publishDate.value?.format(dateFormatter),
                                         bookInfoIsbn = isbn.value.ifBlank { null },
                                         bookInfoTotalPage = totalPage.value.toIntOrNull()
                                     )
@@ -437,7 +471,7 @@ fun BookEditBottomSheetPreview() {
                 bookInfo = MyBookDetailBookInfo(
                     bookId = "1", source = "CUSTOM", title = "테스트 책",
                     author = "테스트 작가", coverImage = null, publisher = "출판사",
-                    totalPage = 300, publishDate = "2025-01-01", isbn = "1234567890", aladinId = null
+                    totalPage = 300, publishDate = "2025-01-01", isbn = "1234567890", aladinId = null, description = null
                 ),
                 historyInfo = MyBookDetailHistoryInfo(startedDate = null, finishedDate = null)
             )

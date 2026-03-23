@@ -20,7 +20,8 @@ data class MyBookDetailBookInfo(
     val totalPage: Int?,
     val publishDate: String?,
     val isbn: String?,
-    val aladinId: String?
+    val aladinId: String?,
+    val description: String?
 )
 
 data class MyBookDetailHistoryInfo(

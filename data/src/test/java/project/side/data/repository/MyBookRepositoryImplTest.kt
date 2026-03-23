@@ -56,7 +56,8 @@ class MyBookRepositoryImplTest {
                 totalPage = 300,
                 publishDate = "2024-01-01",
                 isbn = "1234567890",
-                aladinId = "aladin123"
+                aladinId = "aladin123",
+                description = null
             ),
             historyInfo = HistoryInfoEntity(
                 startedDate = "2024-01-01",

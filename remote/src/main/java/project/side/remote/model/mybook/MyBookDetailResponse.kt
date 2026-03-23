@@ -34,7 +34,8 @@ data class BookInfoResponse(
     val totalPage: Int?,
     val publishDate: String?,
     val isbn: String?,
-    val aladinId: String?
+    val aladinId: String?,
+    val description: String?
 ) {
     fun toData(): BookInfoEntity = BookInfoEntity(
         bookId = bookId,
@@ -46,7 +47,8 @@ data class BookInfoResponse(
         totalPage = totalPage,
         publishDate = publishDate,
         isbn = isbn,
-        aladinId = aladinId
+        aladinId = aladinId,
+        description = description
     )
 }
 

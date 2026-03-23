@@ -75,7 +75,7 @@ internal fun ReadingStartBottomSheetContent(
         initialDate = startDate,
         onDismiss = { showCalendar = false },
         onDateConfirmed = { date ->
-            startDate = date
+            if (date != null) startDate = date
             showCalendar = false
         }
     )

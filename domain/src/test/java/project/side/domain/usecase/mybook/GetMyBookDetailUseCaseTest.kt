@@ -41,7 +41,8 @@ class GetMyBookDetailUseCaseTest {
             totalPage = 300,
             publishDate = "2024-01-01",
             isbn = "1234567890",
-            aladinId = "A12345"
+            aladinId = "A12345",
+            description = null
         )
         val historyInfo = MyBookDetailHistoryInfo(
             startedDate = "2024-01-15",
@@ -106,7 +107,8 @@ class GetMyBookDetailUseCaseTest {
             totalPage = null,
             publishDate = null,
             isbn = null,
-            aladinId = null
+            aladinId = null,
+            description = null
         )
         val historyInfo = MyBookDetailHistoryInfo(startedDate = null, finishedDate = null)
         val myBookDetail = MyBookDetail(

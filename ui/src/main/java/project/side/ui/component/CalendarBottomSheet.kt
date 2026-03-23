@@ -39,12 +39,13 @@ import java.time.LocalDate
 fun CalendarBottomSheet(
     show: Boolean,
     initialDate: LocalDate = LocalDate.now(),
+    allowDeselect: Boolean = false,
     onDismiss: () -> Unit,
-    onDateConfirmed: (LocalDate) -> Unit
+    onDateConfirmed: (LocalDate?) -> Unit
 ) {
     if (!show) return
 
-    var selectedDate by remember(initialDate) { mutableStateOf(initialDate) }
+    var selectedDate by remember(initialDate) { mutableStateOf<LocalDate?>(initialDate) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -63,7 +64,13 @@ fun CalendarBottomSheet(
             Column(modifier = Modifier.padding(16.dp)) {
                 CalendarPicker(
                     selectedDate = selectedDate,
-                    onDateSelected = { selectedDate = it }
+                    onDateSelected = { date ->
+                        if (allowDeselect && date == selectedDate) {
+                            selectedDate = null
+                        } else {
+                            selectedDate = date
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

@@ -34,7 +34,8 @@ data class BookInfoEntity(
     val totalPage: Int?,
     val publishDate: String?,
     val isbn: String?,
-    val aladinId: String?
+    val aladinId: String?,
+    val description: String?
 ) {
     fun toDomain(): MyBookDetailBookInfo = MyBookDetailBookInfo(
         bookId = bookId,
@@ -46,7 +47,8 @@ data class BookInfoEntity(
         totalPage = totalPage,
         publishDate = publishDate,
         isbn = isbn,
-        aladinId = aladinId
+        aladinId = aladinId,
+        description = description
     )
 }
 

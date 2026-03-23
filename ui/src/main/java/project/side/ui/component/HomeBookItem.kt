@@ -47,7 +47,6 @@ fun HomeBookItem(
             .fillMaxWidth()
             .clickable { onClick() },
         backgroundColor = BackgroundWhite,
-        showBorder = false,
         contentAlignment = Alignment.TopStart
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -57,7 +56,6 @@ fun HomeBookItem(
                     .fillMaxWidth()
                     .height(30.dp)
                     .background(BackgroundGray)
-                    .border(1.dp, BorderBlack)
                     .padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -85,6 +83,9 @@ fun HomeBookItem(
                     modifier = Modifier.clickable { onDelete() }
                 )
             }
+
+            // Separator
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(BorderBlack))
 
             // Content
             Row(
