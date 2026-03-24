@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package project.side.ui.component
 
 import android.app.DatePickerDialog
@@ -16,12 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +29,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import project.side.ui.theme.BackgroundDefault
@@ -69,12 +65,9 @@ fun BookRegisterBottomSheet(
     val selectedDate = remember { mutableStateOf(today) }
     val selectedEndDate = remember { mutableStateOf<LocalDate?>(null) }
 
-    ModalBottomSheet(
-        onDismissRequest = { onDismiss() },
-        sheetState = rememberModalBottomSheetState(),
-        dragHandle = null,
-        containerColor = Color.Transparent,
-        shape = RoundedCornerShape(0.dp)
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         RegisterBottomSheetUI(
             selectedTab,
