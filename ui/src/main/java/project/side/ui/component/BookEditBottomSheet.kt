@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package project.side.ui.component
 
 import androidx.compose.foundation.background
@@ -13,13 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -34,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import project.side.domain.model.MyBookDetail
 import project.side.domain.model.MyBookDetailBookInfo
 import project.side.domain.model.MyBookDetailHistoryInfo
@@ -76,14 +75,18 @@ fun BookEditBottomSheet(
 ) {
     if (!show) return
 
-    ModalBottomSheet(
-        onDismissRequest = { onDismiss() },
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        dragHandle = null,
-        containerColor = Color.Transparent,
-        shape = RoundedCornerShape(0.dp)
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        BookEditBottomSheetContent(detail = detail, onDismiss = onDismiss, onConfirm = onConfirm)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            BookEditBottomSheetContent(detail = detail, onDismiss = onDismiss, onConfirm = onConfirm)
+        }
     }
 }
 
@@ -168,7 +171,6 @@ internal fun BookEditBottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
     ) {
         PixelShadowBox(
             backgroundColor = BackgroundWhite,
