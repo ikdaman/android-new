@@ -278,11 +278,12 @@ private fun BookInfoContent(
             )
             Spacer(Modifier.height(8.dp))
             Text(text = detail.bookInfo.author, style = WantedSansBody, color = TextPrimary)
+            Spacer(Modifier.height(8.dp))
             if (detail.bookInfo.publisher != null) {
                 Text(text = detail.bookInfo.publisher!!, style = WantedSansBody, color = TextPrimary)
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(30.dp))
 
             // 독서 이력 section
             SectionWithHeader(
@@ -291,12 +292,15 @@ private fun BookInfoContent(
             ) {
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
                     InfoRow("SAVE", detail.createdDate.take(10).replace("-", " - "))
-                    if (isHistory) {
-                        Spacer(Modifier.height(8.dp))
-                        InfoRow("START", detail.historyInfo.startedDate?.take(10)?.replace("-", " - ") ?: "-")
-                        Spacer(Modifier.height(8.dp))
-                        InfoRow("FINISH", detail.historyInfo.finishedDate?.take(10)?.replace("-", " - ") ?: "읽는 중")
+                    Spacer(Modifier.height(8.dp))
+                    InfoRow("START", detail.historyInfo.startedDate?.take(10)?.replace("-", " - ") ?: "")
+                    Spacer(Modifier.height(8.dp))
+                    val finishText = when {
+                        detail.historyInfo.finishedDate != null -> detail.historyInfo.finishedDate!!.take(10).replace("-", " - ")
+                        detail.historyInfo.startedDate != null -> "읽는 중"
+                        else -> ""
                     }
+                    InfoRow("FINISH", finishText)
                 }
             }
 

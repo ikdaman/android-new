@@ -52,9 +52,9 @@ import project.side.presentation.model.HistoryBookState
 import project.side.presentation.model.HistoryViewType
 import project.side.presentation.viewmodel.HistoryViewModel
 import project.side.ui.R
+import project.side.ui.component.PixelShadowButton
 import project.side.ui.component.TitleBar
 import project.side.ui.theme.BackgroundDefault
-import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BorderBlack
 import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoSubtitle
@@ -135,7 +135,7 @@ fun HistoryScreenUI(
 
                     Image(
                         painter = painterResource(
-                            if (showListPressed) R.drawable.ic_list_button_pressed
+                            if (showListPressed) R.drawable.ic_list_button_p
                             else R.drawable.ic_list_button
                         ),
                         contentDescription = "리스트 뷰",
@@ -151,7 +151,7 @@ fun HistoryScreenUI(
                     )
                     Image(
                         painter = painterResource(
-                            if (showGridPressed) R.drawable.ic_grid_button_pressed
+                            if (showGridPressed) R.drawable.ic_grid_button_p
                             else R.drawable.ic_grid_button
                         ),
                         contentDescription = "썸네일 뷰",
@@ -332,12 +332,10 @@ fun HistoryListBookItem(book: HistoryBookInfo, isEven: Boolean = false, onClick:
 
 @Composable
 fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}) {
-    Box(
-        modifier = Modifier
-            .height(138.dp)
-            .background(Color(0xFFD4D4D4))
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
+    PixelShadowButton(
+        onClick = onClick,
+        backgroundColor = Color(0xFFD4D4D4),
+        modifier = Modifier.height(138.dp),
     ) {
         AsyncImage(
             model = book.coverImage,

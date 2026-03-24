@@ -18,6 +18,7 @@ import project.side.domain.model.StoreBookItem
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
 import project.side.domain.usecase.mybook.GetStoreBooksUseCase
+import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.UpdateReadingStatusUseCase
 import project.side.presentation.util.SnackbarManager
 import java.time.LocalDate
@@ -29,7 +30,8 @@ class MainViewModel @Inject constructor(
     getLoginStateUseCase: GetLoginStateUseCase,
     private val getMyInfoUseCase: GetMyInfoUseCase,
     private val getStoreBooksUseCase: GetStoreBooksUseCase,
-    private val updateReadingStatusUseCase: UpdateReadingStatusUseCase
+    private val updateReadingStatusUseCase: UpdateReadingStatusUseCase,
+    private val deleteMyBookUseCase: DeleteMyBookUseCase
 ): ViewModel() {
     val isLoggedIn: StateFlow<Boolean> = getLoginStateUseCase().stateIn(
         scope = viewModelScope,
@@ -117,6 +119,23 @@ class MainViewModel @Inject constructor(
 
     suspend fun showSnackbar(message: String) {
         _snackbarEvents.emit(message)
+    }
+
+    fun deleteBook(mybookId: Int) {
+        viewModelScope.launch {
+            deleteMyBookUseCase(mybookId).collect { result ->
+                when (result) {
+                    is DataResource.Success -> {
+                        refreshStoreBooks()
+                        SnackbarManager.show("책이 삭제되었어요.")
+                    }
+                    is DataResource.Error -> {
+                        SnackbarManager.show(result.message ?: "삭제에 실패했어요")
+                    }
+                    is DataResource.Loading -> {}
+                }
+            }
+        }
     }
 
     fun startReading(mybookId: Int) {

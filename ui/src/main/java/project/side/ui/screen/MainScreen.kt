@@ -41,8 +41,32 @@ import androidx.compose.runtime.mutableIntStateOf
 import project.side.domain.model.StoreBookItem
 import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import project.side.ui.component.BottomNavBar
+import project.side.ui.component.PixelShadowBox
+import project.side.ui.component.PixelShadowButton
 import project.side.ui.component.ReadingStartBottomSheet
+import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundGray
+import project.side.ui.theme.BackgroundWhite
+import project.side.ui.theme.BorderBlack
+import project.side.ui.theme.DungGeunMoBody
+import project.side.ui.theme.DungGeunMoPopupTitle
+import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.WantedSansBody
+import project.side.ui.util.noEffectClick
 import project.side.ui.util.navigateIfLoggedIn
 
 @Composable
@@ -64,6 +88,84 @@ fun MainScreen(
     val showReadingStartSheet = remember { mutableStateOf(false) }
     val readingStartMybookId = remember { mutableIntStateOf(-1) }
     val readingStartBookTitle = remember { mutableStateOf("") }
+    val showDeleteDialog = remember { mutableStateOf(false) }
+    val deleteMybookId = remember { mutableIntStateOf(-1) }
+
+    if (showDeleteDialog.value) {
+        Dialog(onDismissRequest = { showDeleteDialog.value = false }) {
+            PixelShadowBox(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = BackgroundWhite,
+                shadowOffset = 3.dp,
+                contentAlignment = Alignment.TopStart
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(28.dp)
+                                .background(BackgroundGray)
+                                .border(1.dp, BorderBlack)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(29.dp)
+                                .height(28.dp)
+                                .background(BackgroundGray)
+                                .border(1.dp, BorderBlack)
+                                .noEffectClick { showDeleteDialog.value = false },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("X", style = DungGeunMoBody, color = TextPrimary)
+                        }
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(BackgroundDefault)
+                            .padding(20.dp)
+                    ) {
+                        Text("책 삭제", style = DungGeunMoPopupTitle, color = TextPrimary)
+                        Spacer(Modifier.height(20.dp))
+                        Text(
+                            "책을 삭제하면 모든 기록이 사라져요.\n정말로 삭제하시겠어요?",
+                            style = WantedSansBody,
+                            color = TextPrimary
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            PixelShadowButton(
+                                onClick = { showDeleteDialog.value = false },
+                                backgroundColor = BackgroundGray
+                            ) {
+                                Text(
+                                    "NO", style = DungGeunMoBody, color = TextPrimary,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(50.dp))
+                            PixelShadowButton(
+                                onClick = {
+                                    showDeleteDialog.value = false
+                                    mainViewModel.deleteBook(deleteMybookId.intValue)
+                                },
+                                backgroundColor = BackgroundGray
+                            ) {
+                                Text(
+                                    "YES", style = DungGeunMoBody, color = TextPrimary,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     ReadingStartBottomSheet(
         show = showReadingStartSheet.value,
@@ -131,6 +233,10 @@ fun MainScreen(
                         },
                         navigateToMyBookSearch = {
                             navController.navigate(SEARCH_MY_BOOK_ROUTE)
+                        },
+                        onDelete = { mybookId ->
+                            deleteMybookId.intValue = mybookId
+                            showDeleteDialog.value = true
                         }
                     )
                 }

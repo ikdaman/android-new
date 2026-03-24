@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import project.side.ui.theme.BackgroundDefault
 import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BackgroundWhite
@@ -44,9 +45,12 @@ fun CalendarBottomSheet(
 
     var selectedDate by remember(initialDate) { mutableStateOf<LocalDate?>(initialDate) }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
         PixelShadowBox(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
             backgroundColor = BackgroundWhite,
             shadowOffset = 3.dp,
             contentAlignment = Alignment.TopStart
@@ -117,6 +121,8 @@ fun CalendarBottomSheet(
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -127,8 +133,67 @@ fun CalendarBottomSheet(
 @Composable
 fun CalendarBottomSheetContentPreview() {
     IkdamanTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            CalendarPicker(selectedDate = LocalDate.now())
+        PixelShadowBox(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+            backgroundColor = BackgroundWhite,
+            shadowOffset = 3.dp,
+            contentAlignment = Alignment.TopStart
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(28.dp)
+                            .background(BackgroundGray)
+                            .border(1.dp, BorderBlack)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(29.dp)
+                            .height(28.dp)
+                            .background(BackgroundGray)
+                            .border(1.dp, BorderBlack),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("X", style = DungGeunMoBody, color = TextPrimary)
+                    }
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(BackgroundDefault)
+                        .padding(16.dp)
+                ) {
+                    CalendarPicker(selectedDate = LocalDate.now())
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        PixelShadowButton(
+                            onClick = {},
+                            backgroundColor = BackgroundGray
+                        ) {
+                            Text(
+                                "NO", style = DungGeunMoBody, color = TextPrimary,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                            )
+                        }
+                        Spacer(Modifier.width(50.dp))
+                        PixelShadowButton(
+                            onClick = {},
+                            backgroundColor = BackgroundGray
+                        ) {
+                            Text(
+                                "YES", style = DungGeunMoBody, color = TextPrimary,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
         }
     }
 }

@@ -120,6 +120,7 @@ internal fun ReadingStartBottomSheetContent(
                         .fillMaxWidth()
                         .background(BackgroundDefault)
                         .padding(20.dp)
+                        .padding(bottom = 20.dp)
                 ) {
                     Text(
                         "책 시작하기",
@@ -209,7 +210,7 @@ internal fun ReadingStartBottomSheetContent(
                         }
                     }
 
-                    Spacer(Modifier.height(32.dp))
+                    Spacer(Modifier.height(43.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),

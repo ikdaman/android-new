@@ -1,7 +1,10 @@
 package project.side.ui.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import project.side.ui.R
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.border
 import androidx.compose.material.icons.Icons
@@ -115,23 +121,31 @@ fun CalendarPicker(
                     val day = index - startOffset + 1
                     val date = currentMonth.atDay(day)
                     val isSelected = date == selectedDate
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val showImage = isSelected || isPressed
 
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .then(
-                                if (isSelected) Modifier
-                                    .background(Primary)
-                                    .border(1.dp, BorderBlack)
-                                else Modifier
-                            )
-                            .clickable { onDateSelected(date) },
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null
+                            ) { onDateSelected(date) },
                         contentAlignment = Alignment.Center
                     ) {
+                        if (showImage) {
+                            Image(
+                                painter = painterResource(id = R.drawable.pressed_date),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp),
+                                contentScale = ContentScale.FillBounds
+                            )
+                        }
                         Text(
                             text = "$day",
                             style = WantedSansBody,
-                            color = if (isSelected) TextWhite else TextPrimary,
+                            color = TextPrimary,
                             textAlign = TextAlign.Center
                         )
                     }

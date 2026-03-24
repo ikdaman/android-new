@@ -68,13 +68,43 @@ fun SettingScreen(
     val nickname by viewModel.nickname.collectAsState()
     val isEditing by viewModel.isEditingNickname.collectAsState()
     val nicknameError by viewModel.nicknameError.collectAsState()
-    var editText by remember(nickname) { mutableStateOf(nickname) }
-    var showWithdrawDialog by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     LaunchedEffect(uiState) {
         if (uiState is SettingUIState.LogoutSuccess || uiState is SettingUIState.WithdrawSuccess) onLogoutComplete()
     }
+
+    SettingScreenUI(
+        uiState = uiState,
+        nickname = nickname,
+        isEditing = isEditing,
+        nicknameError = nicknameError,
+        onBack = onBack,
+        onValidateNickname = viewModel::validateNickname,
+        onStartEditing = viewModel::startEditingNickname,
+        onCancelEditing = viewModel::cancelEditingNickname,
+        onSaveNickname = viewModel::updateNickname,
+        onLogout = { if (logoutUseCase != null && getProviderUseCase != null) viewModel.logout(logoutUseCase, getProviderUseCase) },
+        onWithdraw = viewModel::withdraw
+    )
+}
+
+@Composable
+fun SettingScreenUI(
+    uiState: SettingUIState = SettingUIState.Init,
+    nickname: String = "",
+    isEditing: Boolean = false,
+    nicknameError: String? = null,
+    onBack: () -> Unit = {},
+    onValidateNickname: (String) -> Unit = {},
+    onStartEditing: () -> Unit = {},
+    onCancelEditing: () -> Unit = {},
+    onSaveNickname: (String) -> Unit = {},
+    onLogout: () -> Unit = {},
+    onWithdraw: () -> Unit = {}
+) {
+    var editText by remember(nickname) { mutableStateOf(nickname) }
+    var showWithdrawDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     if (showWithdrawDialog) {
         Dialog(onDismissRequest = { showWithdrawDialog = false }) {
@@ -136,7 +166,7 @@ fun SettingScreen(
                             PixelShadowButton(
                                 onClick = {
                                     showWithdrawDialog = false
-                                    viewModel.withdraw()
+                                    onWithdraw()
                                 },
                                 backgroundColor = BackgroundGray
                             ) {
@@ -203,7 +233,7 @@ fun SettingScreen(
                         value = editText,
                         onValueChange = {
                             editText = it
-                            viewModel.validateNickname(it)
+                            onValidateNickname(it)
                         },
                         textStyle = WantedSansBody.copy(color = TextPrimary),
                         modifier = Modifier
@@ -231,7 +261,7 @@ fun SettingScreen(
                 ) {
                     PixelShadowButton(
                         onClick = {
-                            viewModel.cancelEditingNickname()
+                            onCancelEditing()
                             editText = nickname
                         },
                         backgroundColor = BackgroundGray
@@ -245,7 +275,7 @@ fun SettingScreen(
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     PixelShadowButton(
-                        onClick = { viewModel.updateNickname(editText) },
+                        onClick = { onSaveNickname(editText) },
                         backgroundColor = Primary
                     ) {
                         Text(
@@ -260,7 +290,7 @@ fun SettingScreen(
                 PixelShadowButton(
                     onClick = {
                         editText = nickname
-                        viewModel.startEditingNickname()
+                        onStartEditing()
                     },
                     backgroundColor = BackgroundWhite,
                     modifier = Modifier.fillMaxWidth()
@@ -290,18 +320,38 @@ fun SettingScreen(
 
             // Menu items - DungGeunMo 16px, 32dp touch area each
             SettingMenuItem(text = "공지사항") { /* disabled */ }
+            Spacer(Modifier.height(10.dp))
             SettingMenuItem(text = "서비스 이용약관") {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_URL)))
             }
+            Spacer(Modifier.height(10.dp))
             SettingMenuItem(text = "개인정보 처리방침") {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_URL)))
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 회원탈퇴
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showWithdrawDialog = true }
+                    .padding(start = 10.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    "회원탈퇴",
+                    style = DungGeunMoTag,
+                    color = TextPrimary.copy(alpha = 0.5f),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
             // Logout
             PixelShadowButton(
-                onClick = { if (logoutUseCase != null && getProviderUseCase != null) viewModel.logout(logoutUseCase, getProviderUseCase) },
+                onClick = onLogout,
                 backgroundColor = Primary,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -310,23 +360,6 @@ fun SettingScreen(
                     style = DungGeunMoBody,
                     color = TextWhite,
                     modifier = Modifier.padding(vertical = 10.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 회원탈퇴
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showWithdrawDialog = true },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    "회원탈퇴",
-                    style = DungGeunMoTag,
-                    color = TextPrimary.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
 
@@ -366,6 +399,8 @@ private fun SettingMenuItem(text: String, onClick: () -> Unit) {
 @Composable
 fun SettingScreenPreview() {
     IkdamanTheme {
-        SettingScreen()
+        SettingScreenUI(
+            nickname = "익다만"
+        )
     }
 }
