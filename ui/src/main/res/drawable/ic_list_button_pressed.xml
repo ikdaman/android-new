@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  pressed_list_button.svg → VectorDrawable (36x36dp)
+  Pressed state: #E4E4E4 background, inner shadow (#333333 +1,+1 inset), inner highlight (#F6F6F6 -1,-1 inset)
+  Inner shadow approximated as a 1px inset border on bottom-right edges.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+
+    <!-- Background rect -->
+    <path
+        android:fillColor="#E4E4E4"
+        android:pathData="M0,0 L36,0 L36,36 L0,36 Z"/>
+
+    <!-- Inner shadow approximation: top+left edge (#F6F6F6 = highlight from -1,-1 inner) -->
+    <path
+        android:fillColor="#F6F6F6"
+        android:pathData="M0,0 L36,0 L36,1 L1,1 L1,36 L0,36 Z"/>
+
+    <!-- Inner shadow approximation: bottom+right edge (#333333 from +1,+1 inner) -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M1,35 L36,35 L36,36 L35,36 L35,1 L36,1 L36,36 L0,36 L0,35 Z"/>
+
+    <!-- Icon paths (clip at 7.5,7.5 per SVG) -->
+    <!-- Row 1 left square -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M11.875,11.875 L9.25,11.875 L9.25,14.5 L11.875,14.5 Z"/>
+    <!-- Row 2 left square -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M11.875,22.375 L9.25,22.375 L9.25,25 L11.875,25 Z"/>
+    <!-- Row 3 left square -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M11.875,17.125 L9.25,17.125 L9.25,19.75 L11.875,19.75 Z"/>
+    <!-- Row 1 right bar -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M27.625,12.75 L27.625,13.625 L26.75,13.625 L26.75,14.5 L16.25,14.5 L16.25,13.625 L15.375,13.625 L15.375,12.75 L16.25,12.75 L16.25,11.875 L26.75,11.875 L26.75,12.75 Z"/>
+    <!-- Row 2 right bar -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M26.75,18 L27.625,18 L27.625,18.875 L26.75,18.875 L26.75,19.75 L16.25,19.75 L16.25,18.875 L15.375,18.875 L15.375,18 L16.25,18 L16.25,17.125 L26.75,17.125 Z"/>
+    <!-- Row 3 right bar -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M26.75,23.25 L27.625,23.25 L27.625,24.125 L26.75,24.125 L26.75,25 L16.25,25 L16.25,24.125 L15.375,24.125 L15.375,23.25 L16.25,23.25 L16.25,22.375 L26.75,22.375 Z"/>
+</vector>

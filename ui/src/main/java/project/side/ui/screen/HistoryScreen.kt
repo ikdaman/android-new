@@ -121,42 +121,27 @@ fun HistoryScreenUI(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // View toggle buttons
-                Row(
-                    modifier = Modifier
-                        .border(1.dp, BorderBlack)
-                ) {
-                    Box(
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Image(
+                        painter = painterResource(
+                            if (isListView) R.drawable.ic_list_button_pressed
+                            else R.drawable.ic_list_button
+                        ),
+                        contentDescription = "리스트 뷰",
                         modifier = Modifier
-                            .size(36.dp)
-                            .background(if (isListView) Color(0xFFE4E4E4) else Color(0xFFD4D4D4))
-                            .then(if (!isListView) Modifier.clickable { onViewTypeChanged() } else Modifier),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            modifier = Modifier.size(21.dp),
-                            painter = painterResource(R.drawable.list_view),
-                            contentDescription = "리스트 뷰"
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .height(36.dp)
-                            .background(BorderBlack)
+                            .size(if (isListView) 36.dp else 38.dp)
+                            .then(if (!isListView) Modifier.clickable { onViewTypeChanged() } else Modifier)
                     )
-                    Box(
+                    Image(
+                        painter = painterResource(
+                            if (!isListView) R.drawable.ic_grid_button_pressed
+                            else R.drawable.ic_grid_button
+                        ),
+                        contentDescription = "썸네일 뷰",
                         modifier = Modifier
-                            .size(36.dp)
-                            .background(if (!isListView) Color(0xFFE4E4E4) else Color(0xFFD4D4D4))
-                            .then(if (isListView) Modifier.clickable { onViewTypeChanged() } else Modifier),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            modifier = Modifier.size(20.dp),
-                            painter = painterResource(R.drawable.dataset_view),
-                            contentDescription = "썸네일 뷰"
-                        )
-                    }
+                            .size(if (!isListView) 36.dp else 38.dp)
+                            .then(if (isListView) Modifier.clickable { onViewTypeChanged() } else Modifier)
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Row(
