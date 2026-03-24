@@ -33,6 +33,7 @@ import project.side.ui.theme.DungGeunMoSubtitle
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.TextHint
 import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.WantedSansBody
 import project.side.ui.util.noEffectClick
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -40,6 +41,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ReadingStartBottomSheet(
     show: Boolean,
+    bookTitle: String = "",
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -49,12 +51,17 @@ fun ReadingStartBottomSheet(
         onDismissRequest = { onDismiss() },
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        ReadingStartBottomSheetContent(onDismiss = onDismiss, onConfirm = onConfirm)
+        ReadingStartBottomSheetContent(
+            bookTitle = bookTitle,
+            onDismiss = onDismiss,
+            onConfirm = onConfirm
+        )
     }
 }
 
 @Composable
 internal fun ReadingStartBottomSheetContent(
+    bookTitle: String = "",
     onDismiss: () -> Unit = {},
     onConfirm: () -> Unit = {}
 ) {
@@ -119,7 +126,13 @@ internal fun ReadingStartBottomSheetContent(
                         style = DungGeunMoPopupTitle,
                         color = TextPrimary
                     )
-                    Spacer(Modifier.height(32.dp))
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        bookTitle,
+                        style = WantedSansBody,
+                        color = TextPrimary
+                    )
+                    Spacer(Modifier.height(24.dp))
 
                     Text("START", style = DungGeunMoBody, color = TextPrimary)
                     Spacer(Modifier.height(8.dp))

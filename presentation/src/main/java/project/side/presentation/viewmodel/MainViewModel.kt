@@ -125,7 +125,7 @@ class MainViewModel @Inject constructor(
             updateReadingStatusUseCase(mybookId, startedDate = today).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
-                        SnackbarManager.show("독서를 시작했어요")
+                        SnackbarManager.show("시작한 책은 히스토리에서 볼 수 있어요.")
                     }
                     is DataResource.Error -> {
                         SnackbarManager.show(result.message ?: "독서 시작에 실패했어요")

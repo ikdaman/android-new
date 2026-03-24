@@ -63,9 +63,11 @@ fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val showReadingStartSheet = remember { mutableStateOf(false) }
     val readingStartMybookId = remember { mutableIntStateOf(-1) }
+    val readingStartBookTitle = remember { mutableStateOf("") }
 
     ReadingStartBottomSheet(
         show = showReadingStartSheet.value,
+        bookTitle = readingStartBookTitle.value,
         onDismiss = { showReadingStartSheet.value = false },
         onConfirm = {
             showReadingStartSheet.value = false
@@ -114,8 +116,9 @@ fun MainScreen(
                         onBookClick = { mybookId ->
                             navController.navigate("BookInfo/$mybookId")
                         },
-                        onStartReading = { mybookId ->
+                        onStartReading = { mybookId, title ->
                             readingStartMybookId.intValue = mybookId
+                            readingStartBookTitle.value = title
                             showReadingStartSheet.value = true
                         },
                         navigateToSetting = {

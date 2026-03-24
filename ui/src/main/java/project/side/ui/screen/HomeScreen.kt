@@ -50,7 +50,7 @@ fun HomeScreen(
     onToggleSort: () -> Unit = {},
     onLoadMore: () -> Unit = {},
     onBookClick: (Int) -> Unit = {},
-    onStartReading: (Int) -> Unit = {},
+    onStartReading: (Int, String) -> Unit = { _, _ -> },
     onDelete: (Int) -> Unit = {},
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
@@ -137,7 +137,7 @@ fun HomeScreen(
                     date = book.createdDate.take(10).replace("-", "."),
                     description = book.description,
                     onClick = { onBookClick(book.mybookId) },
-                    onStartReading = { onStartReading(book.mybookId) },
+                    onStartReading = { onStartReading(book.mybookId, book.title) },
                     onDelete = { onDelete(book.mybookId) }
                 )
                 Spacer(modifier = Modifier.height(30.dp))
