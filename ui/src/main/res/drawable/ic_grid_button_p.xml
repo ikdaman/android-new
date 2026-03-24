@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  grid_button.svg → VectorDrawable (38x38dp)
+  Normal state: #D4D4D4 background, drop shadow (#333333 +1,+1), highlight (#F6F6F6 -1,-1)
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="38dp"
+    android:height="38dp"
+    android:viewportWidth="38"
+    android:viewportHeight="38">
+
+    <!-- Outer shadow (bottom-right, #333333) -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M2,2 L37,2 L37,37 L2,37 Z"/>
+
+    <!-- Outer highlight (top-left, #F6F6F6) -->
+    <path
+        android:fillColor="#F6F6F6"
+        android:pathData="M1,1 L36,1 L36,36 L1,36 Z"/>
+
+    <!-- Background rect -->
+    <path
+        android:fillColor="#D4D4D4"
+        android:pathData="M1,1 L37,1 L37,37 L1,37 Z"/>
+
+    <!-- Icon paths (translated +1,+1 to match SVG transform="translate(1 1)") -->
+    <!-- Bottom-left cell -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M18.3333,21.6666 L19.1666,21.6666 L19.1666,28.3333 L18.3333,28.3333 L18.3333,29.1666 L11.6666,29.1666 L11.6666,28.3333 L10.8333,28.3333 L10.8333,21.6666 L11.6666,21.6666 L11.6666,20.8333 L18.3333,20.8333 Z"/>
+    <!-- Top-left cell -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M18.3333,11.6666 L19.1666,11.6666 L19.1666,18.3333 L18.3333,18.3333 L18.3333,19.1666 L11.6666,19.1666 L11.6666,18.3333 L10.8333,18.3333 L10.8333,11.6666 L11.6666,11.6666 L11.6666,10.8333 L18.3333,10.8333 Z"/>
+    <!-- Bottom-right cell -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M28.3333,21.6666 L29.1666,21.6666 L29.1666,28.3333 L28.3333,28.3333 L28.3333,29.1666 L21.6666,29.1666 L21.6666,28.3333 L20.8333,28.3333 L20.8333,21.6666 L21.6666,21.6666 L21.6666,20.8333 L28.3333,20.8333 Z"/>
+    <!-- Top-right cell -->
+    <path
+        android:fillColor="#333333"
+        android:pathData="M29.1666,11.6666 L29.1666,18.3333 L28.3333,18.3333 L28.3333,19.1666 L21.6666,19.1666 L21.6666,18.3333 L20.8333,18.3333 L20.8333,11.6666 L21.6666,11.6666 L21.6666,10.8333 L28.3333,10.8333 L28.3333,11.6666 Z"/>
+</vector>

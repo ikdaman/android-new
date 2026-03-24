@@ -173,15 +173,6 @@ private fun MyBookSearchResultItem(item: MyBookSearchItem, onClick: () -> Unit =
         "COMPLETED" -> "완독" to TextPrimary
         else -> "읽는 중" to TextPrimary
     }
-    val isTodo = item.readingStatus == "TODO"
-    val dateText = if (isTodo) {
-        item.createdDate.take(10)
-    } else {
-        val start = item.startedDate?.take(10) ?: ""
-        val end = item.finishedDate?.take(10) ?: ""
-        if (start.isNotEmpty()) "$start ~ $end" else ""
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -219,10 +210,6 @@ private fun MyBookSearchResultItem(item: MyBookSearchItem, onClick: () -> Unit =
                 )
             }
             Spacer(modifier = Modifier.height(4.dp))
-            if (dateText.isNotEmpty()) {
-                Text(text = dateText, style = DungGeunMoTag, color = TextPrimary)
-                Spacer(modifier = Modifier.height(4.dp))
-            }
             Text(
                 text = item.title,
                 style = WantedSansBookTitle,
