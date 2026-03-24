@@ -350,8 +350,38 @@ fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}) {
     }
 }
 
+private val dummyBooks = listOf(
+    HistoryBookInfo(mybookId = 1, title = "소년과 두더지와 여우와 말", author = listOf("찰리 맥커시"), coverImage = "", description = null, startedDate = "2026-01-15", finishedDate = "2026-02-10"),
+    HistoryBookInfo(mybookId = 2, title = "달러구트 꿈 백화점", author = listOf("이미예"), coverImage = "", description = null, startedDate = "2026-02-01", finishedDate = null),
+    HistoryBookInfo(mybookId = 3, title = "역행자", author = listOf("자청"), coverImage = "", description = null, startedDate = "2025-12-20", finishedDate = "2026-01-05"),
+    HistoryBookInfo(mybookId = 4, title = "아몬드", author = listOf("손원평"), coverImage = "", description = null, startedDate = "2025-11-10", finishedDate = "2025-12-01"),
+    HistoryBookInfo(mybookId = 5, title = "불편한 편의점", author = listOf("김호연"), coverImage = "", description = null, startedDate = "2025-10-01", finishedDate = "2025-10-20")
+)
+
 @Preview(showBackground = true)
 @Composable
-fun HistoryScreenPreview() {
-    IkdamanTheme { HistoryScreenUI() }
+fun HistoryScreenListPreview() {
+    IkdamanTheme {
+        HistoryScreenUI(
+            uiState = HistoryBookState(
+                isLoading = false,
+                viewType = HistoryViewType.LIST,
+                books = dummyBooks
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HistoryScreenGridPreview() {
+    IkdamanTheme {
+        HistoryScreenUI(
+            uiState = HistoryBookState(
+                isLoading = false,
+                viewType = HistoryViewType.DATASET,
+                books = dummyBooks
+            )
+        )
+    }
 }
