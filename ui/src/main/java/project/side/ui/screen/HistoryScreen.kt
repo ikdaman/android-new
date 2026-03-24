@@ -135,8 +135,8 @@ fun HistoryScreenUI(
 
                     Image(
                         painter = painterResource(
-                            if (showListPressed) R.drawable.ic_grid_button_pressed
-                            else R.drawable.ic_grid_button
+                            if (showListPressed) R.drawable.ic_list_button_pressed
+                            else R.drawable.ic_list_button
                         ),
                         contentDescription = "리스트 뷰",
                         modifier = Modifier
@@ -151,8 +151,8 @@ fun HistoryScreenUI(
                     )
                     Image(
                         painter = painterResource(
-                            if (showGridPressed) R.drawable.ic_list_button_pressed
-                            else R.drawable.ic_list_button
+                            if (showGridPressed) R.drawable.ic_grid_button_pressed
+                            else R.drawable.ic_grid_button
                         ),
                         contentDescription = "썸네일 뷰",
                         modifier = Modifier
