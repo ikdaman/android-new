@@ -28,6 +28,7 @@ import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
 import project.side.domain.usecase.member.UpdateNicknameUseCase
+import project.side.domain.usecase.member.WithdrawUseCase
 import project.side.presentation.model.SettingUIState
 import project.side.presentation.util.SnackbarManager
 
@@ -45,6 +46,9 @@ class SettingViewModelTest {
     @MockK
     private lateinit var updateNicknameUseCase: UpdateNicknameUseCase
 
+    @MockK
+    private lateinit var withdrawUseCase: WithdrawUseCase
+
     private lateinit var viewModel: SettingViewModel
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -56,7 +60,7 @@ class SettingViewModelTest {
         every { getMyInfoUseCase() } returns flowOf(
             DataResource.Success(Member(nickname = "테스트"))
         )
-        viewModel = SettingViewModel(getMyInfoUseCase, updateNicknameUseCase)
+        viewModel = SettingViewModel(getMyInfoUseCase, updateNicknameUseCase, withdrawUseCase)
     }
 
     @After

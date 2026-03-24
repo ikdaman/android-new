@@ -27,6 +27,7 @@ import project.side.domain.model.StoreBook
 import project.side.domain.model.StoreBookItem
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
+import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.GetStoreBooksUseCase
 import project.side.domain.usecase.mybook.UpdateReadingStatusUseCase
 import project.side.presentation.util.SnackbarManager
@@ -45,6 +46,9 @@ class MainViewModelTest {
     @MockK
     private lateinit var updateReadingStatusUseCase: UpdateReadingStatusUseCase
 
+    @MockK
+    private lateinit var deleteMyBookUseCase: DeleteMyBookUseCase
+
     private lateinit var viewModel: MainViewModel
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -62,7 +66,7 @@ class MainViewModelTest {
     }
 
     private fun stubDefaultBooks() {
-        every { getStoreBooksUseCase(any(), any(), any()) } returns flowOf(
+        every { getStoreBooksUseCase(any(), any(), any(), any()) } returns flowOf(
             DataResource.success(
                 StoreBook(
                     content = emptyList(),
@@ -83,7 +87,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
 
         // Then
         verify(exactly = 1) { getMyInfoUseCase() }
@@ -99,7 +103,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
 
         // Then
         assertEquals("홍길동", viewModel.nickname.value)
@@ -112,7 +116,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
 
         // Then
         verify(exactly = 0) { getMyInfoUseCase() }
@@ -128,7 +132,7 @@ class MainViewModelTest {
             )
         )
         every { getLoginStateUseCase() } returns flowOf(false)
-        every { getStoreBooksUseCase(any(), any(), any()) } returns flowOf(
+        every { getStoreBooksUseCase(any(), any(), any(), any()) } returns flowOf(
             DataResource.success(
                 StoreBook(
                     content = storeBookItems,
@@ -139,7 +143,7 @@ class MainViewModelTest {
         )
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
         viewModel.refreshStoreBooks()
 
         // Then
@@ -157,7 +161,7 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
         viewModel.startReading(mybookId = 123)
 
         // Then
@@ -180,11 +184,11 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
         viewModel.startReading(mybookId = 123)
 
         // Then
-        coVerify { SnackbarManager.show("독서를 시작했어요") }
+        coVerify { SnackbarManager.show("시작한 책은 히스토리에서 볼 수 있어요.") }
     }
 
     @Test
@@ -199,10 +203,62 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
         viewModel.startReading(mybookId = 123)
 
         // Then
         coVerify { SnackbarManager.show("네트워크 오류") }
+    }
+
+    @Test
+    fun `deleteBook success calls refreshStoreBooks and shows snackbar`() = runTest {
+        // Given
+        every { getLoginStateUseCase() } returns flowOf(false)
+        stubDefaultBooks()
+        every { deleteMyBookUseCase(any()) } returns flowOf(DataResource.success(Unit))
+        mockkObject(SnackbarManager)
+        coEvery { SnackbarManager.show(any()) } just Runs
+
+        // When
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel.deleteBook(mybookId = 42)
+
+        // Then
+        verify { deleteMyBookUseCase(42) }
+        coVerify { SnackbarManager.show("책이 삭제되었어요.") }
+    }
+
+    @Test
+    fun `deleteBook error shows error snackbar`() = runTest {
+        // Given
+        every { getLoginStateUseCase() } returns flowOf(false)
+        stubDefaultBooks()
+        every { deleteMyBookUseCase(any()) } returns flowOf(DataResource.error("삭제에 실패했어요"))
+        mockkObject(SnackbarManager)
+        coEvery { SnackbarManager.show(any()) } just Runs
+
+        // When
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel.deleteBook(mybookId = 42)
+
+        // Then
+        coVerify { SnackbarManager.show("삭제에 실패했어요") }
+    }
+
+    @Test
+    fun `deleteBook error with null message uses default error message`() = runTest {
+        // Given
+        every { getLoginStateUseCase() } returns flowOf(false)
+        stubDefaultBooks()
+        every { deleteMyBookUseCase(any()) } returns flowOf(DataResource.error(null))
+        mockkObject(SnackbarManager)
+        coEvery { SnackbarManager.show(any()) } just Runs
+
+        // When
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel.deleteBook(mybookId = 99)
+
+        // Then
+        coVerify { SnackbarManager.show("삭제에 실패했어요") }
     }
 }

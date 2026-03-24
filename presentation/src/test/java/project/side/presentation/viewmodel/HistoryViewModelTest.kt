@@ -57,7 +57,7 @@ class HistoryViewModelTest {
     fun `init loads history books successfully`() = runTest {
         // Given
         val books = listOf(createHistoryBookInfo(mybookId = 1), createHistoryBookInfo(mybookId = 2))
-        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), any(), any(), any()) } returns flowOf(
             DataResource.success(HistoryBook(totalPages = 1, nowPage = 0, books = books))
         )
 
@@ -72,7 +72,7 @@ class HistoryViewModelTest {
     @Test
     fun `error sets error message`() = runTest {
         // Given
-        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), any(), any(), any()) } returns flowOf(
             DataResource.error("네트워크 오류")
         )
 
@@ -88,11 +88,11 @@ class HistoryViewModelTest {
     fun `loadMore appends books`() = runTest {
         // Given - first page
         val firstBooks = (1..5).map { createHistoryBookInfo(mybookId = it) }
-        coEvery { getHistoryBooksUseCase(any(), eq(0), any()) } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), eq(0), any(), any()) } returns flowOf(
             DataResource.success(HistoryBook(totalPages = 2, nowPage = 0, books = firstBooks))
         )
         val secondBooks = (6..10).map { createHistoryBookInfo(mybookId = it) }
-        coEvery { getHistoryBooksUseCase(any(), eq(1), any()) } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), eq(1), any(), any()) } returns flowOf(
             DataResource.success(HistoryBook(totalPages = 2, nowPage = 1, books = secondBooks))
         )
 
@@ -108,7 +108,7 @@ class HistoryViewModelTest {
     fun `loadMore does not load when last page`() = runTest {
         // Given - single page (nowPage 0, totalPages 1)
         val books = listOf(createHistoryBookInfo())
-        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), any(), any(), any()) } returns flowOf(
             DataResource.success(HistoryBook(totalPages = 1, nowPage = 0, books = books))
         )
 
@@ -124,7 +124,7 @@ class HistoryViewModelTest {
     @Test
     fun `onViewTypeChanged toggles view type`() = runTest {
         // Given
-        coEvery { getHistoryBooksUseCase(any(), any(), any()) } returns flowOf(
+        coEvery { getHistoryBooksUseCase(any(), any(), any(), any()) } returns flowOf(
             DataResource.success(HistoryBook(totalPages = 1, nowPage = 0, books = emptyList()))
         )
         viewModel = HistoryViewModel(getHistoryBooksUseCase)
