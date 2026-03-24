@@ -22,10 +22,6 @@ val InputBackground = Color(0xFFF7F6EF)
 val DividerGray = Color(0xFFF5F5F5)
 val BorderBlack = Color(0xFF333333)
 
-// Tag
-val TagStore = Color(0xFF4CAF50)
-val TagHistory = Color(0xFF2196F3)
-
 // Surface
 val SurfaceGray = Color(0xFFEEEEEE)
 val TextGray = Color(0xFF999999)

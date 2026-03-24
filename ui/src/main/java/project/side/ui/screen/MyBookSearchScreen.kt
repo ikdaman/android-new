@@ -49,9 +49,8 @@ import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoSubtitle
 import project.side.ui.theme.DungGeunMoTag
 import project.side.ui.theme.Primary
-import project.side.ui.theme.TagHistory
-import project.side.ui.theme.TagStore
 import project.side.ui.theme.TextHint
+import project.side.ui.theme.TextWhite
 import project.side.ui.theme.TextPrimary
 import project.side.ui.theme.WantedSansBodySmall
 import project.side.ui.theme.WantedSansBookTitle
@@ -163,8 +162,12 @@ fun MyBookSearchScreen(
 
 @Composable
 private fun MyBookSearchResultItem(item: MyBookSearchItem, onClick: () -> Unit = {}) {
+    val (tag, tagColor) = when (item.readingStatus) {
+        "TODO" -> "읽고 싶은 책" to Primary
+        "COMPLETED" -> "완독" to TextPrimary
+        else -> "읽는 중" to TextPrimary
+    }
     val isTodo = item.readingStatus == "TODO"
-    val tag = if (isTodo) "내 서점" else "히스토리"
     val dateText = if (isTodo) {
         item.createdDate.take(10)
     } else {
@@ -198,11 +201,17 @@ private fun MyBookSearchResultItem(item: MyBookSearchItem, onClick: () -> Unit =
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "[$tag]",
-                style = DungGeunMoTag,
-                color = if (isTodo) TagStore else TagHistory
-            )
+            Box(
+                modifier = Modifier
+                    .background(tagColor)
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = tag,
+                    style = DungGeunMoTag,
+                    color = TextWhite
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
             if (dateText.isNotEmpty()) {
                 Text(text = dateText, style = DungGeunMoTag, color = TextPrimary)
