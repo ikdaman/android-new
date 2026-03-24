@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.border
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -27,11 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import project.side.ui.theme.BackgroundGray
+import project.side.ui.theme.BorderBlack
 import project.side.ui.theme.DungGeunMoPopupTitle
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.Primary
@@ -119,9 +119,10 @@ fun CalendarPicker(
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .clip(CircleShape)
                             .then(
-                                if (isSelected) Modifier.background(Primary, CircleShape)
+                                if (isSelected) Modifier
+                                    .background(Primary)
+                                    .border(1.dp, BorderBlack)
                                 else Modifier
                             )
                             .clickable { onDateSelected(date) },
