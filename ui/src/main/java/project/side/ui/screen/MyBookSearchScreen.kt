@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import project.side.ui.component.PixelShadowBox
 import project.side.ui.component.TitleBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -96,43 +97,48 @@ fun MyBookSearchScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
-                .height(48.dp)
-                .background(BackgroundWhite)
-                .border(1.dp, BorderBlack),
-            contentAlignment = Alignment.CenterStart
         ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically
+            PixelShadowBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                backgroundColor = BackgroundWhite,
+                shadowOffset = 2.dp,
+                contentAlignment = Alignment.CenterStart
             ) {
-                BasicTextField(
-                    value = searchText,
-                    onValueChange = { searchText = it },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 10.dp),
-                    singleLine = true,
-                    textStyle = DungGeunMoBody.copy(color = TextPrimary),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = { viewModel.search(searchText) }),
-                    decorationBox = { innerTextField ->
-                        if (searchText.isEmpty()) {
-                            Text("검색어를 입력하세요", style = DungGeunMoBody, color = TextHint)
-                        }
-                        innerTextField()
-                    }
-                )
-                Box(
-                    modifier = Modifier
-                        .clickable { viewModel.search(searchText) }
-                        .padding(8.dp)
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.search),
-                        contentDescription = "검색",
-                        tint = TextPrimary,
-                        modifier = Modifier.size(20.dp)
+                    BasicTextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 10.dp),
+                        singleLine = true,
+                        textStyle = DungGeunMoBody.copy(color = TextPrimary),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = { viewModel.search(searchText) }),
+                        decorationBox = { innerTextField ->
+                            if (searchText.isEmpty()) {
+                                Text("검색어를 입력하세요", style = DungGeunMoBody, color = TextHint)
+                            }
+                            innerTextField()
+                        }
                     )
+                    Box(
+                        modifier = Modifier
+                            .clickable { viewModel.search(searchText) }
+                            .padding(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.search),
+                            contentDescription = "검색",
+                            tint = TextPrimary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }

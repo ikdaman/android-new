@@ -2,6 +2,7 @@ package project.side.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import project.side.ui.component.PixelShadowBox
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -106,12 +107,12 @@ fun SearchBookScreen(
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp),
         ) {
             // Search field
-            Box(
-                Modifier
+            PixelShadowBox(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
-                    .background(BackgroundWhite)
-                    .border(1.dp, BorderBlack),
+                    .height(48.dp),
+                backgroundColor = BackgroundWhite,
+                shadowOffset = 2.dp,
                 contentAlignment = Alignment.CenterStart
             ) {
                 Row(
