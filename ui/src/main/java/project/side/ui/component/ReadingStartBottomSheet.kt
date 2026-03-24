@@ -126,77 +126,85 @@ internal fun ReadingStartBottomSheetContent(
                         style = DungGeunMoPopupTitle,
                         color = TextPrimary
                     )
-                    Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(35.dp))
                     Text(
                         bookTitle,
                         style = WantedSansBody,
                         color = TextPrimary
                     )
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(30.dp))
 
-                    Text("START", style = DungGeunMoBody, color = TextPrimary)
-                    Spacer(Modifier.height(8.dp))
-                    PixelShadowButton(
-                        onClick = { showCalendar = true },
-                        backgroundColor = BackgroundWhite,
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row {
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(28.dp),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    startDate.format(dateFormatter),
-                                    style = DungGeunMoBody,
-                                    color = TextPrimary,
-                                    modifier = Modifier.padding(horizontal = 10.dp)
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .height(28.dp)
-                                    .width(28.dp)
-                                    .background(BackgroundGray),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("▼", style = DungGeunMoSubtitle, color = TextPrimary)
+                        Text("START", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
+                        PixelShadowButton(
+                            onClick = { showCalendar = true },
+                            backgroundColor = BackgroundWhite,
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Row {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(28.dp),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    Text(
+                                        startDate.format(dateFormatter),
+                                        style = DungGeunMoBody,
+                                        color = TextPrimary,
+                                        modifier = Modifier.padding(horizontal = 10.dp)
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .height(28.dp)
+                                        .width(28.dp)
+                                        .background(BackgroundGray),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("▼", style = DungGeunMoSubtitle, color = TextPrimary)
+                                }
                             }
                         }
                     }
 
-                    Spacer(Modifier.height(32.dp))
+                    Spacer(Modifier.height(16.dp))
 
-                    Text("FINISH", style = DungGeunMoBody, color = TextPrimary)
-                    Spacer(Modifier.height(8.dp))
-                    PixelShadowBox(
-                        backgroundColor = BackgroundWhite,
-                        modifier = Modifier.fillMaxWidth()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row {
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(28.dp),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    "읽는 중",
-                                    style = DungGeunMoBody,
-                                    color = TextHint,
-                                    modifier = Modifier.padding(horizontal = 10.dp)
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .height(28.dp)
-                                    .width(28.dp)
-                                    .background(BackgroundGray),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("▼", style = DungGeunMoSubtitle, color = TextPrimary)
+                        Text("FINISH", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
+                        PixelShadowBox(
+                            backgroundColor = BackgroundWhite,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Row {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(28.dp),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    Text(
+                                        "읽는 중",
+                                        style = DungGeunMoBody,
+                                        color = TextHint,
+                                        modifier = Modifier.padding(horizontal = 10.dp)
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .height(28.dp)
+                                        .width(28.dp)
+                                        .background(BackgroundGray),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("▼", style = DungGeunMoSubtitle, color = TextPrimary)
+                                }
                             }
                         }
                     }
@@ -241,6 +249,10 @@ internal fun ReadingStartBottomSheetContent(
 @Composable
 fun ReadingStartBottomSheetPreview() {
     IkdamanTheme {
-        ReadingStartBottomSheetContent()
+        ReadingStartBottomSheetContent(
+            bookTitle = "책 제목이 들어갑니다",
+            onDismiss = {},
+            onConfirm = {}
+        )
     }
 }
