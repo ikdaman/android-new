@@ -5,7 +5,6 @@ platform :android do
       json_key: ENV["PLAY_STORE_CONFIG_JSON_PATH"] || File.join(Dir.pwd, "play-store-credentials.json"),
       track: "internal",
       aab: ENV["AAB_PATH"] || "../app/build/outputs/bundle/release/app-release.aab",
-      mapping_paths: [ENV["NATIVE_DEBUG_SYMBOLS_PATH"] || "../app/build/outputs/native-debug-symbols/release/native-debug-symbols.zip"],
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
