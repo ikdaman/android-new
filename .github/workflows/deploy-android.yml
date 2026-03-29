@@ -54,7 +54,7 @@ jobs:
       - name: Deploy to Play Store (Internal Testing)
         run: |
           cd fastlane
-          bundle exec fastlane deploy_internal
+          bundle exec fastlane android deploy_internal
         env:
           PLAY_STORE_CONFIG_JSON_PATH: play-store-credentials.json
 
