@@ -2,6 +2,7 @@ platform :android do
   desc "Deploy to Play Store Internal Testing"
   lane :deploy_internal do
     upload_to_play_store(
+      json_key: ENV["PLAY_STORE_CONFIG_JSON_PATH"] || File.join(Dir.pwd, "play-store-credentials.json"),
       track: "internal",
       aab: ENV["AAB_PATH"] || "../app/build/outputs/bundle/release/app-release.aab",
       skip_upload_metadata: true,
@@ -14,6 +15,7 @@ platform :android do
   desc "Promote Internal to Production"
   lane :promote_to_production do
     upload_to_play_store(
+      json_key: ENV["PLAY_STORE_CONFIG_JSON_PATH"] || File.join(Dir.pwd, "play-store-credentials.json"),
       track: "internal",
       track_promote_to: "production",
       skip_upload_metadata: true,
