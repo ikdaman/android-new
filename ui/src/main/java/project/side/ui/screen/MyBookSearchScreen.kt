@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CircularProgressIndicator
+import project.side.ui.component.RetroLoadingScreen
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import project.side.ui.component.PixelShadowBox
@@ -143,11 +143,7 @@ fun MyBookSearchScreen(
             }
         }
 
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else {
+        RetroLoadingScreen(isLoading = isLoading) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier
@@ -169,7 +165,7 @@ fun MyBookSearchScreen(
 @Composable
 private fun MyBookSearchResultItem(item: MyBookSearchItem, onClick: () -> Unit = {}) {
     val (tag, tagColor) = when (item.readingStatus) {
-        "TODO" -> "읽고 싶은 책" to Primary
+        "TODO" -> "읽다만" to Primary
         "COMPLETED" -> "완독" to TextPrimary
         else -> "읽는 중" to TextPrimary
     }

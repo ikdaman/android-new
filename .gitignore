@@ -15,6 +15,8 @@
 local.properties
 key.properties
 release.keystore
+fastlane/play-store-credentials.json
+fastlane/report.xml
 .idea
 .omc
 .claude

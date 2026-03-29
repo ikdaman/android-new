@@ -249,7 +249,7 @@ class BookInfoViewModelTest {
 
         // Then
         assertTrue(viewModel.deleteSuccess.value)
-        coVerify { SnackbarManager.show("책을 정리했어요.") }
+        coVerify { SnackbarManager.show("책을 정리했어요!") }
     }
 
     @Test

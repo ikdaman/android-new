@@ -202,7 +202,11 @@ fun MainScreen(
             }
             NavHost(
                 navController = navController,
-                startDestination = HOME_ROUTE
+                startDestination = HOME_ROUTE,
+                enterTransition = { androidx.compose.animation.EnterTransition.None },
+                exitTransition = { androidx.compose.animation.ExitTransition.None },
+                popEnterTransition = { androidx.compose.animation.EnterTransition.None },
+                popExitTransition = { androidx.compose.animation.ExitTransition.None }
             ) {
                 composable(HOME_ROUTE) { backStackEntry ->
                     LaunchedEffect(backStackEntry) {
@@ -216,7 +220,9 @@ fun MainScreen(
                         onToggleSort = { mainViewModel.toggleSort() },
                         onLoadMore = { mainViewModel.loadMore() },
                         onBookClick = { mybookId ->
-                            navController.navigate("BookInfo/$mybookId")
+                            val desc = storeBooks.find { it.mybookId == mybookId }?.description
+                            val encodedDesc = desc?.let { android.net.Uri.encode(it) } ?: ""
+                            navController.navigate("BookInfo/$mybookId?description=$encodedDesc")
                         },
                         onStartReading = { mybookId, title ->
                             readingStartMybookId.intValue = mybookId
@@ -260,9 +266,13 @@ fun MainScreen(
                         }
                     )
                 }
-                composable(HISTORY_ROUTE) {
+                composable(HISTORY_ROUTE) { backStackEntry ->
+                    val historyViewModel: project.side.presentation.viewmodel.HistoryViewModel = hiltViewModel()
+                    LaunchedEffect(backStackEntry) {
+                        historyViewModel.getBooks(showLoading = false)
+                    }
                     HistoryScreen(
-                        viewModel = hiltViewModel(),
+                        viewModel = historyViewModel,
                         onBookClick = { mybookId ->
                             navController.navigate("BookInfo/$mybookId")
                         },
@@ -285,7 +295,14 @@ fun MainScreen(
                 }
                 composable(
                     BOOK_INFO_ROUTE,
-                    arguments = listOf(navArgument("mybookId") { type = NavType.IntType })
+                    arguments = listOf(
+                        navArgument("mybookId") { type = NavType.IntType },
+                        navArgument("description") {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        }
+                    )
                 ) {
                     val bookInfoViewModel: BookInfoViewModel = hiltViewModel()
                     BookInfoScreen(

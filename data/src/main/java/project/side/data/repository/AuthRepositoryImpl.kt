@@ -9,13 +9,15 @@ import project.side.data.model.DataApiResult
 import project.side.data.model.SocialLoginResult
 import project.side.domain.model.LoginState
 import project.side.domain.model.LogoutState
+import project.side.data.auth.TokenCacheManager
 import project.side.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource,
     private val socialAuthDataSource: SocialAuthDataSource,
-    private val authDataStoreSource: AuthDataStoreSource
+    private val authDataStoreSource: AuthDataStoreSource,
+    private val tokenCacheManager: TokenCacheManager
 ) : AuthRepository {
     override fun googleLogin() = flow {
         emit(LoginState.Loading)
@@ -52,6 +54,7 @@ class AuthRepositoryImpl @Inject constructor(
         authDataSource.logout()
         logout()
         authDataStoreSource.clear()
+        tokenCacheManager.clearToken()
         emit(LogoutState.Success)
     }
 
@@ -71,6 +74,7 @@ class AuthRepositoryImpl @Inject constructor(
                 data.refreshToken,
                 data.nickname
             )
+            tokenCacheManager.updateToken()
             emit(project.side.domain.model.SignupState.Success)
         } else if (signupResult is DataApiResult.Error) {
             emit(project.side.domain.model.SignupState.Error(signupResult.message))
@@ -108,6 +112,7 @@ class AuthRepositoryImpl @Inject constructor(
                     data.refreshToken,
                     data.nickname
                 )
+                tokenCacheManager.updateToken()
                 emit(LoginState.Success)
             } else if (loginResult is DataApiResult.Error && loginResult.code == 404) {
                 emit(LoginState.SignupRequired(accessToken, provider, providerId))

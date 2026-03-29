@@ -3,6 +3,7 @@ package project.side.ui.screen
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,36 +15,44 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import project.side.ui.component.CustomSnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.presentation.model.LoginUIState
 import project.side.presentation.viewmodel.LoginViewModel
+import project.side.ui.R
+import project.side.ui.component.CustomSnackbarHost
+import project.side.ui.component.PixelShadowBox
+import project.side.ui.component.PixelShadowButton
 import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BackgroundWhite
+import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoHomeTitle
+import project.side.ui.theme.DungGeunMoSubtitle
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.TextPrimary
-import project.side.ui.theme.WantedSansBody
 import project.side.ui.theme.WantedSansBodySmall
 
 private const val TERMS_URL = "https://www.notion.so/19f4710961a980499b90cb88b2c2ec0d"
@@ -65,6 +74,7 @@ fun LoginScreen(
         var message = ""
         if (uiState is LoginUIState.SignupRequired) {
             navigateToSignup(uiState.socialToken, uiState.provider, uiState.providerId)
+            viewModel?.resetState()
         }
         if (uiState is LoginUIState.Error) {
             message = uiState.message
@@ -86,34 +96,80 @@ fun LoginScreen(
                 .padding(innerPadding)
                 .background(BackgroundDefault)
         ) {
+            // Loading dialog
             if (uiState is LoginUIState.Loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                Dialog(onDismissRequest = {}) {
+                    val dotCount by remember { mutableIntStateOf(0) }.also { state ->
+                        LaunchedEffect(Unit) {
+                            while (true) {
+                                delay(500)
+                                state.intValue = (state.intValue % 3) + 1
+                            }
+                        }
+                    }
+                    PixelShadowBox(
+                        backgroundColor = BackgroundWhite
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp, vertical = 32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "로그인 중" + ".".repeat(dotCount),
+                                style = DungGeunMoBody,
+                                color = TextPrimary
+                            )
+                        }
+                    }
+                }
             }
+
             Column(
-                Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // App intro
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 60.dp)
-                        .clip(RoundedCornerShape(0.dp))
-                        .background(BackgroundWhite),
-                    contentAlignment = Alignment.Center
+                // App logo + title
+                Spacer(Modifier.weight(1f))
+                Image(
+                    painter = painterResource(R.drawable.ic_app_logo),
+                    contentDescription = "읽다만",
+                    modifier = Modifier.size(100.dp)
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = "읽 다 만",
+                    style = DungGeunMoHomeTitle,
+                    color = TextPrimary
+                )
+                Spacer(Modifier.weight(1f))
+
+                // Social login buttons
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
-                    Text(
-                        text = "읽고 싶은 책\n앱 소개",
-                        style = DungGeunMoHomeTitle,
-                        color = TextPrimary,
-                        textAlign = TextAlign.Center
+                    SocialLoginButton(
+                        iconRes = R.drawable.google_logo,
+                        text = "구글 로그인",
+                        onClick = { if (loginUseCase != null) viewModel?.googleLogin(loginUseCase) }
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    SocialLoginButton(
+                        iconRes = R.drawable.naver_logo,
+                        text = "네이버 로그인",
+                        onClick = { if (loginUseCase != null) viewModel?.naverLogin(loginUseCase) }
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    SocialLoginButton(
+                        iconRes = R.drawable.kakao_logo,
+                        text = "카카오 로그인",
+                        onClick = { if (loginUseCase != null) viewModel?.kakaoLogin(loginUseCase) }
                     )
                 }
 
                 // Terms
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(16.dp))
                 Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(text = "가입시 ", style = WantedSansBodySmall, color = TextPrimary)
                     TermText("이용약관") {
@@ -125,47 +181,42 @@ fun LoginScreen(
                     }
                     Text(text = "에 동의하게 됩니다.", style = WantedSansBodySmall, color = TextPrimary)
                 }
-
-                // Social login buttons
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 10.dp, bottom = 40.dp)
-                ) {
-                    LoginButton("구글 로그인") {
-                        if (loginUseCase != null) viewModel?.googleLogin(loginUseCase)
-                    }
-                    Spacer(Modifier.height(9.dp))
-                    LoginButton("네이버 로그인") {
-                        if (loginUseCase != null) viewModel?.naverLogin(loginUseCase)
-                    }
-                    Spacer(Modifier.height(9.dp))
-                    LoginButton("카카오 로그인") {
-                        if (loginUseCase != null) viewModel?.kakaoLogin(loginUseCase)
-                    }
-                }
+                Spacer(Modifier.height(40.dp))
             }
         }
     }
 }
 
 @Composable
-private fun LoginButton(text: String, onClick: () -> Unit = {}) {
-    Box(
+private fun SocialLoginButton(
+    iconRes: Int,
+    text: String,
+    onClick: () -> Unit = {}
+) {
+    PixelShadowButton(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(52.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xFFD9D9D9))
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
+            .height(48.dp),
+        backgroundColor = BackgroundWhite
     ) {
-        Text(
-            text = text,
-            style = WantedSansBody,
-            color = TextPrimary,
-            textAlign = TextAlign.Center
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = text,
+                style = DungGeunMoSubtitle,
+                color = TextPrimary
+            )
+        }
     }
 }
 

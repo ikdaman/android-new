@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import project.side.domain.usecase.SignupUseCase
 import project.side.presentation.model.SignupUIState
 import project.side.presentation.viewmodel.SignupViewModel
+import project.side.ui.component.PixelShadowBox
 import project.side.ui.component.TitleBar
 import project.side.ui.theme.BackgroundDefault
 import project.side.ui.theme.BackgroundWhite
@@ -45,6 +46,7 @@ fun SignupScreen(
     providerId: String,
     signupUseCase: SignupUseCase,
     viewModel: SignupViewModel = hiltViewModel(),
+    onBackClick: () -> Unit = {},
     onSignupComplete: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -64,7 +66,7 @@ fun SignupScreen(
             TitleBar(
                 title = "닉네임 입력",
                 showBackButton = true,
-                onBackButtonClicked = {},
+                onBackButtonClicked = onBackClick,
                 rightText = "완료",
                 onRightClick = {
                     viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
@@ -86,20 +88,24 @@ fun SignupScreen(
 
             // Nickname input
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                TextField(
-                    value = nickname,
-                    onValueChange = { nickname = it },
-                    singleLine = true,
-                    textStyle = WantedSansBody.copy(color = TextPrimary),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = BackgroundWhite,
-                        unfocusedContainerColor = BackgroundWhite,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
+                PixelShadowBox(
+                    backgroundColor = BackgroundWhite,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextField(
+                        value = nickname,
+                        onValueChange = { nickname = it },
+                        singleLine = true,
+                        textStyle = WantedSansBody.copy(color = TextPrimary),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
                 if (showDuplicateError) {
                     Spacer(modifier = Modifier.height(6.dp))
@@ -108,6 +114,7 @@ fun SignupScreen(
                         style = DungGeunMoTag,
                         color = Primary
                     )
+                    Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = "닉네임을 다시 확인해주세요.",
                         style = DungGeunMoTag,

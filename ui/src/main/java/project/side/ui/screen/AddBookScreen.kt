@@ -122,6 +122,7 @@ fun AddBookScreen(
                     color = TextPrimary,
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(Modifier.height(8.dp))
                 Text(
                     text = selectedBookResolved.publisher,
                     style = WantedSansBody,

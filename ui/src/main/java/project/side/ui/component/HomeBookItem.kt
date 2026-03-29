@@ -42,10 +42,9 @@ fun HomeBookItem(
     onStartReading: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
-    PixelShadowBox(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+    PixelShadowButton(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
         backgroundColor = BackgroundWhite,
         contentAlignment = Alignment.TopStart
     ) {
@@ -133,7 +132,7 @@ fun HomeBookItem(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(9.dp))
                     if (!description.isNullOrEmpty()) {
                         Text(
                             text = description,

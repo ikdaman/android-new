@@ -2,6 +2,7 @@ package project.side.ui.screen
 
 import android.Manifest
 import android.content.Context
+import android.graphics.Rect
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,20 +12,22 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.painterResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -34,12 +37,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import project.side.ui.theme.BackgroundDefault
-import project.side.ui.theme.DungGeunMoHeader
-import project.side.ui.theme.TextPrimary
+import project.side.ui.R
+import project.side.ui.component.TitleBar
+import project.side.ui.theme.DungGeunMo
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -130,26 +147,12 @@ private fun BarcodeScreenUI(
 ) {
     Scaffold(
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(BackgroundDefault)
-                    .statusBarsPadding()
-            ) {
-                IconButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterStart)) {
-                    Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
-                }
-                Text(
-                    text = "바코드 스캔",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(vertical = 15.dp),
-                    style = DungGeunMoHeader,
-                    color = TextPrimary
+            Column(modifier = Modifier.statusBarsPadding()) {
+                TitleBar(
+                    title = "바코드 스캔",
+                    showBackButton = true,
+                    onBackButtonClicked = onBack
                 )
-                IconButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterEnd)) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = TextPrimary)
-                }
             }
         }
     ) { innerPadding ->
@@ -188,11 +191,18 @@ private fun CameraPreview(
         }
     }
 
+    // Scan region: centered box (10%-90% horizontal, 30%-60% vertical)
+    val scanLeft = 100; val scanTop = 300; val scanRight = 900; val scanBottom = 600
+    LaunchedEffect(barcodeScanner) {
+        barcodeScanner?.scanRegion = Rect(scanLeft, scanTop, scanRight, scanBottom)
+    }
+
+    val textMeasurer = rememberTextMeasurer()
+
     Box(modifier) {
         AndroidView(
             factory = { ctx ->
                 val previewView = PreviewView(ctx)
-                // bind if scanner is provided
                 if (barcodeScanner != null) {
                     try {
                         bindCamera(previewView, cameraProvider, lifecycleOwner, barcodeScanner)
@@ -212,9 +222,54 @@ private fun CameraPreview(
             },
             modifier = Modifier
                 .fillMaxSize()
-                .border(2.dp, Color(0xFFFFD900))
                 .background(Color.Black)
         )
+
+        // Dark overlay with transparent hole
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val boxLeft = size.width * scanLeft / 1000f
+            val boxTop = size.height * scanTop / 1000f
+            val boxRight = size.width * scanRight / 1000f
+            val boxBottom = size.height * scanBottom / 1000f
+            val boxWidth = boxRight - boxLeft
+            val boxHeight = boxBottom - boxTop
+
+            val holePath = Path().apply {
+                addRect(androidx.compose.ui.geometry.Rect(boxLeft, boxTop, boxRight, boxBottom))
+            }
+            clipPath(holePath, clipOp = ClipOp.Difference) {
+                drawRect(Color.Black.copy(alpha = 0.8f))
+            }
+
+            drawRect(
+                color = Color.White,
+                topLeft = Offset(boxLeft, boxTop),
+                size = Size(boxWidth, boxHeight),
+                style = Stroke(width = 3.dp.toPx())
+            )
+        }
+
+        // Guide text + arrow (positioned above the scan box)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.weight(scanTop / 1000f - 0.1f))
+            Text(
+                text = "책의 바코드 영역을 맞춰주세요.",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontFamily = DungGeunMo,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_down),
+                contentDescription = null,
+                modifier = Modifier.height(30.dp)
+            )
+            Spacer(modifier = Modifier.weight(0.1f + (1000 - scanTop) / 1000f))
+        }
     }
 }
 

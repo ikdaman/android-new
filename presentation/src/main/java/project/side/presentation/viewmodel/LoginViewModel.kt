@@ -22,6 +22,10 @@ class LoginViewModel @Inject constructor(): ViewModel() {
     private val _uiState = MutableStateFlow<LoginUIState>(LoginUIState.Init)
     val uiState: StateFlow<LoginUIState> = _uiState.asStateFlow()
 
+    fun resetState() {
+        _uiState.value = LoginUIState.Init
+    }
+
     fun googleLogin(loginUseCase: LoginUseCase) = login(AuthType.GOOGLE, loginUseCase)
     fun naverLogin(loginUseCase: LoginUseCase) = login(AuthType.NAVER, loginUseCase)
     fun kakaoLogin(loginUseCase: LoginUseCase) = login(AuthType.KAKAO, loginUseCase)

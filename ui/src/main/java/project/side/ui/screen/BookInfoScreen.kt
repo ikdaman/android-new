@@ -44,6 +44,7 @@ import project.side.presentation.viewmodel.BookInfoUiState
 import project.side.presentation.viewmodel.BookInfoViewModel
 import androidx.compose.ui.window.Dialog
 import project.side.ui.component.BookEditBottomSheet
+import project.side.ui.component.RetroLoadingScreen
 import project.side.ui.component.PixelShadowBox
 import project.side.ui.component.PixelShadowButton
 import project.side.ui.component.TitleBar
@@ -157,44 +158,42 @@ fun BookInfoScreen(
         }
     }
 
-    when (val state = uiState) {
-        is BookInfoUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        }
-        is BookInfoUiState.Error -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = state.message ?: "오류가 발생했습니다.", color = Primary)
-            }
-        }
-        is BookInfoUiState.Success -> {
-            BookEditBottomSheet(
-                show = showEditSheet,
-                detail = state.detail,
-                onDismiss = { showEditSheet = false },
-                onConfirm = { result ->
-                    showEditSheet = false
-                    viewModel.updateMyBook(
-                        status = result.status,
-                        reason = result.reason,
-                        startedDate = result.startedDate,
-                        finishedDate = result.finishedDate,
-                        bookInfoTitle = result.bookInfoTitle,
-                        bookInfoAuthor = result.bookInfoAuthor,
-                        bookInfoPublisher = result.bookInfoPublisher,
-                        bookInfoPublishDate = result.bookInfoPublishDate,
-                        bookInfoIsbn = result.bookInfoIsbn,
-                        bookInfoTotalPage = result.bookInfoTotalPage
-                    )
+    RetroLoadingScreen(isLoading = uiState is BookInfoUiState.Loading) {
+        when (val state = uiState) {
+            is BookInfoUiState.Error -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = state.message ?: "오류가 발생했습니다.", color = Primary)
                 }
-            )
-            BookInfoContent(
-                detail = state.detail,
-                onBack = onBack,
-                onEdit = { showEditSheet = true },
-                onDelete = { showDeleteDialog = true }
-            )
+            }
+            is BookInfoUiState.Success -> {
+                BookEditBottomSheet(
+                    show = showEditSheet,
+                    detail = state.detail,
+                    onDismiss = { showEditSheet = false },
+                    onConfirm = { result ->
+                        showEditSheet = false
+                        viewModel.updateMyBook(
+                            status = result.status,
+                            reason = result.reason,
+                            startedDate = result.startedDate,
+                            finishedDate = result.finishedDate,
+                            bookInfoTitle = result.bookInfoTitle,
+                            bookInfoAuthor = result.bookInfoAuthor,
+                            bookInfoPublisher = result.bookInfoPublisher,
+                            bookInfoPublishDate = result.bookInfoPublishDate,
+                            bookInfoIsbn = result.bookInfoIsbn,
+                            bookInfoTotalPage = result.bookInfoTotalPage
+                        )
+                    }
+                )
+                BookInfoContent(
+                    detail = state.detail,
+                    onBack = onBack,
+                    onEdit = { showEditSheet = true },
+                    onDelete = { showDeleteDialog = true }
+                )
+            }
+            else -> {}
         }
     }
 }
@@ -212,7 +211,7 @@ private fun BookInfoContent(
     val tagText = when {
         isHistory && detail.readingStatus == "COMPLETED" -> "완독"
         isHistory -> "읽는 중"
-        else -> "읽고 싶은 책"
+        else -> "읽다만"
     }
 
     Column(

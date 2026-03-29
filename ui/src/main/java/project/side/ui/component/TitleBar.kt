@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import project.side.ui.R
 import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundWhite
 import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoHeader
 import project.side.ui.theme.IkdamanTheme
@@ -44,18 +45,19 @@ fun TitleBar(
     ) {
         // Back button (left)
         if (showBackButton) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .size(30.dp)
-                    .clickable { onBackButtonClicked() },
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.arrow_left),
-                    contentDescription = null,
-                    modifier = Modifier.height(24.dp)
-                )
+            Box(modifier = Modifier.align(Alignment.CenterStart)) {
+                PixelShadowButton(
+                    onClick = { onBackButtonClicked() },
+                    modifier = Modifier.size(30.dp),
+                    backgroundColor = BackgroundWhite,
+                    shadowOffset = 1.dp
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.arrow_left),
+                        contentDescription = null,
+                        modifier = Modifier.height(16.dp)
+                    )
+                }
             }
         }
 

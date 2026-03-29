@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.scopes.ActivityScoped
+import project.side.data.auth.TokenCacheManager
 import project.side.data.datasource.AuthDataSource
 import project.side.data.datasource.AuthDataStoreSource
 import project.side.data.datasource.SocialAuthDataSource
@@ -24,8 +25,9 @@ object ActivityModule {
     fun provideAuthRepository(
         authDataSource: AuthDataSource,
         socialAuthDataSource: SocialAuthDataSource,
-        authDataStoreSource: AuthDataStoreSource
-    ): AuthRepository = AuthRepositoryImpl(authDataSource, socialAuthDataSource, authDataStoreSource)
+        authDataStoreSource: AuthDataStoreSource,
+        tokenCacheManager: TokenCacheManager
+    ): AuthRepository = AuthRepositoryImpl(authDataSource, socialAuthDataSource, authDataStoreSource, tokenCacheManager)
 
     @Provides
     @ActivityScoped

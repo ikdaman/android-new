@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,7 @@ import project.side.ui.R
 import project.side.ui.component.HomeBookItem
 import project.side.ui.component.PixelShadowButton
 import project.side.ui.theme.BackgroundDefault
+import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.DungGeunMoEtc
 import project.side.ui.theme.DungGeunMoHomeTitle
@@ -128,19 +130,24 @@ fun HomeScreen(
                 }
             }
 
-            items(storeBooks.size) { index ->
+            items(
+                count = storeBooks.size,
+                key = { storeBooks[it].mybookId }
+            ) { index ->
                 val book = storeBooks[index]
-                HomeBookItem(
-                    index = if (sortDescending) storeBooks.size - index else index + 1,
-                    title = book.title,
-                    coverImage = book.coverImage,
-                    date = book.createdDate.take(10).replace("-", "."),
-                    description = book.description,
-                    onClick = { onBookClick(book.mybookId) },
-                    onStartReading = { onStartReading(book.mybookId, book.title) },
-                    onDelete = { onDelete(book.mybookId) }
-                )
-                Spacer(modifier = Modifier.height(30.dp))
+                Column(modifier = Modifier.animateItem()) {
+                    HomeBookItem(
+                        index = if (sortDescending) storeBooks.size - index else index + 1,
+                        title = book.title,
+                        coverImage = book.coverImage,
+                        date = book.createdDate.take(10).replace("-", "."),
+                        description = book.description,
+                        onClick = { onBookClick(book.mybookId) },
+                        onStartReading = { onStartReading(book.mybookId, book.title) },
+                        onDelete = { onDelete(book.mybookId) }
+                    )
+                    Spacer(modifier = Modifier.height(30.dp))
+                }
             }
         }
     }
@@ -158,14 +165,20 @@ private fun HomeHeader(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            Image(
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.CenterEnd)
-                    .clickable { navigateToSetting() },
-                painter = painterResource(R.drawable.settings),
-                contentDescription = "설정"
-            )
+            Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                PixelShadowButton(
+                    onClick = { navigateToSetting() },
+                    modifier = Modifier.size(30.dp),
+                    backgroundColor = BackgroundGray,
+                    shadowOffset = 1.dp
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.settings),
+                        contentDescription = "설정",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
 
         // Title

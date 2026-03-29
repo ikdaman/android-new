@@ -77,7 +77,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun fetchStoreBooks() {
+    private fun fetchStoreBooks(isRefresh: Boolean = false) {
         if (storeBooksLoading || storeBooksLastPage) return
         storeBooksLoading = true
         fetchJob = viewModelScope.launch {
@@ -85,7 +85,7 @@ class MainViewModel @Inject constructor(
             getStoreBooksUseCase(page = storeBooksPage, size = PAGE_SIZE, sort = sort).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
-                        _storeBooks.value = _storeBooks.value + result.data.content
+                        _storeBooks.value = if (isRefresh) result.data.content else _storeBooks.value + result.data.content
                         storeBooksLastPage = result.data.last
                         storeBooksPage++
                         storeBooksLoading = false
@@ -113,8 +113,7 @@ class MainViewModel @Inject constructor(
         storeBooksPage = 0
         storeBooksLastPage = false
         storeBooksLoading = false
-        _storeBooks.value = emptyList()
-        fetchStoreBooks()
+        fetchStoreBooks(isRefresh = true)
     }
 
     suspend fun showSnackbar(message: String) {

@@ -3,6 +3,7 @@ package project.side.data.repository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -10,6 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import project.side.data.auth.TokenCacheManager
 import project.side.data.datasource.AuthDataSource
 import project.side.data.datasource.AuthDataStoreSource
 import project.side.data.datasource.SocialAuthDataSource
@@ -31,12 +33,17 @@ class AuthRepositoryImplTest {
     @MockK
     private lateinit var authDataStoreSource: AuthDataStoreSource
 
+    @MockK
+    private lateinit var tokenCacheManager: TokenCacheManager
+
     private lateinit var repository: AuthRepositoryImpl
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        repository = AuthRepositoryImpl(authDataSource, socialAuthDataSource, authDataStoreSource)
+        coEvery { tokenCacheManager.updateToken() } returns Unit
+        every { tokenCacheManager.clearToken() } returns Unit
+        repository = AuthRepositoryImpl(authDataSource, socialAuthDataSource, authDataStoreSource, tokenCacheManager)
     }
 
     // googleLogin tests

@@ -20,7 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CircularProgressIndicator
+import project.side.ui.component.RetroLoading
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -150,7 +150,7 @@ fun SearchBookScreen(
                         appNavController?.navigate(BARCODE_ROUTE)
                     }) {
                         Icon(
-                            painter = painterResource(R.drawable.camera),
+                            painter = painterResource(R.drawable.ic_camera_pixel),
                             contentDescription = "barcode",
                             tint = TextPrimary,
                             modifier = Modifier.padding(8.dp)
@@ -173,14 +173,7 @@ fun SearchBookScreen(
 
             when {
                 searchState.isLoading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                    RetroLoading()
                 }
                 searchState.errorMessage != null -> {
                     Column(
@@ -268,7 +261,11 @@ fun SearchBookScreen(
                                         .padding(16.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                    Text(
+                                        text = "로딩중...",
+                                        style = DungGeunMoBody,
+                                        color = TextPrimary
+                                    )
                                 }
                             }
                         }

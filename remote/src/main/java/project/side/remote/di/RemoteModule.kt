@@ -14,6 +14,7 @@ import project.side.data.datasource.HistoryDataSource
 import project.side.data.datasource.MemberDataSource
 import project.side.data.datasource.MyBookDataSource
 import project.side.data.datasource.TestDataSource
+import project.side.data.auth.TokenCacheManager
 import project.side.remote.BuildConfig
 import project.side.remote.api.AladinBookService
 import project.side.remote.api.AuthService
@@ -23,6 +24,7 @@ import project.side.remote.api.MyBookService
 import project.side.remote.api.TestApiService
 import project.side.remote.api.UserService
 import project.side.remote.auth.AuthInterceptor
+import project.side.remote.auth.AuthTokenProvider
 import project.side.remote.auth.TokenAuthenticator
 import project.side.remote.datasource.AladinBookSearchSourceImpl
 import project.side.remote.datasource.AuthDataSourceImpl
@@ -176,5 +178,10 @@ object RemoteModule {
     @Singleton
     fun provideMyBookDataSource(myBookService: MyBookService): MyBookDataSource =
         MyBookDataSourceImpl(myBookService)
+
+    @Provides
+    @Singleton
+    fun provideTokenCacheManager(authTokenProvider: AuthTokenProvider): TokenCacheManager =
+        authTokenProvider
 }
 

@@ -30,6 +30,7 @@ class BookInfoViewModel @Inject constructor(
     val deleteSuccess = _deleteSuccess.asStateFlow()
 
     private val mybookId: Int = savedStateHandle["mybookId"] ?: -1
+    private val fallbackDescription: String? = savedStateHandle["description"]
 
     init {
         if (mybookId != -1) {
@@ -44,7 +45,13 @@ class BookInfoViewModel @Inject constructor(
             getMyBookDetailUseCase(mybookId).collect {
                 when (it) {
                     is DataResource.Success -> {
-                        _uiState.value = BookInfoUiState.Success(it.data)
+                        val detail = it.data
+                        val mergedDetail = if (detail.bookInfo.description.isNullOrEmpty() && !fallbackDescription.isNullOrEmpty()) {
+                            detail.copy(bookInfo = detail.bookInfo.copy(description = fallbackDescription))
+                        } else {
+                            detail
+                        }
+                        _uiState.value = BookInfoUiState.Success(mergedDetail)
                     }
                     is DataResource.Error -> {
                         _uiState.value = BookInfoUiState.Error(it.message)
@@ -104,7 +111,7 @@ class BookInfoViewModel @Inject constructor(
             deleteMyBookUseCase(mybookId).collect {
                 when (it) {
                     is DataResource.Success -> {
-                        SnackbarManager.show("책을 정리했어요.")
+                        SnackbarManager.show("책을 정리했어요!")
                         _deleteSuccess.value = true
                     }
                     is DataResource.Error -> {

@@ -25,6 +25,13 @@ class BarcodeScanner {
     private val barcodeScanner = BarcodeScanning.getClient()
     val executor: ExecutorService = Executors.newSingleThreadExecutor()
 
+    /**
+     * Scan region as fractions of the image (0f..1f).
+     * Set from the UI layer based on the viewfinder box position.
+     */
+    @Volatile
+    var scanRegion: Rect? = null
+
     val imageAnalysisBuilder = ImageAnalysis.Builder()
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
 
@@ -36,10 +43,17 @@ class BarcodeScanner {
                 imageProxy.imageInfo.rotationDegrees
             )
 
+            val imageWidth = imageProxy.width
+            val imageHeight = imageProxy.height
+
             barcodeScanner.process(inputImage)
                 .addOnSuccessListener { barcodes ->
                     for (barcode in barcodes) {
                         if (barcode.valueType == TYPE_ISBN) {
+                            val box = barcode.boundingBox
+                            if (box != null && !isInScanRegion(box, imageWidth, imageHeight)) {
+                                continue
+                            }
                             barcode.rawValue?.let { value ->
                                 Log.d(TAG, "processImageProxy: $value")
                                 _isbnFlow.tryEmit(value)
@@ -56,5 +70,16 @@ class BarcodeScanner {
         } else {
             imageProxy.close()
         }
+    }
+
+    private fun isInScanRegion(box: Rect, imageWidth: Int, imageHeight: Int): Boolean {
+        val region = scanRegion ?: return true
+        val barcodeCenter = android.graphics.Rect(
+            box.left * 1000 / imageWidth,
+            box.top * 1000 / imageHeight,
+            box.right * 1000 / imageWidth,
+            box.bottom * 1000 / imageHeight
+        )
+        return region.contains(barcodeCenter.centerX(), barcodeCenter.centerY())
     }
 }

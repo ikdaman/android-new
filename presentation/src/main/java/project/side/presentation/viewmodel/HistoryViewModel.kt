@@ -34,7 +34,8 @@ class HistoryViewModel @Inject constructor(
         keyword: String? = null,
         page: Int? = 0,
         size: Int? = PAGE_SIZE,
-        isLoadMore: Boolean = false
+        isLoadMore: Boolean = false,
+        showLoading: Boolean = true
     ) {
         val sort = if (_uiState.value.sortDescending) "createdAt,desc" else "createdAt,asc"
         viewModelScope.launch {
@@ -61,7 +62,7 @@ class HistoryViewModel @Inject constructor(
                     }
 
                     is DataResource.Loading -> {
-                        if (!isLoadMore) {
+                        if (!isLoadMore && showLoading) {
                             _uiState.value = _uiState.value.copy(isLoading = true)
                         }
                     }
@@ -84,6 +85,6 @@ class HistoryViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(sortDescending = !_uiState.value.sortDescending)
         currentPage = 0
         isLastPage = false
-        getBooks()
+        getBooks(showLoading = false)
     }
 }

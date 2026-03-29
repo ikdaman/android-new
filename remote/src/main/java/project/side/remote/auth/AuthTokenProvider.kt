@@ -1,6 +1,7 @@
 package project.side.remote.auth
 
 import kotlinx.coroutines.runBlocking
+import project.side.data.auth.TokenCacheManager
 import project.side.data.datasource.AuthDataStoreSource
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,7 +14,7 @@ import javax.inject.Singleton
 @Singleton
 class AuthTokenProvider @Inject constructor(
     private val authDataStoreSource: AuthDataStoreSource
-) {
+) : TokenCacheManager {
     @Volatile
     private var cachedToken: String? = null
 
@@ -57,7 +58,7 @@ class AuthTokenProvider @Inject constructor(
      * Note: Fetches the token before entering the synchronized block to avoid
      * potential deadlocks when mixing coroutines with synchronized blocks.
      */
-    suspend fun updateToken() {
+    override suspend fun updateToken() {
         val newToken = authDataStoreSource.getAuthorization()
         synchronized(this) {
             cachedToken = newToken
@@ -72,7 +73,7 @@ class AuthTokenProvider @Inject constructor(
      * - This ensures subsequent requests won't use a stale token
      * - Example: After authDataStoreSource.clear(), call authTokenProvider.clearToken()
      */
-    fun clearToken() {
+    override fun clearToken() {
         synchronized(this) {
             cachedToken = null
         }

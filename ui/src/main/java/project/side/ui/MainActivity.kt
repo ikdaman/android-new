@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -77,7 +79,14 @@ class MainActivity : ComponentActivity() {
                         .launchIn(this)
                 }
 
-                NavHost(navController = navController, startDestination = SPLASH_ROUTE) {
+                NavHost(
+                    navController = navController,
+                    startDestination = SPLASH_ROUTE,
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None },
+                    popEnterTransition = { EnterTransition.None },
+                    popExitTransition = { ExitTransition.None }
+                ) {
                     composable(SPLASH_ROUTE) {
                         SplashScreen(
                             getLoginStateUseCase = getLoginStateUseCase,
@@ -144,6 +153,7 @@ class MainActivity : ComponentActivity() {
                             provider = provider,
                             providerId = providerId,
                             signupUseCase = signupUseCase,
+                            onBackClick = { navController.popBackStack() },
                             onSignupComplete = {
                                 navController.navigate(MAIN_ROUTE) {
                                     popUpTo(LOGIN_ROUTE) { inclusive = true }
@@ -163,6 +173,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
+
             }
         }
     }

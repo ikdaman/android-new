@@ -27,7 +27,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
+import project.side.ui.component.RetroLoadingScreen
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -91,11 +91,8 @@ fun HistoryScreenUI(
     onBookClick: (Int) -> Unit = {},
     onSearchClick: () -> Unit = {}
 ) {
-    if (uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else if (uiState.errorMessage != null) {
+    RetroLoadingScreen(isLoading = uiState.isLoading) {
+    if (uiState.errorMessage != null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = uiState.errorMessage ?: "", style = DungGeunMoBody, color = Color.Gray)
@@ -212,9 +209,16 @@ fun HistoryScreenUI(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        items(uiState.books.size) { index ->
+                        items(
+                            count = uiState.books.size,
+                            key = { uiState.books[it].mybookId }
+                        ) { index ->
                             val book = uiState.books[index]
-                            HistoryDataSetBookItem(book = book, onClick = { onBookClick(book.mybookId) })
+                            HistoryDataSetBookItem(
+                                book = book,
+                                onClick = { onBookClick(book.mybookId) },
+                                modifier = Modifier.animateItem()
+                            )
                         }
                     }
                 }
@@ -277,14 +281,19 @@ fun HistoryScreenUI(
                             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(BorderBlack))
                             // Table rows
                             LazyColumn(state = listState) {
-                                items(uiState.books.size) { index ->
+                                items(
+                                    count = uiState.books.size,
+                                    key = { uiState.books[it].mybookId }
+                                ) { index ->
                                     val book = uiState.books[index]
-                                    HistoryListBookItem(
-                                        book = book,
-                                        isEven = index % 2 == 0,
-                                        onClick = { onBookClick(book.mybookId) }
-                                    )
-                                    HorizontalDivider(color = BorderBlack, thickness = 0.5.dp)
+                                    Column(modifier = Modifier.animateItem()) {
+                                        HistoryListBookItem(
+                                            book = book,
+                                            isEven = index % 2 == 0,
+                                            onClick = { onBookClick(book.mybookId) }
+                                        )
+                                        HorizontalDivider(color = BorderBlack, thickness = 0.5.dp)
+                                    }
                                 }
                             }
                         }
@@ -292,6 +301,7 @@ fun HistoryScreenUI(
                 }
             }
         }
+    }
     }
 }
 
@@ -331,11 +341,11 @@ fun HistoryListBookItem(book: HistoryBookInfo, isEven: Boolean = false, onClick:
 }
 
 @Composable
-fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}) {
+fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
     PixelShadowButton(
         onClick = onClick,
         backgroundColor = Color(0xFFD4D4D4),
-        modifier = Modifier.height(138.dp),
+        modifier = modifier.height(138.dp),
     ) {
         AsyncImage(
             model = book.coverImage,
