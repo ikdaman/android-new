@@ -388,12 +388,12 @@ internal fun BookEditBottomSheetContent(
                                         status = statusToSend,
                                         reason = reasonToSend,
                                         startedDate = null, finishedDate = null,
-                                        bookInfoTitle = title.value,
-                                        bookInfoAuthor = author.value,
-                                        bookInfoPublisher = publisher.value.ifBlank { null },
-                                        bookInfoPublishDate = publishDate.value?.format(dateFormatter),
-                                        bookInfoIsbn = isbn.value.ifBlank { null },
-                                        bookInfoTotalPage = totalPage.value.toIntOrNull()
+                                        bookInfoTitle = null,
+                                        bookInfoAuthor = null,
+                                        bookInfoPublisher = null,
+                                        bookInfoPublishDate = null,
+                                        bookInfoIsbn = null,
+                                        bookInfoTotalPage = null
                                     )
                                 } else {
                                     BookEditResult(
@@ -401,12 +401,12 @@ internal fun BookEditBottomSheetContent(
                                         reason = reasonToSend,
                                         startedDate = startDate.value.atStartOfDay(java.time.ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
                                         finishedDate = endDate.value?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")) ?: "",
-                                        bookInfoTitle = title.value,
-                                        bookInfoAuthor = author.value,
-                                        bookInfoPublisher = publisher.value.ifBlank { null },
-                                        bookInfoPublishDate = publishDate.value?.format(dateFormatter),
-                                        bookInfoIsbn = isbn.value.ifBlank { null },
-                                        bookInfoTotalPage = totalPage.value.toIntOrNull()
+                                        bookInfoTitle = null,
+                                        bookInfoAuthor = null,
+                                        bookInfoPublisher = null,
+                                        bookInfoPublishDate = null,
+                                        bookInfoIsbn = null,
+                                        bookInfoTotalPage = null
                                     )
                                 }
                                 onConfirm(result)
