@@ -41,7 +41,9 @@ jobs:
         run: echo "${{ secrets.KEY_PROPERTIES_BASE64 }}" | base64 --decode > key.properties
 
       - name: Create Play Store credentials
-        run: echo "${{ secrets.PLAY_STORE_CONFIG_JSON }}" > fastlane/play-store-credentials.json
+        env:
+          PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+        run: printenv PLAY_STORE_CONFIG_JSON > fastlane/play-store-credentials.json
 
       - name: Update version
         run: |
@@ -53,8 +55,7 @@ jobs:
 
       - name: Deploy to Play Store (Internal Testing)
         run: bundle exec fastlane android deploy_internal
-        env:
-          BUNDLE_GEMFILE: fastlane/Gemfile
+        working-directory: fastlane
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
