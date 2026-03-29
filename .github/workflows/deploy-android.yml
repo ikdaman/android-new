@@ -53,6 +53,7 @@ jobs:
 
       - name: Deploy to Play Store (Internal Testing)
         run: bundle exec fastlane android deploy_internal
+        working-directory: fastlane
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
