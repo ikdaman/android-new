@@ -18,8 +18,8 @@ android {
         applicationId = "project.side.ikdaman"
         minSdk = 29
         targetSdk = 36
-        versionCode = 13
-        versionName = "1.0.13"
+        versionCode = 15
+        versionName = "1.0.15"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
