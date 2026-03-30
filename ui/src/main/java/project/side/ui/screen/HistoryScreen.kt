@@ -3,8 +3,6 @@ package project.side.ui.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -120,46 +118,34 @@ fun HistoryScreenUI(
             ) {
                 // View toggle buttons
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    val listInteraction = remember { MutableInteractionSource() }
-                    val listPressed by listInteraction.collectIsPressedAsState()
-                    val gridInteraction = remember { MutableInteractionSource() }
-                    val gridPressed by gridInteraction.collectIsPressedAsState()
-
-                    val showListPressed = isListView || listPressed
-                    val showGridPressed = !isListView || gridPressed
-
-                    Image(
-                        painter = painterResource(
-                            if (showListPressed) R.drawable.ic_list_button_p
-                            else R.drawable.ic_list_button
-                        ),
-                        contentDescription = "리스트 뷰",
-                        modifier = Modifier
-                            .size(if (showListPressed) 36.dp else 38.dp)
-                            .then(
-                                if (!isListView) Modifier.clickable(
-                                    interactionSource = listInteraction,
-                                    indication = null
-                                ) { onViewTypeChanged() }
-                                else Modifier
+                    Box(modifier = Modifier.size(36.dp)) {
+                        PixelShadowButton(
+                            onClick = { if (!isListView) onViewTypeChanged() },
+                            modifier = Modifier.fillMaxSize(),
+                            isSelected = isListView,
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_list_icon),
+                                contentDescription = "리스트 뷰",
+                                tint = BorderBlack,
+                                modifier = Modifier.size(20.dp)
                             )
-                    )
-                    Image(
-                        painter = painterResource(
-                            if (showGridPressed) R.drawable.ic_grid_button_p
-                            else R.drawable.ic_grid_button
-                        ),
-                        contentDescription = "썸네일 뷰",
-                        modifier = Modifier
-                            .size(if (showGridPressed) 36.dp else 38.dp)
-                            .then(
-                                if (isListView) Modifier.clickable(
-                                    interactionSource = gridInteraction,
-                                    indication = null
-                                ) { onViewTypeChanged() }
-                                else Modifier
+                        }
+                    }
+                    Box(modifier = Modifier.size(36.dp)) {
+                        PixelShadowButton(
+                            onClick = { if (isListView) onViewTypeChanged() },
+                            modifier = Modifier.fillMaxSize(),
+                            isSelected = !isListView,
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_grid_icon),
+                                contentDescription = "썸네일 뷰",
+                                tint = BorderBlack,
+                                modifier = Modifier.size(20.dp)
                             )
-                    )
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Row(

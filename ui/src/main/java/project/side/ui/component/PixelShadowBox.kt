@@ -1,7 +1,6 @@
 package project.side.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -21,6 +20,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BorderBlack
+
+// 상/좌: white 1dp, 우/하: black 1dp (normal)
+// 상/좌: black 1dp, 우/하: white 1dp (pressed)
+private fun Modifier.pixelBorder(pressed: Boolean): Modifier = this.drawBehind {
+    val stroke = 1.dp.toPx()
+    val w = size.width
+    val h = size.height
+    val topLeft  = if (pressed) Color.Black else Color.White
+    val botRight = if (pressed) Color.White else Color.Black
+    drawLine(topLeft,  Offset(0f, stroke / 2),      Offset(w, stroke / 2),      strokeWidth = stroke) // top
+    drawLine(topLeft,  Offset(stroke / 2, 0f),      Offset(stroke / 2, h),      strokeWidth = stroke) // left
+    drawLine(botRight, Offset(0f, h - stroke / 2),  Offset(w, h - stroke / 2),  strokeWidth = stroke) // bottom
+    drawLine(botRight, Offset(w - stroke / 2, 0f),  Offset(w - stroke / 2, h),  strokeWidth = stroke) // right
+}
 
 @Composable
 fun PixelShadowBox(
@@ -42,7 +55,7 @@ fun PixelShadowBox(
         Box(
             modifier = modifier
                 .background(backgroundColor)
-                .then(if (showBorder) Modifier.border(1.dp, BorderBlack) else Modifier),
+                .then(if (showBorder) Modifier.pixelBorder(pressed = false) else Modifier),
             contentAlignment = contentAlignment,
             content = content
         )
@@ -76,25 +89,7 @@ fun PixelShadowButton(
         Box(
             modifier = modifier
                 .background(backgroundColor)
-                .then(
-                    if (showPressed) {
-                        Modifier.drawBehind {
-                            val stroke = 1.dp.toPx()
-                            val w = size.width
-                            val h = size.height
-                            // top
-                            drawLine(Color.Black, Offset(0f, stroke / 2), Offset(w, stroke / 2), strokeWidth = stroke)
-                            // left
-                            drawLine(Color.Black, Offset(stroke / 2, 0f), Offset(stroke / 2, h), strokeWidth = stroke)
-                            // bottom
-                            drawLine(Color.White, Offset(0f, h - stroke / 2), Offset(w, h - stroke / 2), strokeWidth = stroke)
-                            // right
-                            drawLine(Color.White, Offset(w - stroke / 2, 0f), Offset(w - stroke / 2, h), strokeWidth = stroke)
-                        }
-                    } else {
-                        Modifier.border(1.dp, BorderBlack)
-                    }
-                )
+                .pixelBorder(pressed = showPressed)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,

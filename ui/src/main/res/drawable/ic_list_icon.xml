@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <!-- Row 1 left square -->
+    <path android:fillColor="#333333" android:pathData="M4.375,3.375 L1.75,3.375 L1.75,6 L4.375,6 Z"/>
+    <!-- Row 2 left square -->
+    <path android:fillColor="#333333" android:pathData="M4.375,13.875 L1.75,13.875 L1.75,16.5 L4.375,16.5 Z"/>
+    <!-- Row 3 left square -->
+    <path android:fillColor="#333333" android:pathData="M4.375,8.625 L1.75,8.625 L1.75,11.25 L4.375,11.25 Z"/>
+    <!-- Row 1 right bar -->
+    <path android:fillColor="#333333" android:pathData="M18.125,4.25 L18.125,5.125 L17.25,5.125 L17.25,6 L6.75,6 L6.75,5.125 L5.875,5.125 L5.875,4.25 L6.75,4.25 L6.75,3.375 L17.25,3.375 L17.25,4.25 Z"/>
+    <!-- Row 2 right bar -->
+    <path android:fillColor="#333333" android:pathData="M17.25,9.5 L18.125,9.5 L18.125,10.375 L17.25,10.375 L17.25,11.25 L6.75,11.25 L6.75,10.375 L5.875,10.375 L5.875,9.5 L6.75,9.5 L6.75,8.625 L17.25,8.625 Z"/>
+    <!-- Row 3 right bar -->
+    <path android:fillColor="#333333" android:pathData="M17.25,14.75 L18.125,14.75 L18.125,15.625 L17.25,15.625 L17.25,16.5 L6.75,16.5 L6.75,15.625 L5.875,15.625 L5.875,14.75 L6.75,14.75 L6.75,13.875 L17.25,13.875 Z"/>
+</vector>
