@@ -29,7 +29,7 @@ data class HistoryBookInfoEntity(
     val mybookId: Int,
     val title: String,
     val author: List<String>?,
-    val coverImage: String,
+    val coverImage: String?,
     val description: String?,
     val startedDate: String,
     val finishedDate: String?

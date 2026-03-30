@@ -1,8 +1,5 @@
 package project.side.ui.component
 
-import android.app.DatePickerDialog
-import android.content.Context
-import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +21,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,7 +53,6 @@ fun BookRegisterBottomSheet(
     if (!show) return
 
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     val selectedTab = remember { mutableStateOf(0) }
     val reason = remember { mutableStateOf("") }
@@ -74,7 +69,6 @@ fun BookRegisterBottomSheet(
             reason,
             selectedDate,
             selectedEndDate,
-            context,
             scope,
             onDismiss,
             onConfirm
@@ -88,11 +82,33 @@ private fun RegisterBottomSheetUI(
     reason: MutableState<String>,
     selectedDate: MutableState<LocalDate>,
     selectedEndDate: MutableState<LocalDate?>,
-    context: Context,
     scope: CoroutineScope,
     onDismiss: () -> Unit = {},
     onConfirm: (String?, LocalDate?, LocalDate?) -> Unit
 ) {
+    val showStartCalendar = remember { mutableStateOf(false) }
+    val showEndCalendar = remember { mutableStateOf(false) }
+
+    CalendarBottomSheet(
+        show = showStartCalendar.value,
+        initialDate = selectedDate.value,
+        onDismiss = { showStartCalendar.value = false },
+        onDateConfirmed = { date ->
+            if (date != null) selectedDate.value = date
+            showStartCalendar.value = false
+        }
+    )
+
+    CalendarBottomSheet(
+        show = showEndCalendar.value,
+        initialDate = selectedEndDate.value ?: LocalDate.now(),
+        allowDeselect = true,
+        onDismiss = { showEndCalendar.value = false },
+        onDateConfirmed = { date ->
+            selectedEndDate.value = date
+            showEndCalendar.value = false
+        }
+    )
     // 팝업 전체에 픽셀 그림자 적용
     PixelShadowBox(
         modifier = Modifier
@@ -238,17 +254,7 @@ private fun RegisterBottomSheetUI(
                     DatePickerRow(
                         label = "START",
                         dateText = selectedDate.value.format(dateFormatter),
-                        onClick = {
-                            DatePickerDialog(
-                                context,
-                                { _: DatePicker, y: Int, m: Int, d: Int ->
-                                    selectedDate.value = LocalDate.of(y, m + 1, d)
-                                },
-                                selectedDate.value.year,
-                                selectedDate.value.monthValue - 1,
-                                selectedDate.value.dayOfMonth
-                            ).show()
-                        }
+                        onClick = { showStartCalendar.value = true }
                     )
 
                     Spacer(Modifier.height(20.dp))
@@ -256,18 +262,7 @@ private fun RegisterBottomSheetUI(
                     DatePickerRow(
                         label = "FINISH",
                         dateText = selectedEndDate.value?.format(dateFormatter) ?: "읽는 중",
-                        onClick = {
-                            val initial = selectedEndDate.value ?: LocalDate.now()
-                            DatePickerDialog(
-                                context,
-                                { _: DatePicker, y: Int, m: Int, d: Int ->
-                                    selectedEndDate.value = LocalDate.of(y, m + 1, d)
-                                },
-                                initial.year,
-                                initial.monthValue - 1,
-                                initial.dayOfMonth
-                            ).show()
-                        }
+                        onClick = { showEndCalendar.value = true }
                     )
                 }
 
@@ -382,7 +377,6 @@ fun BookRegisterBottomSheetPreview() {
             selectedTab = remember { mutableStateOf(0) },
             reason = remember { mutableStateOf("") },
             selectedDate = remember { mutableStateOf(LocalDate.now()) },
-            context = LocalContext.current,
             scope = rememberCoroutineScope(),
             selectedEndDate = remember { mutableStateOf(null) },
             onConfirm = { _, _, _ -> },

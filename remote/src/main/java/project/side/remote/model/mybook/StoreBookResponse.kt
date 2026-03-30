@@ -25,7 +25,8 @@ data class StoreBookResponse(
 data class StoreBookItemResponse(
     val mybookId: Int,
     val createdDate: String,
-    val bookInfo: SearchBookInfoResponse
+    val bookInfo: SearchBookInfoResponse,
+    val reason: String?
 ) {
     fun toData(): StoreBookItemEntity = StoreBookItemEntity(
         mybookId = mybookId,
@@ -33,6 +34,7 @@ data class StoreBookItemResponse(
         title = bookInfo.title,
         author = bookInfo.author,
         coverImage = bookInfo.coverImage,
-        description = bookInfo.description
+        description = bookInfo.description,
+        reason = reason
     )
 }

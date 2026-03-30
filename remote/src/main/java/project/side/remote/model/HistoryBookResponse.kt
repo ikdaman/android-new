@@ -35,7 +35,7 @@ data class HistoryBook(
 data class HistoryBookInfo(
     val title: String,
     val author: List<String>?,
-    val coverImage: String,
+    val coverImage: String?,
     val description: String?
 )
 

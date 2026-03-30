@@ -33,7 +33,8 @@ data class StoreBookItemEntity(
     val title: String,
     val author: List<String>,
     val coverImage: String?,
-    val description: String?
+    val description: String?,
+    val reason: String?
 ) {
     fun toDomain(): StoreBookItem = StoreBookItem(
         mybookId = mybookId,
@@ -41,6 +42,7 @@ data class StoreBookItemEntity(
         title = title,
         author = author,
         coverImage = coverImage,
-        description = description
+        description = description,
+        reason = reason
     )
 }

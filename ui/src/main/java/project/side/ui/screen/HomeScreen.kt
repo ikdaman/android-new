@@ -141,7 +141,7 @@ fun HomeScreen(
                         title = book.title,
                         coverImage = book.coverImage,
                         date = book.createdDate.take(10).replace("-", "."),
-                        description = book.description,
+                        description = book.reason,
                         onClick = { onBookClick(book.mybookId) },
                         onStartReading = { onStartReading(book.mybookId, book.title) },
                         onDelete = { onDelete(book.mybookId) }

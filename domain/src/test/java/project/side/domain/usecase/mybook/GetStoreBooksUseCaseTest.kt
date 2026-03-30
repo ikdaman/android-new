@@ -38,7 +38,8 @@ class GetStoreBooksUseCaseTest {
             title = "Test Book",
             author = listOf("Test Author"),
             coverImage = "http://example.com/cover.jpg",
-            description = "Test description"
+            description = "Test description",
+            reason = null
         )
         val storeBook = StoreBook(
             content = listOf(storeBookItem),

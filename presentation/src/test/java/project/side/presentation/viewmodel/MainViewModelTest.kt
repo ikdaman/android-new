@@ -128,7 +128,7 @@ class MainViewModelTest {
         val storeBookItems = listOf(
             StoreBookItem(
                 mybookId = 1, createdDate = "2025-01-01", title = "테스트 책",
-                author = listOf("저자1"), coverImage = null, description = "설명"
+                author = listOf("저자1"), coverImage = null, description = "설명", reason = null
             )
         )
         every { getLoginStateUseCase() } returns flowOf(false)

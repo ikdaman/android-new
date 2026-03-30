@@ -18,5 +18,6 @@ data class StoreBookItem(
     val title: String,
     val author: List<String>,
     val coverImage: String?,
-    val description: String?
+    val description: String?,
+    val reason: String?
 )
