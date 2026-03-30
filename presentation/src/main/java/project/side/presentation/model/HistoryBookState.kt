@@ -6,8 +6,8 @@ data class HistoryBookState(
     val isLoading: Boolean = true,
     val viewType: HistoryViewType = HistoryViewType.LIST,
     val sortDescending: Boolean = true,
-    val totalPages: Int = 1,
-    val nowPage: Int = 1,
+    val totalPages: Int = 0,
+    val nowPage: Int = 0,
     val books: List<HistoryBookInfo> = emptyList(),
     val errorMessage: String? = null
 )

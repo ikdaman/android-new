@@ -195,10 +195,16 @@ fun HistoryScreenUI(
                         derivedStateOf {
                             val last = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                             val total = gridState.layoutInfo.totalItemsCount
-                            last >= total - 2 && total > 0
+                            last >= total - 2 && total > 0 && uiState.nowPage < uiState.totalPages - 1
                         }
                     }
                     LaunchedEffect(shouldLoadMore.value) { if (shouldLoadMore.value) onLoadMore() }
+                    val bookCount = uiState.books.size
+                    val emptyCount = if (bookCount < 12) {
+                        12 - bookCount
+                    } else {
+                        (3 - bookCount % 3) % 3
+                    }
                     LazyVerticalGrid(
                         state = gridState,
                         modifier = Modifier
@@ -208,7 +214,7 @@ fun HistoryScreenUI(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         items(
-                            count = uiState.books.size,
+                            count = bookCount,
                             key = { uiState.books[it].mybookId }
                         ) { index ->
                             val book = uiState.books[index]
@@ -216,6 +222,15 @@ fun HistoryScreenUI(
                                 book = book,
                                 onClick = { onBookClick(book.mybookId) },
                                 modifier = Modifier.animateItem()
+                            )
+                        }
+                        items(count = emptyCount) {
+                            Box(
+                                modifier = Modifier
+                                    .height(140.dp)
+                                    .padding(end = 2.dp, bottom = 2.dp)
+                                    .fillMaxWidth()
+                                    .background(Color(0xFFD4D4D4))
                             )
                         }
                     }
@@ -226,7 +241,7 @@ fun HistoryScreenUI(
                         derivedStateOf {
                             val last = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                             val total = listState.layoutInfo.totalItemsCount
-                            last >= total - 2 && total > 0
+                            last >= total - 2 && total > 0 && uiState.nowPage < uiState.totalPages - 1
                         }
                     }
                     LaunchedEffect(shouldLoadMore.value) { if (shouldLoadMore.value) onLoadMore() }
@@ -270,6 +285,26 @@ fun HistoryScreenUI(
                             }
                         }
                         LazyColumn(state = listState) {
+                            if (uiState.books.isEmpty()) {
+                                item {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(36.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Spacer(modifier = Modifier.weight(2f))
+                                        Text(
+                                            modifier = Modifier
+                                                .weight(2f)
+                                                .padding(start = 10.dp),
+                                            text = "읽고 있는 책을 추가해주세요.",
+                                            style = WantedSansBodySmall,
+                                            color = TextPrimary
+                                        )
+                                    }
+                                }
+                            }
                             items(
                                 count = uiState.books.size,
                                 key = { uiState.books[it].mybookId }
