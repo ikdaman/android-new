@@ -2,7 +2,6 @@ package project.side.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,7 +26,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import project.side.ui.component.RetroLoadingScreen
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,7 +41,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import project.side.domain.model.HistoryBookInfo
@@ -232,70 +228,23 @@ fun HistoryScreenUI(
                         }
                     }
                     LaunchedEffect(shouldLoadMore.value) { if (shouldLoadMore.value) onLoadMore() }
-                    Box(
+                    LazyColumn(
+                        state = listState,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(start = 16.dp, end = 18.dp, bottom = 4.dp)
                     ) {
-                        // Shadow
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .offset(x = 2.dp, y = 2.dp)
-                                .background(BorderBlack)
-                        )
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.White)
-                                .border(1.dp, BorderBlack)
-                        ) {
-                            // Table header
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(24.dp)
-                                    .background(Color(0xFFD4D4D4)),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    modifier = Modifier.weight(1f).padding(start = 10.dp),
-                                    text = "START",
-                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
-                                    color = TextPrimary
-                                )
-                                Text(
-                                    modifier = Modifier.weight(1f).padding(start = 10.dp),
-                                    text = "FINISH",
-                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
-                                    color = TextPrimary
-                                )
-                                Text(
-                                    modifier = Modifier.weight(2f).padding(start = 10.dp),
-                                    text = "BOOK NAME",
-                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
-                                    color = TextPrimary
-                                )
-                            }
-                            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(BorderBlack))
-                            // Table rows
-                            LazyColumn(state = listState) {
-                                items(
-                                    count = uiState.books.size,
-                                    key = { uiState.books[it].mybookId }
-                                ) { index ->
-                                    val book = uiState.books[index]
-                                    Column(modifier = Modifier.animateItem()) {
-                                        HistoryListBookItem(
-                                            book = book,
-                                            isEven = index % 2 == 0,
-                                            onClick = { onBookClick(book.mybookId) }
-                                        )
-                                        HorizontalDivider(color = BorderBlack, thickness = 0.5.dp)
-                                    }
-                                }
-                            }
+                        items(
+                            count = uiState.books.size,
+                            key = { uiState.books[it].mybookId }
+                        ) { index ->
+                            val book = uiState.books[index]
+                            HistoryListBookItem(
+                                book = book,
+                                isOdd = index % 2 == 0,
+                                onClick = { onBookClick(book.mybookId) },
+                                modifier = Modifier.animateItem()
+                            )
                         }
                     }
                 }
@@ -306,14 +255,14 @@ fun HistoryScreenUI(
 }
 
 @Composable
-fun HistoryListBookItem(book: HistoryBookInfo, isEven: Boolean = false, onClick: () -> Unit = {}) {
+fun HistoryListBookItem(book: HistoryBookInfo, isOdd: Boolean = false, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
     val startDateFormatted = book.startedDate.take(10).replace("-", "").drop(2)
     val finishDateFormatted = book.finishedDate?.take(10)?.replace("-", "")?.drop(2) ?: "-"
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(36.dp)
-            .background(if (isEven) Color.Transparent else Color.White)
+            .background(if (isOdd) BackgroundDefault else Color.White)
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -342,19 +291,21 @@ fun HistoryListBookItem(book: HistoryBookInfo, isEven: Boolean = false, onClick:
 
 @Composable
 fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
-    PixelShadowButton(
-        onClick = onClick,
-        backgroundColor = Color(0xFFD4D4D4),
-        modifier = modifier.height(138.dp),
-    ) {
-        AsyncImage(
-            model = book.coverImage,
-            contentDescription = book.title,
-            modifier = Modifier
-                .width(75.dp)
-                .height(105.dp),
-            contentScale = ContentScale.Crop
-        )
+    Box(modifier = modifier.height(140.dp).padding(end = 2.dp, bottom = 2.dp)) {
+        PixelShadowButton(
+            onClick = onClick,
+            backgroundColor = Color(0xFFD4D4D4),
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            AsyncImage(
+                model = book.coverImage,
+                contentDescription = book.title,
+                modifier = Modifier
+                    .width(75.dp)
+                    .height(105.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }
 

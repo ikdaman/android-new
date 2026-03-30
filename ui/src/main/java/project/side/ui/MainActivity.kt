@@ -136,29 +136,23 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             navigateToSignup = { socialToken, provider, providerId ->
-                                val returnBack = if (canGoBack) "true" else "false"
                                 navController.navigate(
-                                    "Signup/${Uri.encode(socialToken)}/${Uri.encode(provider)}/${Uri.encode(providerId)}?returnBack=$returnBack"
+                                    "Signup/${Uri.encode(socialToken)}/${Uri.encode(provider)}/${Uri.encode(providerId)}"
                                 )
                             }
                         )
                     }
                     composable(
-                        route = "$SIGNUP_ROUTE?returnBack={returnBack}",
+                        route = SIGNUP_ROUTE,
                         arguments = listOf(
                             navArgument("socialToken") { type = NavType.StringType },
                             navArgument("provider") { type = NavType.StringType },
-                            navArgument("providerId") { type = NavType.StringType },
-                            navArgument("returnBack") {
-                                type = NavType.BoolType
-                                defaultValue = false
-                            }
+                            navArgument("providerId") { type = NavType.StringType }
                         )
                     ) { backStackEntry ->
                         val socialToken = backStackEntry.arguments?.getString("socialToken") ?: ""
                         val provider = backStackEntry.arguments?.getString("provider") ?: ""
                         val providerId = backStackEntry.arguments?.getString("providerId") ?: ""
-                        val returnBack = backStackEntry.arguments?.getBoolean("returnBack") ?: false
                         SignupScreen(
                             socialToken = socialToken,
                             provider = provider,
@@ -166,12 +160,8 @@ class MainActivity : ComponentActivity() {
                             signupUseCase = signupUseCase,
                             onBackClick = { navController.popBackStack() },
                             onSignupComplete = {
-                                if (returnBack) {
-                                    navController.popBackStack(LOGIN_ROUTE, inclusive = true)
-                                } else {
-                                    navController.navigate(MAIN_ROUTE) {
-                                        popUpTo(LOGIN_ROUTE) { inclusive = true }
-                                    }
+                                navController.navigate(MAIN_ROUTE) {
+                                    popUpTo(0) { inclusive = true }
                                 }
                             }
                         )

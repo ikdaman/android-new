@@ -150,12 +150,12 @@ fun LoginScreen(
                 Spacer(Modifier.weight(1f))
                 Image(
                     painter = painterResource(R.drawable.ic_app_logo),
-                    contentDescription = "읽다만",
+                    contentDescription = "모아북",
                     modifier = Modifier.size(100.dp)
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "읽 다 만",
+                    text = "모아북",
                     style = DungGeunMoHomeTitle,
                     color = TextPrimary
                 )
