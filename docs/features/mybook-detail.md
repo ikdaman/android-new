@@ -62,14 +62,21 @@ UI
 | bookInfo | Object | 책 기본 정보 |
 | historyInfo | Object | 독서 시작/완료 날짜 |
 
+## readingStatus 태그 표시
+BookInfoScreen 상단에 readingStatus에 따라 태그 표시:
+| readingStatus | 태그 텍스트 |
+|--------------|-----------|
+| TODO | 읽고 싶은 책 |
+| INPROGRESS | 읽는 중 |
+| DONE | 완독 |
+
 ## 화면 이동 플로우
 ```
-HistoryScreen 또는 StoreScreen (예정)
+HomeScreen 또는 HistoryScreen
   └─ 책 아이템 클릭
-      └─ → BookDetailScreen (예정, mybookId 전달)
-          ├─ 책 정보 표시 (bookInfo, historyInfo, readingStatus 등)
-          ├─ 수정 버튼 → 수정 화면
+      └─ → BookInfoScreen (mybookId 전달)
+          ├─ 책 정보 표시 (bookInfo, historyInfo, readingStatus 태그 등)
+          ├─ 수정 버튼 → BookEditBottomSheet
           ├─ 삭제 버튼 → 삭제 확인 다이얼로그
           └─ 뒤로 가기 → 이전 화면
 ```
-※ 현재 API 레이어만 구현됨. 전용 상세 화면 구현 예정.

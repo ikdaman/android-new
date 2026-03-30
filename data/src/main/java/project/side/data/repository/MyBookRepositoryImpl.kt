@@ -66,7 +66,7 @@ class MyBookRepositoryImpl @Inject constructor(
 
     override fun updateMyBook(
         mybookId: Int,
-        status: String?,
+        shelfType: String?,
         reason: String?,
         startedDate: String?,
         finishedDate: String?,
@@ -81,7 +81,7 @@ class MyBookRepositoryImpl @Inject constructor(
         val hasBookInfo = bookInfoTitle != null || bookInfoAuthor != null || bookInfoPublisher != null ||
                 bookInfoPublishDate != null || bookInfoIsbn != null || bookInfoTotalPage != null
         val entity = MyBookUpdateEntity(
-            status = status,
+            shelfType = shelfType,
             reason = reason,
             startedDate = startedDate,
             finishedDate = finishedDate,

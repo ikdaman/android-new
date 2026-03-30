@@ -362,7 +362,7 @@ class MyBookRepositoryImplTest {
         // When
         val flow = repository.updateMyBook(
             mybookId = mybookId,
-            status = null,
+            shelfType = null,
             reason = reason,
             startedDate = startedDate,
             finishedDate = finishedDate,
@@ -397,7 +397,7 @@ class MyBookRepositoryImplTest {
         // When
         val flow = repository.updateMyBook(
             mybookId = mybookId,
-            status = null,
+            shelfType = null,
             reason = reason,
             startedDate = startedDate,
             finishedDate = finishedDate,
@@ -430,7 +430,7 @@ class MyBookRepositoryImplTest {
         // When
         val flow = repository.updateMyBook(
             mybookId = mybookId,
-            status = null,
+            shelfType = null,
             reason = reason,
             startedDate = startedDate,
             finishedDate = finishedDate,
@@ -451,10 +451,10 @@ class MyBookRepositoryImplTest {
     }
 
     @Test
-    fun `updateMyBook with status passes status in entity`() = runTest {
+    fun `updateMyBook with shelfType passes shelfType in entity`() = runTest {
         // Given
         val mybookId = 100
-        val status = "READING"
+        val shelfType = "READING"
         coEvery {
             myBookDataSource.updateMyBook(eq(mybookId), any())
         } returns DataApiResult.Success(mybookId)
@@ -462,7 +462,7 @@ class MyBookRepositoryImplTest {
         // When
         val flow = repository.updateMyBook(
             mybookId = mybookId,
-            status = status,
+            shelfType = shelfType,
             reason = null,
             startedDate = null,
             finishedDate = null,
@@ -480,7 +480,7 @@ class MyBookRepositoryImplTest {
         assertTrue(results[1] is DataResource.Success)
         coVerify(exactly = 1) {
             myBookDataSource.updateMyBook(mybookId, withArg { entity ->
-                assertEquals(status, entity.status)
+                assertEquals(shelfType, entity.shelfType)
             })
         }
     }
@@ -499,7 +499,7 @@ class MyBookRepositoryImplTest {
         // When
         val flow = repository.updateMyBook(
             mybookId = mybookId,
-            status = null,
+            shelfType = null,
             reason = null,
             startedDate = null,
             finishedDate = null,
@@ -537,7 +537,7 @@ class MyBookRepositoryImplTest {
         // When
         val flow = repository.updateMyBook(
             mybookId = mybookId,
-            status = null,
+            shelfType = null,
             reason = reason,
             startedDate = null,
             finishedDate = null,
@@ -573,7 +573,7 @@ class MyBookRepositoryImplTest {
         // When
         val flow = repository.updateMyBook(
             mybookId = mybookId,
-            status = null,
+            shelfType = null,
             reason = null,
             startedDate = null,
             finishedDate = null,

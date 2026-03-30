@@ -47,7 +47,7 @@ interface MyBookService {
     @PATCH("/mybooks/{mybookId}")
     suspend fun updateMyBook(
         @Path("mybookId") mybookId: Int,
-        @Body request: MyBookUpdateRequest
+        @Body request: okhttp3.RequestBody
     ): Response<MyBookIdResponse>
 
     @POST("/mybooks")

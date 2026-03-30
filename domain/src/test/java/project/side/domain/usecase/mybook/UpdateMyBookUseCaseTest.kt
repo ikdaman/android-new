@@ -28,7 +28,7 @@ class UpdateMyBookUseCaseTest {
     fun `invoke returns success flow with mybookId`() = runTest {
         // Given
         val mybookId = 123
-        val status = "HISTORY"
+        val shelfType = "HISTORY"
         val reason = "Great book!"
         val startedDate = "2024-01-01"
         val finishedDate = "2024-02-01"
@@ -36,7 +36,7 @@ class UpdateMyBookUseCaseTest {
         coEvery {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,
@@ -52,7 +52,7 @@ class UpdateMyBookUseCaseTest {
         // When
         val results = useCase.invoke(
             mybookId = mybookId,
-            status = status,
+            shelfType = shelfType,
             reason = reason,
             startedDate = startedDate,
             finishedDate = finishedDate
@@ -66,7 +66,7 @@ class UpdateMyBookUseCaseTest {
         coVerify(exactly = 1) {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,
@@ -84,7 +84,7 @@ class UpdateMyBookUseCaseTest {
     fun `invoke returns error flow from repository`() = runTest {
         // Given
         val mybookId = 123
-        val status = null
+        val shelfType = null
         val reason = null
         val startedDate = "2024-01-01"
         val finishedDate = null
@@ -96,7 +96,7 @@ class UpdateMyBookUseCaseTest {
         coEvery {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,
@@ -112,7 +112,7 @@ class UpdateMyBookUseCaseTest {
         // When
         val results = useCase.invoke(
             mybookId = mybookId,
-            status = status,
+            shelfType = shelfType,
             reason = reason,
             startedDate = startedDate,
             finishedDate = finishedDate
@@ -126,7 +126,7 @@ class UpdateMyBookUseCaseTest {
         coVerify(exactly = 1) {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,
@@ -144,7 +144,7 @@ class UpdateMyBookUseCaseTest {
     fun `invoke passes all parameters correctly to repository`() = runTest {
         // Given
         val mybookId = 456
-        val status = "READING"
+        val shelfType = "READING"
         val reason = "Interesting read"
         val startedDate = "2024-03-01"
         val finishedDate = "2024-03-20"
@@ -152,7 +152,7 @@ class UpdateMyBookUseCaseTest {
         coEvery {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,
@@ -168,7 +168,7 @@ class UpdateMyBookUseCaseTest {
         // When
         useCase.invoke(
             mybookId = mybookId,
-            status = status,
+            shelfType = shelfType,
             reason = reason,
             startedDate = startedDate,
             finishedDate = finishedDate
@@ -178,7 +178,7 @@ class UpdateMyBookUseCaseTest {
         coVerify(exactly = 1) {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,
@@ -200,7 +200,7 @@ class UpdateMyBookUseCaseTest {
         coEvery {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = null,
+                shelfType = null,
                 reason = null,
                 startedDate = null,
                 finishedDate = null,
@@ -220,7 +220,7 @@ class UpdateMyBookUseCaseTest {
         coVerify(exactly = 1) {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = null,
+                shelfType = null,
                 reason = null,
                 startedDate = null,
                 finishedDate = null,
@@ -235,15 +235,15 @@ class UpdateMyBookUseCaseTest {
     }
 
     @Test
-    fun `invoke with status passes status to repository`() = runTest {
+    fun `invoke with shelfType passes shelfType to repository`() = runTest {
         // Given
         val mybookId = 100
-        val status = "HISTORY"
+        val shelfType = "HISTORY"
         val expectedFlow = flowOf(DataResource.Success(mybookId))
         coEvery {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = null,
                 startedDate = null,
                 finishedDate = null,
@@ -257,13 +257,13 @@ class UpdateMyBookUseCaseTest {
         } returns expectedFlow
 
         // When
-        useCase.invoke(mybookId = mybookId, status = status).toList()
+        useCase.invoke(mybookId = mybookId, shelfType = shelfType).toList()
 
         // Then
         coVerify(exactly = 1) {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = null,
                 startedDate = null,
                 finishedDate = null,
@@ -291,7 +291,7 @@ class UpdateMyBookUseCaseTest {
         coEvery {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = null,
+                shelfType = null,
                 reason = null,
                 startedDate = null,
                 finishedDate = null,
@@ -319,7 +319,7 @@ class UpdateMyBookUseCaseTest {
         coVerify(exactly = 1) {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = null,
+                shelfType = null,
                 reason = null,
                 startedDate = null,
                 finishedDate = null,
@@ -337,7 +337,7 @@ class UpdateMyBookUseCaseTest {
     fun `invoke with all parameters passes everything correctly`() = runTest {
         // Given
         val mybookId = 300
-        val status = "READING"
+        val shelfType = "READING"
         val reason = "Must-read classic"
         val startedDate = "2024-02-01"
         val finishedDate = "2024-02-20"
@@ -351,7 +351,7 @@ class UpdateMyBookUseCaseTest {
         coEvery {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,
@@ -367,7 +367,7 @@ class UpdateMyBookUseCaseTest {
         // When
         useCase.invoke(
             mybookId = mybookId,
-            status = status,
+            shelfType = shelfType,
             reason = reason,
             startedDate = startedDate,
             finishedDate = finishedDate,
@@ -383,7 +383,7 @@ class UpdateMyBookUseCaseTest {
         coVerify(exactly = 1) {
             myBookRepository.updateMyBook(
                 mybookId = mybookId,
-                status = status,
+                shelfType = shelfType,
                 reason = reason,
                 startedDate = startedDate,
                 finishedDate = finishedDate,

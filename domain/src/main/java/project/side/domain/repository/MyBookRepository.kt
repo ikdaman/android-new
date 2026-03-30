@@ -15,7 +15,7 @@ interface MyBookRepository {
     fun updateReadingStatus(mybookId: Int, startedDate: String?, finishedDate: String?): Flow<DataResource<Int>>
     fun updateMyBook(
         mybookId: Int,
-        status: String? = null,
+        shelfType: String? = null,
         reason: String? = null,
         startedDate: String? = null,
         finishedDate: String? = null,

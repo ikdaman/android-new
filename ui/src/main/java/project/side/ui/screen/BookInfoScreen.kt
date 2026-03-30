@@ -76,6 +76,7 @@ fun BookInfoScreen(
     val deleteSuccess by viewModel.deleteSuccess.collectAsState()
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEditSheet by remember { mutableStateOf(false) }
+    var editInitialTab by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(deleteSuccess) {
         if (deleteSuccess) onDeleteComplete()
@@ -169,11 +170,15 @@ fun BookInfoScreen(
                 BookEditBottomSheet(
                     show = showEditSheet,
                     detail = state.detail,
-                    onDismiss = { showEditSheet = false },
+                    initialTab = editInitialTab,
+                    onDismiss = {
+                        showEditSheet = false
+                        editInitialTab = null
+                    },
                     onConfirm = { result ->
                         showEditSheet = false
                         viewModel.updateMyBook(
-                            status = result.status,
+                            shelfType = result.shelfType,
                             reason = result.reason,
                             startedDate = result.startedDate,
                             finishedDate = result.finishedDate,
@@ -189,7 +194,14 @@ fun BookInfoScreen(
                 BookInfoContent(
                     detail = state.detail,
                     onBack = onBack,
-                    onEdit = { showEditSheet = true },
+                    onEditHistory = {
+                        editInitialTab = 1
+                        showEditSheet = true
+                    },
+                    onEditReason = {
+                        editInitialTab = null
+                        showEditSheet = true
+                    },
                     onDelete = { showDeleteDialog = true }
                 )
             }
@@ -202,16 +214,18 @@ fun BookInfoScreen(
 private fun BookInfoContent(
     detail: MyBookDetail,
     onBack: () -> Unit = {},
-    onEdit: () -> Unit = {},
+    onEditHistory: () -> Unit = {},
+    onEditReason: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     val isHistory = detail.shelfType == "HISTORY"
     val oneClickHandler = rememberOneClickHandler()
-    val tagText = when {
-        isHistory && detail.readingStatus == "COMPLETED" -> "완독"
-        isHistory -> "읽는 중"
-        else -> "읽다만"
+    val tagText = when (detail.readingStatus) {
+        "TODO" -> "읽고 싶은 책"
+        "INPROGRESS" -> "읽는 중"
+        "DONE" -> "완독"
+        else -> "읽고 싶은 책"
     }
 
     Column(
@@ -287,7 +301,7 @@ private fun BookInfoContent(
             // 독서 이력 section
             SectionWithHeader(
                 title = "독서 이력",
-                onEditClick = onEdit
+                onEditClick = onEditHistory
             ) {
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
                     InfoRow("SAVE", detail.createdDate.take(10).replace("-", " - "))
@@ -308,7 +322,7 @@ private fun BookInfoContent(
             // 읽고 싶었던 이유 section
             SectionWithHeader(
                 title = "읽고 싶었던 이유",
-                onEditClick = onEdit
+                onEditClick = onEditReason
             ) {
                 Box(modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
                     Text(

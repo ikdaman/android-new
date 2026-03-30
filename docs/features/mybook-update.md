@@ -15,25 +15,34 @@
 - **인증:** Bearer 토큰 필요
 - **Path Parameter:** mybookId (Int)
 - **Request Body:**
+
+**주의:** 서버가 `Optional<T>` 타입을 사용하므로 모든 필드를 명시적으로 포함해야 함 (null도 포함).
+앱에서는 Moshi 대신 `JSONObject`로 body를 직접 생성하여 `RequestBody`로 전송.
+
+내 서점(STORE) 수정:
 ```json
 {
-  "status": "HISTORY",
-  "reason": "읽고싶은 이유",
-  "historyInfo": {
-    "startedDate": "2025-03-01",
-    "finishedDate": "2025-04-01"
-  },
-  "bookInfo": {
-    "title": "책제목",
-    "author": "작가",
-    "publisher": "출판사",
-    "publishDate": "yyyy-MM-dd",
-    "ISBN": "9123456783111",
-    "totalPage": 500
-  }
+  "shelfType": "STORE",
+  "reason": "읽고 싶은 이유",
+  "historyInfo": null,
+  "bookInfo": null
 }
 ```
-- ALADIN 책: `bookInfo` 필드는 null (수정 불가)
+
+히스토리(HISTORY) 수정:
+```json
+{
+  "shelfType": "HISTORY",
+  "reason": "읽고 싶은 이유",
+  "historyInfo": {
+    "startedDate": "2025-03-01T00:00:00Z",
+    "finishedDate": "2025-04-01T00:00:00Z"
+  },
+  "bookInfo": null
+}
+```
+
+- ALADIN 책: `bookInfo` 필드는 null (서버에서 무시)
 - CUSTOM 책: `bookInfo` 필드로 책 기본 정보 수정 가능
 - `finishedDate`: "읽는 중"인 경우 null
 - **Response Body:**
@@ -46,27 +55,28 @@
 ## 데이터 흐름
 ```
 UI (BookEditBottomSheet)
-  → BookInfoViewModel.updateMyBook(status?, reason?, startedDate?, finishedDate?, bookInfo...)
-    → UpdateMyBookUseCase(mybookId, status?, reason?, startedDate?, finishedDate?, bookInfo...)
+  → BookInfoViewModel.updateMyBook(shelfType?, reason?, startedDate?, finishedDate?, bookInfo...)
+    → UpdateMyBookUseCase(mybookId, shelfType?, reason?, startedDate?, finishedDate?, bookInfo...)
       → MyBookRepository.updateMyBook(mybookId, MyBookUpdateEntity)
         → MyBookDataSource.updateMyBook(mybookId, MyBookUpdateEntity)
-          → MyBookService.updateMyBook(mybookId, MyBookUpdateRequest) [PATCH /mybooks/{id}]
+          → MyBookDataSourceImpl: JSONObject로 body 생성 → RequestBody
+            → MyBookService.updateMyBook(mybookId, RequestBody) [PATCH /mybooks/{id}]
   ← Flow<DataResource<Int>> (Loading → Success(mybookId) | Error)
 ```
 
 ## 수정 가능한 필드
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| status | String? | 선반 상태 ("STORE" 또는 "HISTORY") |
-| reason | String? | 읽고 싶은 이유 또는 독서 감상 |
-| historyInfo.startedDate | String? | 독서 시작일 (yyyy-MM-dd) |
-| historyInfo.finishedDate | String? | 독서 완료일 (yyyy-MM-dd), "읽는 중"이면 null |
-| bookInfo.title | String? | 책 제목 (CUSTOM 전용) |
-| bookInfo.author | String? | 작가 (CUSTOM 전용) |
-| bookInfo.publisher | String? | 출판사 (CUSTOM 전용) |
-| bookInfo.publishDate | String? | 출간일 (CUSTOM 전용) |
-| bookInfo.ISBN | String? | ISBN 13자리 (CUSTOM 전용) |
-| bookInfo.totalPage | Int? | 총 페이지 수 (CUSTOM 전용) |
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| shelfType | String | **필수** | 선반 상태 ("STORE" 또는 "HISTORY"), @NotBlank |
+| reason | String? | 선택 | 읽고 싶은 이유 (빈 문자열 불가, 최대 500자) |
+| historyInfo.startedDate | String? | 선택 | 독서 시작일 (yyyy-MM-dd'T'HH:mm:ss'Z') |
+| historyInfo.finishedDate | String? | 선택 | 독서 완료일, "읽는 중"이면 null |
+| bookInfo.title | String? | 선택 | 책 제목 (CUSTOM 전용, 빈 문자열 불가) |
+| bookInfo.author | String? | 선택 | 작가 (CUSTOM 전용) |
+| bookInfo.publisher | String? | 선택 | 출판사 (CUSTOM 전용) |
+| bookInfo.publishDate | String? | 선택 | 출간일 (CUSTOM 전용) |
+| bookInfo.ISBN | String? | 선택 | ISBN 13자리 (CUSTOM 전용, @Size(13)) |
+| bookInfo.totalPage | Int? | 선택 | 총 페이지 수 (CUSTOM 전용) |
 
 ## 상태별 UI 분기
 | 조건 | 탭 전환 | reason | historyInfo | bookInfo 수정 |

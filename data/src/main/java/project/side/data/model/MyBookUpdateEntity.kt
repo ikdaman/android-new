@@ -1,7 +1,7 @@
 package project.side.data.model
 
 data class MyBookUpdateEntity(
-    val status: String? = null,
+    val shelfType: String? = null,
     val reason: String? = null,
     val startedDate: String? = null,
     val finishedDate: String? = null,

@@ -55,7 +55,9 @@ import project.side.ui.util.rememberOneClickHandler
 fun AddBookScreen(
     appNavController: NavController,
     viewModel: SearchBookViewModel?,
-    selectedBook: BookItem? = null
+    selectedBook: BookItem? = null,
+    isLoggedIn: Boolean = true,
+    onLoginRequired: () -> Unit = {}
 ) {
     LaunchedEffect(viewModel) {
         viewModel?.clearSearchedBook()
@@ -66,8 +68,16 @@ fun AddBookScreen(
 
     val scrollState = rememberScrollState()
     val showRegister = remember { mutableStateOf(false) }
+    val pendingSave = remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val oneClickHandler = rememberOneClickHandler()
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn && pendingSave.value) {
+            pendingSave.value = false
+            showRegister.value = true
+        }
+    }
 
     Scaffold(
         snackbarHost = { CustomSnackbarHost(snackbarHostState) }
@@ -83,7 +93,14 @@ fun AddBookScreen(
                 showBackButton = true,
                 onBackButtonClicked = { oneClickHandler { appNavController.popBackStack() } },
                 rightText = "저장",
-                onRightClick = { showRegister.value = true }
+                onRightClick = {
+                    if (isLoggedIn) {
+                        showRegister.value = true
+                    } else {
+                        pendingSave.value = true
+                        onLoginRequired()
+                    }
+                }
             )
 
             Column(

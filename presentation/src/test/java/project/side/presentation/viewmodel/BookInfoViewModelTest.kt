@@ -145,7 +145,7 @@ class BookInfoViewModelTest {
         advanceUntilIdle()
 
         // When
-        viewModel.updateMyBook(status = "READING")
+        viewModel.updateMyBook(shelfType = "READING")
         advanceUntilIdle()
 
         // Then
@@ -166,7 +166,7 @@ class BookInfoViewModelTest {
         advanceUntilIdle()
 
         // When
-        viewModel.updateMyBook(status = "READING")
+        viewModel.updateMyBook(shelfType = "READING")
         advanceUntilIdle()
 
         // Then
@@ -174,7 +174,7 @@ class BookInfoViewModelTest {
     }
 
     @Test
-    fun `updateMyBook with status and bookInfo passes all params`() = runTest {
+    fun `updateMyBook with shelfType and bookInfo passes all params`() = runTest {
         // Given
         val detail = createDetail()
         coEvery { getMyBookDetailUseCase(123) } returns flowOf(DataResource.Success(detail))
@@ -186,7 +186,7 @@ class BookInfoViewModelTest {
 
         // When
         viewModel.updateMyBook(
-            status = "READING",
+            shelfType = "READING",
             reason = "Interesting",
             startedDate = "2024-01-01",
             finishedDate = "2024-02-01",
@@ -203,7 +203,7 @@ class BookInfoViewModelTest {
         coVerify {
             updateMyBookUseCase(
                 mybookId = 123,
-                status = "READING",
+                shelfType = "READING",
                 reason = "Interesting",
                 startedDate = "2024-01-01",
                 finishedDate = "2024-02-01",
@@ -225,7 +225,7 @@ class BookInfoViewModelTest {
         advanceUntilIdle()
 
         // When
-        viewModel.updateMyBook(status = "READING")
+        viewModel.updateMyBook(shelfType = "READING")
         advanceUntilIdle()
 
         // Then

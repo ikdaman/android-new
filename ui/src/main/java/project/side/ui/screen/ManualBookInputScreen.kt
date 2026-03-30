@@ -54,7 +54,9 @@ import project.side.ui.util.rememberOneClickHandler
 @Composable
 fun ManualBookInputScreen(
     appNavController: NavController,
-    viewModel: ManualInputViewModel? = hiltViewModel<ManualInputViewModel>()
+    viewModel: ManualInputViewModel? = hiltViewModel<ManualInputViewModel>(),
+    isLoggedIn: Boolean = true,
+    onLoginRequired: () -> Unit = {}
 ) {
     var title by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
@@ -64,9 +66,19 @@ fun ManualBookInputScreen(
     var pageCount by remember { mutableStateOf("") }
 
     val showRegister = remember { mutableStateOf(false) }
+    val pendingSave = remember { mutableStateOf(false) }
     val oneClickHandler = rememberOneClickHandler()
     val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn && pendingSave.value) {
+            pendingSave.value = false
+            if (title.isNotBlank() && author.isNotBlank()) {
+                showRegister.value = true
+            }
+        }
+    }
 
     Scaffold(
         snackbarHost = { CustomSnackbarHost(snackbarHostState) }
@@ -83,7 +95,10 @@ fun ManualBookInputScreen(
                 onBackButtonClicked = { oneClickHandler { appNavController.popBackStack() } },
                 rightText = "저장",
                 onRightClick = {
-                    if (title.isNotBlank() && author.isNotBlank()) {
+                    if (!isLoggedIn) {
+                        pendingSave.value = true
+                        onLoginRequired()
+                    } else if (title.isNotBlank() && author.isNotBlank()) {
                         showRegister.value = true
                     }
                 }

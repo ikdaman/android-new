@@ -18,6 +18,9 @@ import project.side.domain.model.DomainAuthEvent
 import project.side.domain.usecase.GetAuthEventUseCase
 import project.side.domain.usecase.GetLoginStateUseCase
 import project.side.domain.usecase.SignupUseCase
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
@@ -65,6 +68,9 @@ class MainActivity : ComponentActivity() {
 
                 val searchBookViewModel: SearchBookViewModel = hiltViewModel()
 
+                val loginFlow = remember { getLoginStateUseCase() }
+                val isLoggedIn by loginFlow.collectAsState(initial = false)
+
                 LaunchedEffect(Unit) {
                     getAuthEventUseCase()
                         .onEach {
@@ -89,14 +95,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(SPLASH_ROUTE) {
                         SplashScreen(
-                            getLoginStateUseCase = getLoginStateUseCase,
                             navigateToHome = {
                                 navController.navigate(MAIN_ROUTE) {
-                                    popUpTo(SPLASH_ROUTE) { inclusive = true }
-                                }
-                            },
-                            navigateToLogin = {
-                                navController.navigate(LOGIN_ROUTE) {
                                     popUpTo(SPLASH_ROUTE) { inclusive = true }
                                 }
                             }
@@ -121,33 +121,44 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(LOGIN_ROUTE) {
+                        val canGoBack = remember { navController.previousBackStackEntry != null }
                         LoginScreen(
                             loginUseCase = loginUseCase,
+                            onBackClick = if (canGoBack) { { navController.popBackStack() } } else null,
+                            infoMessage = if (canGoBack) "로그인 후 사용이 가능합니다" else null,
                             navigateToHome = {
-                                navController.navigate(MAIN_ROUTE) {
-                                    popUpTo(LOGIN_ROUTE) {
-                                        inclusive = true
+                                if (canGoBack) {
+                                    navController.popBackStack()
+                                } else {
+                                    navController.navigate(MAIN_ROUTE) {
+                                        popUpTo(LOGIN_ROUTE) { inclusive = true }
                                     }
                                 }
                             },
                             navigateToSignup = { socialToken, provider, providerId ->
+                                val returnBack = if (canGoBack) "true" else "false"
                                 navController.navigate(
-                                    "Signup/${Uri.encode(socialToken)}/${Uri.encode(provider)}/${Uri.encode(providerId)}"
+                                    "Signup/${Uri.encode(socialToken)}/${Uri.encode(provider)}/${Uri.encode(providerId)}?returnBack=$returnBack"
                                 )
                             }
                         )
                     }
                     composable(
-                        route = SIGNUP_ROUTE,
+                        route = "$SIGNUP_ROUTE?returnBack={returnBack}",
                         arguments = listOf(
                             navArgument("socialToken") { type = NavType.StringType },
                             navArgument("provider") { type = NavType.StringType },
-                            navArgument("providerId") { type = NavType.StringType }
+                            navArgument("providerId") { type = NavType.StringType },
+                            navArgument("returnBack") {
+                                type = NavType.BoolType
+                                defaultValue = false
+                            }
                         )
                     ) { backStackEntry ->
                         val socialToken = backStackEntry.arguments?.getString("socialToken") ?: ""
                         val provider = backStackEntry.arguments?.getString("provider") ?: ""
                         val providerId = backStackEntry.arguments?.getString("providerId") ?: ""
+                        val returnBack = backStackEntry.arguments?.getBoolean("returnBack") ?: false
                         SignupScreen(
                             socialToken = socialToken,
                             provider = provider,
@@ -155,8 +166,12 @@ class MainActivity : ComponentActivity() {
                             signupUseCase = signupUseCase,
                             onBackClick = { navController.popBackStack() },
                             onSignupComplete = {
-                                navController.navigate(MAIN_ROUTE) {
-                                    popUpTo(LOGIN_ROUTE) { inclusive = true }
+                                if (returnBack) {
+                                    navController.popBackStack(LOGIN_ROUTE, inclusive = true)
+                                } else {
+                                    navController.navigate(MAIN_ROUTE) {
+                                        popUpTo(LOGIN_ROUTE) { inclusive = true }
+                                    }
                                 }
                             }
                         )
@@ -164,12 +179,16 @@ class MainActivity : ComponentActivity() {
                     composable(ADD_BOOK_ROUTE) {
                         AddBookScreen(
                             appNavController = navController,
-                            viewModel = searchBookViewModel
+                            viewModel = searchBookViewModel,
+                            isLoggedIn = isLoggedIn,
+                            onLoginRequired = { navController.navigate(LOGIN_ROUTE) }
                         )
                     }
                     composable(MANUAL_BOOK_INPUT_ROUTE) {
                         ManualBookInputScreen(
-                            appNavController = navController
+                            appNavController = navController,
+                            isLoggedIn = isLoggedIn,
+                            onLoginRequired = { navController.navigate(LOGIN_ROUTE) }
                         )
                     }
                 }

@@ -48,22 +48,31 @@ UI (LoginViewModel)
 ## 화면 이동 플로우
 ```
 SplashScreen (앱 시작)
-  ├─ 로그인 상태 확인 (GetLoginStateUseCase)
-  │   ├─ 로그인됨 → MainScreen (popUpTo Splash inclusive)
-  │   └─ 로그인 안됨 → LoginScreen (popUpTo Splash inclusive)
+  └─ 항상 → MainScreen (popUpTo Splash inclusive)
+     (로그인 상태와 무관하게 홈 화면으로 진입)
 
-LoginScreen
+비로그인 상태에서 접근 가능한 화면:
+  ├─ HomeScreen (내 서점)
+  └─ SearchBookScreen / AddBookScreen (책 추가)
+
+비로그인 상태에서 저장 시 (AddBookScreen / ManualBookInputScreen):
+  ├─ "저장" 버튼 클릭
+  │   └─ → LoginScreen (백스택 유지, 뒤로가기 O)
+  │       Snackbar: "로그인 후 사용이 가능합니다"
+  ├─ 로그인 성공 → popBack → AddBookScreen 복귀 → BottomSheet 자동 표시
+  └─ 신규 가입 → SignupScreen → 완료 → popBack(Login inclusive) → AddBookScreen 복귀
+
+LoginScreen (직접 진입 시 - AUTH_EVENT)
   ├─ 로그인 성공 (LoginState.Success)
   │   └─ → MainScreen (popUpTo LoginScreen inclusive)
   ├─ 신규 사용자 (LoginState.SignupRequired, HTTP 404)
-  │   ├─ 소셜 연동 해제 수행
-  │   └─ → SignupScreen (socialToken/provider/providerId URL 인코딩하여 전달)
+  │   └─ → SignupScreen → 완료 → MainScreen (popUpTo LoginScreen inclusive)
   └─ 로그인 실패 (LoginState.Error)
-      └─ → LoginScreen (Snackbar 에러 메시지 표시)
+      └─ → Snackbar 에러 메시지 표시
 
 인증 만료 시:
   DomainAuthEvent.LOGIN_REQUIRED
-    └─ 앱 어디서든 → LoginScreen (popUpTo MainScreen inclusive)
+    └─ 앱 어디서든 → LoginScreen (popUpTo MainScreen inclusive, 뒤로가기 X)
 ```
 
 ## 상태 (LoginState)

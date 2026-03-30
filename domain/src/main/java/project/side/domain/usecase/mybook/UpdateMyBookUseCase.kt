@@ -10,7 +10,7 @@ class UpdateMyBookUseCase @Inject constructor(
 ) {
     operator fun invoke(
         mybookId: Int,
-        status: String? = null,
+        shelfType: String? = null,
         reason: String? = null,
         startedDate: String? = null,
         finishedDate: String? = null,
@@ -22,7 +22,7 @@ class UpdateMyBookUseCase @Inject constructor(
         bookInfoTotalPage: Int? = null
     ): Flow<DataResource<Int>> =
         myBookRepository.updateMyBook(
-            mybookId, status, reason, startedDate, finishedDate,
+            mybookId, shelfType, reason, startedDate, finishedDate,
             bookInfoTitle, bookInfoAuthor, bookInfoPublisher,
             bookInfoPublishDate, bookInfoIsbn, bookInfoTotalPage
         )

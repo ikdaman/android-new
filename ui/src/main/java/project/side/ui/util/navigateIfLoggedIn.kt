@@ -11,8 +11,6 @@ fun NavController.navigateIfLoggedIn(
     if (isLoggedIn) {
         onLoggedIn()
     } else {
-        this.navigate(LOGIN_ROUTE) {
-            popUpTo(0)
-        }
+        this.navigate(LOGIN_ROUTE)
     }
 }

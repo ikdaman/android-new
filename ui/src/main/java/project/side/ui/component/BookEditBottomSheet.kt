@@ -54,7 +54,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 data class BookEditResult(
-    val status: String?,
+    val shelfType: String?,
     val reason: String?,
     val startedDate: String?,
     val finishedDate: String?,
@@ -70,6 +70,7 @@ data class BookEditResult(
 fun BookEditBottomSheet(
     show: Boolean,
     detail: MyBookDetail,
+    initialTab: Int? = null,
     onDismiss: () -> Unit,
     onConfirm: (BookEditResult) -> Unit
 ) {
@@ -85,7 +86,7 @@ fun BookEditBottomSheet(
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            BookEditBottomSheetContent(detail = detail, onDismiss = onDismiss, onConfirm = onConfirm)
+            BookEditBottomSheetContent(detail = detail, initialTab = initialTab, onDismiss = onDismiss, onConfirm = onConfirm)
         }
     }
 }
@@ -93,6 +94,7 @@ fun BookEditBottomSheet(
 @Composable
 internal fun BookEditBottomSheetContent(
     detail: MyBookDetail,
+    initialTab: Int? = null,
     onDismiss: () -> Unit = {},
     onConfirm: (BookEditResult) -> Unit = {}
 ) {
@@ -100,7 +102,8 @@ internal fun BookEditBottomSheetContent(
     val isCustom = detail.bookInfo.source == "CUSTOM"
 
     // tab: 0 = 내 서점, 1 = 히스토리
-    val selectedTab = remember { mutableStateOf(if (isHistory) 1 else 0) }
+    val defaultTab = initialTab ?: if (isHistory) 1 else 0
+    val selectedTab = remember { mutableStateOf(defaultTab) }
     val reason = remember { mutableStateOf(detail.reason ?: "") }
 
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -382,10 +385,10 @@ internal fun BookEditBottomSheetContent(
                         PixelShadowButton(
                             onClick = {
                                 val reasonToSend = reason.value.takeIf { it.isNotBlank() }
-                                val statusToSend = if (selectedTab.value == 0) "STORE" else "HISTORY"
+                                val shelfTypeToSend = if (selectedTab.value == 0) "STORE" else "HISTORY"
                                 val result = if (selectedTab.value == 0) {
                                     BookEditResult(
-                                        status = statusToSend,
+                                        shelfType = shelfTypeToSend,
                                         reason = reasonToSend,
                                         startedDate = null, finishedDate = null,
                                         bookInfoTitle = null,
@@ -397,7 +400,7 @@ internal fun BookEditBottomSheetContent(
                                     )
                                 } else {
                                     BookEditResult(
-                                        status = statusToSend,
+                                        shelfType = shelfTypeToSend,
                                         reason = reasonToSend,
                                         startedDate = startDate.value.atStartOfDay(java.time.ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
                                         finishedDate = endDate.value?.atStartOfDay(java.time.ZoneOffset.UTC)?.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")) ?: "",

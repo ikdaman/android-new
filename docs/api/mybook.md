@@ -182,7 +182,27 @@
 | 위치 | 파라미터 | 타입 | 필수 | 설명 |
 |------|---------|------|------|------|
 | Path | `mybookId` | Int | O | 나의 책 ID |
-| Body | (MyBookUpdateRequest) | Object | O | 수정할 정보 |
+| Body | (JSON) | Object | O | 수정할 정보 |
+
+### Request Body
+서버가 `Optional<T>`를 사용하므로, 모든 필드를 **명시적으로 포함**해야 함 (null 포함).
+앱에서는 `JSONObject`로 직접 body를 생성하여 `RequestBody`로 전송.
+
+```json
+{
+  "shelfType": "STORE",
+  "reason": "읽고 싶은 이유",
+  "historyInfo": null,
+  "bookInfo": null
+}
+```
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `shelfType` | String | **필수** | `"STORE"` 또는 `"HISTORY"` (@NotBlank) |
+| `reason` | String? | 선택 | 읽고 싶은 이유 (빈 문자열 불가, 최대 500자) |
+| `historyInfo` | Object? | 선택 | 독서 이력 (null이어도 명시 필요) |
+| `bookInfo` | Object? | 선택 | 책 정보 (CUSTOM 소스만 수정 가능, null이어도 명시 필요) |
 
 ### Response
 | 필드 | 타입 | 설명 |

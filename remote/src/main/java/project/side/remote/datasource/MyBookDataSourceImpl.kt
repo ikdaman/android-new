@@ -8,13 +8,14 @@ import project.side.data.model.MyBookUpdateEntity
 import project.side.data.model.SaveMyBookEntity
 import project.side.data.model.StoreBookEntity
 import project.side.remote.api.MyBookService
-import project.side.remote.model.mybook.BookInfoRequest
-import project.side.remote.model.mybook.HistoryInfoRequest
-import project.side.remote.model.mybook.MyBookUpdateRequest
+
+
 import project.side.remote.model.mybook.ReadingStatusRequest
 import project.side.remote.model.mybook.SaveBookInfoRequest
 import project.side.remote.model.mybook.SaveHistoryInfoRequest
 import project.side.remote.model.mybook.SaveMyBookRequest
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class MyBookDataSourceImpl @Inject constructor(
@@ -101,32 +102,34 @@ class MyBookDataSourceImpl @Inject constructor(
     override suspend fun updateMyBook(mybookId: Int, request: MyBookUpdateEntity): DataApiResult<Int> {
         return try {
             val historyInfo = if (request.startedDate != null || request.finishedDate != null) {
-                HistoryInfoRequest(
-                    startedDate = request.startedDate,
-                    finishedDate = request.finishedDate
-                )
-            } else null
+                org.json.JSONObject().apply {
+                    put("startedDate", request.startedDate ?: org.json.JSONObject.NULL)
+                    put("finishedDate", request.finishedDate ?: org.json.JSONObject.NULL)
+                }
+            } else org.json.JSONObject.NULL
 
             val bookInfo = request.bookInfo?.let {
-                BookInfoRequest(
-                    title = it.title,
-                    author = it.author,
-                    publisher = it.publisher,
-                    publishDate = it.publishDate,
-                    isbn = it.isbn,
-                    totalPage = it.totalPage
-                )
+                org.json.JSONObject().apply {
+                    put("title", it.title ?: org.json.JSONObject.NULL)
+                    put("author", it.author ?: org.json.JSONObject.NULL)
+                    put("publisher", it.publisher ?: org.json.JSONObject.NULL)
+                    put("publishDate", it.publishDate ?: org.json.JSONObject.NULL)
+                    put("ISBN", it.isbn ?: org.json.JSONObject.NULL)
+                    put("totalPage", it.totalPage ?: org.json.JSONObject.NULL)
+                }
+            } ?: org.json.JSONObject.NULL
+
+            val jsonBody = org.json.JSONObject().apply {
+                put("shelfType", request.shelfType ?: org.json.JSONObject.NULL)
+                put("reason", request.reason ?: org.json.JSONObject.NULL)
+                put("historyInfo", historyInfo)
+                put("bookInfo", bookInfo)
             }
 
-            val response = myBookService.updateMyBook(
-                mybookId,
-                MyBookUpdateRequest(
-                    status = request.status,
-                    reason = request.reason,
-                    historyInfo = historyInfo,
-                    bookInfo = bookInfo
-                )
-            )
+            val requestBody = jsonBody.toString()
+                .toRequestBody("application/json".toMediaType())
+
+            val response = myBookService.updateMyBook(mybookId, requestBody)
             if (response.isSuccessful) {
                 response.body()?.let {
                     DataApiResult.Success(it.mybookId)

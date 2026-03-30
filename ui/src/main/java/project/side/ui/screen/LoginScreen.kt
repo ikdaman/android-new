@@ -63,12 +63,20 @@ private const val PRIVACY_URL = "https://www.notion.so/19f4710961a9807f98a8e1617
 fun LoginScreen(
     loginUseCase: LoginUseCase? = null,
     viewModel: LoginViewModel? = hiltViewModel(),
+    onBackClick: (() -> Unit)? = null,
+    infoMessage: String? = null,
     navigateToHome: () -> Unit = {},
     navigateToSignup: (String, String, String) -> Unit = { _, _, _ -> }
 ) {
     val uiState = viewModel?.uiState?.collectAsState()?.value
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+
+    LaunchedEffect(infoMessage) {
+        if (!infoMessage.isNullOrEmpty()) {
+            snackbarHostState.showSnackbar(infoMessage)
+        }
+    }
 
     LaunchedEffect(uiState) {
         var message = ""
@@ -130,6 +138,14 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (onBackClick != null) {
+                    project.side.ui.component.TitleBar(
+                        title = "",
+                        showBackButton = true,
+                        onBackButtonClicked = onBackClick
+                    )
+                }
+
                 // App logo + title
                 Spacer(Modifier.weight(1f))
                 Image(

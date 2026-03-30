@@ -64,21 +64,37 @@ UI
 - 기존 `DataManualBookInfo` 형식에서 새 `SaveMyBookRequest` 형식으로 변경
 - bookInfo와 historyInfo를 분리하여 구조화
 
+## 비로그인 저장 플로우
+비로그인 유저도 책 검색/추가 화면에 접근 가능. 저장 시 로그인 필요.
+
+```
+AddBookScreen / ManualBookInputScreen
+  └─ "저장" 버튼 클릭
+      ├─ 로그인 상태 → BookRegisterBottomSheet → 저장 API 호출
+      └─ 비로그인 상태 → pendingSave 플래그 설정 → LoginScreen 이동
+          ├─ Snackbar: "로그인 후 사용이 가능합니다"
+          ├─ 뒤로가기 → AddBookScreen 복귀
+          ├─ 로그인 성공 → popBack → AddBookScreen 복귀 → BottomSheet 자동 표시
+          └─ 회원가입 → SignupScreen → 완료 → popBack(Login inclusive) → AddBookScreen 복귀
+```
+
 ## 화면 이동 플로우
 ```
 HomeScreen
-  └─ 검색바 클릭 → SearchBookScreen (알라딘 도서 검색)
+  └─ [+] ADD BOOK 버튼 → SearchBookScreen (알라딘 도서 검색)
       ├─ 검색 결과에서 책 선택
       │   └─ → AddBookScreen (선택한 책 정보 전달)
-      │       ├─ 추가 정보 입력 (이유, 독서 날짜 등)
-      │       ├─ "추가하기" 버튼 → SaveMyBook API 호출
-      │       │   ├─ 성공 → MainScreen (popBackStack)
+      │       ├─ "저장" 버튼 → BookRegisterBottomSheet
+      │       │   ├─ 내 서점 탭: reason만 입력 (historyInfo = null)
+      │       │   └─ 히스토리 탭: reason + startDate/endDate 입력
+      │       ├─ 확인 → SaveMyBook API 호출
+      │       │   ├─ 성공 → MainScreen (popBackStack) + "책을 저장했어요" 스낵바
       │       │   └─ 실패 → 에러 메시지 표시
       │       └─ 뒤로 가기 → SearchBookScreen
       └─ "직접 입력" 버튼
           └─ → ManualBookInputScreen (직접 입력)
               ├─ 책 정보 수동 입력
-              ├─ "추가하기" 버튼 → SaveMyBook API 호출
+              ├─ "저장" 버튼 → BookRegisterBottomSheet → SaveMyBook API 호출
               └─ 뒤로 가기 → SearchBookScreen
 
 바코드 스캔:
