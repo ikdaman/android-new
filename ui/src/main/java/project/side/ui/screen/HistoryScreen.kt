@@ -225,13 +225,12 @@ fun HistoryScreenUI(
                             )
                         }
                         items(count = emptyCount) {
-                            Box(
-                                modifier = Modifier
-                                    .height(140.dp)
-                                    .padding(end = 2.dp, bottom = 2.dp)
-                                    .fillMaxWidth()
-                                    .background(Color(0xFFD4D4D4))
-                            )
+                            Box(modifier = Modifier.height(140.dp).padding(end = 2.dp, bottom = 2.dp)) {
+                                PixelShadowBox(
+                                    modifier = Modifier.fillMaxSize(),
+                                    backgroundColor = Color(0xFFD4D4D4),
+                                ) {}
+                            }
                         }
                     }
                 }
