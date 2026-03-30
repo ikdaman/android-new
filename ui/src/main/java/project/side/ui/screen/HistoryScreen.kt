@@ -225,7 +225,7 @@ fun HistoryScreenUI(
                             )
                         }
                         items(count = emptyCount) {
-                            Box(modifier = Modifier.height(140.dp).padding(end = 2.dp, bottom = 2.dp)) {
+                            Box(modifier = Modifier.height(140.dp).padding(end = 1.dp, bottom = 1.dp)) {
                                 PixelShadowBox(
                                     modifier = Modifier.fillMaxSize(),
                                     backgroundColor = Color(0xFFD4D4D4),
@@ -362,7 +362,7 @@ fun HistoryListBookItem(book: HistoryBookInfo, isOdd: Boolean = false, onClick: 
 
 @Composable
 fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.height(140.dp).padding(end = 2.dp, bottom = 2.dp)) {
+    Box(modifier = modifier.height(140.dp).padding(end = 1.dp, bottom = 1.dp)) {
         PixelShadowButton(
             onClick = onClick,
             backgroundColor = Color(0xFFD4D4D4),
