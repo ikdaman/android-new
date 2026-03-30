@@ -31,6 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -121,6 +123,12 @@ fun SearchBookScreen(
                 ) {
                     val keyboardController = LocalSoftwareKeyboardController.current
                     var text by remember { mutableStateOf("") }
+                    val focusRequester = remember { FocusRequester() }
+
+                    LaunchedEffect(Unit) {
+                        focusRequester.requestFocus()
+                        keyboardController?.show()
+                    }
 
                     BasicTextField(
                         value = text,
@@ -128,7 +136,8 @@ fun SearchBookScreen(
                         textStyle = DungGeunMoBody.copy(color = TextPrimary),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = 10.dp),
+                            .padding(start = 10.dp)
+                            .focusRequester(focusRequester),
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(onSearch = {
                             keyboardController?.hide()

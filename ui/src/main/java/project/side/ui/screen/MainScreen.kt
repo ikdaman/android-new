@@ -305,11 +305,16 @@ fun MainScreen(
                     )
                 ) {
                     val bookInfoViewModel: BookInfoViewModel = hiltViewModel()
+                    val previousRoute = navController.previousBackStackEntry?.destination?.route
                     BookInfoScreen(
                         viewModel = bookInfoViewModel,
                         onBack = { navController.popBackStack() },
                         onDeleteComplete = {
-                            navController.popBackStack(HOME_ROUTE, inclusive = false)
+                            if (previousRoute == HISTORY_ROUTE) {
+                                navController.popBackStack(HISTORY_ROUTE, inclusive = false)
+                            } else {
+                                navController.popBackStack(HOME_ROUTE, inclusive = false)
+                            }
                         }
                     )
                 }

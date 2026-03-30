@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import project.side.domain.model.HistoryBookInfo
@@ -48,6 +49,7 @@ import project.side.presentation.model.HistoryBookState
 import project.side.presentation.model.HistoryViewType
 import project.side.presentation.viewmodel.HistoryViewModel
 import project.side.ui.R
+import project.side.ui.component.PixelShadowBox
 import project.side.ui.component.PixelShadowButton
 import project.side.ui.component.TitleBar
 import project.side.ui.theme.BackgroundDefault
@@ -228,23 +230,58 @@ fun HistoryScreenUI(
                         }
                     }
                     LaunchedEffect(shouldLoadMore.value) { if (shouldLoadMore.value) onLoadMore() }
-                    LazyColumn(
-                        state = listState,
+                    Column(
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 30.dp)
                     ) {
-                        items(
-                            count = uiState.books.size,
-                            key = { uiState.books[it].mybookId }
-                        ) { index ->
-                            val book = uiState.books[index]
-                            HistoryListBookItem(
-                                book = book,
-                                isOdd = index % 2 == 0,
-                                onClick = { onBookClick(book.mybookId) },
-                                modifier = Modifier.animateItem()
-                            )
+                        // Table header with retro shadow
+                        PixelShadowBox(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(24.dp),
+                            backgroundColor = Color(0xFFD4D4D4),
+                            showBorder = true,
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f).padding(start = 10.dp),
+                                    text = "START",
+                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    modifier = Modifier.weight(1f).padding(start = 10.dp),
+                                    text = "FINISH",
+                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    modifier = Modifier.weight(2f).padding(start = 10.dp),
+                                    text = "BOOK NAME",
+                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
+                                    color = TextPrimary
+                                )
+                            }
+                        }
+                        LazyColumn(state = listState) {
+                            items(
+                                count = uiState.books.size,
+                                key = { uiState.books[it].mybookId }
+                            ) { index ->
+                                val book = uiState.books[index]
+                                HistoryListBookItem(
+                                    book = book,
+                                    isOdd = index % 2 == 0,
+                                    onClick = { onBookClick(book.mybookId) },
+                                    modifier = Modifier.animateItem()
+                                )
+                            }
                         }
                     }
                 }
