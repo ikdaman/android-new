@@ -26,10 +26,6 @@ class HistoryViewModel @Inject constructor(
         private const val PAGE_SIZE = 5
     }
 
-    init {
-        getBooks()
-    }
-
     fun getBooks(
         keyword: String? = null,
         page: Int? = 0,

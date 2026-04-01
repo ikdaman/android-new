@@ -55,8 +55,8 @@ import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.TextPrimary
 import project.side.ui.theme.WantedSansBodySmall
 
-private const val TERMS_URL = "https://www.notion.so/19f4710961a980499b90cb88b2c2ec0d"
-private const val PRIVACY_URL = "https://www.notion.so/19f4710961a9807f98a8e1617d31b4bd"
+private const val TERMS_URL = "https://scientific-ferryboat-eb1.notion.site/3354710961a98025a529d8e3bb765d2a"
+private const val PRIVACY_URL = "https://scientific-ferryboat-eb1.notion.site/3354710961a9809caafdf17937d5dc80"
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
