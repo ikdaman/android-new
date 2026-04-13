@@ -26,25 +26,23 @@ class TokenAuthenticator @Inject constructor(
 
         if (response.code == 401) {
             synchronized(lock) {
-                // 이미 다른 스레드가 토큰을 갱신했는지 확인
                 val requestToken = response.request.header("Authorization")
                 val currentToken = authTokenProvider.getToken()?.let { "Bearer $it" }
                 if (currentToken != null && currentToken != requestToken) {
-                    // 이미 갱신된 토큰이 있으므로 재시도만 수행
                     return response.request.newBuilder()
                         .header("Authorization", currentToken)
                         .build()
                 }
 
-                val refreshToken = runBlocking { authDataStoreSource.getRefreshToken() }
-                val authorization = runBlocking { authDataStoreSource.getAuthorization() }
+                val refreshToken = authTokenProvider.getRefreshTokenSync()
+                val authorization = authTokenProvider.getAuthorizationSync()
                 if (refreshToken.isNullOrBlank() || authorization.isNullOrBlank()) {
                     clearToken()
                     return null
                 }
 
                 val result = try {
-                    runBlocking { userService.reissue("Bearer $authorization", refreshToken) }
+                    userService.reissueSync("Bearer $authorization", refreshToken).execute()
                 } catch (e: Exception) {
                     clearToken()
                     return null
@@ -56,11 +54,10 @@ class TokenAuthenticator @Inject constructor(
 
                     if (newAuthorization != null && newRefreshToken != null) {
                         runBlocking {
-                            authDataStoreSource.saveToken(
+                            authTokenProvider.saveTokenAndUpdateCache(
                                 authorization = newAuthorization,
                                 refreshToken = newRefreshToken
                             )
-                            authTokenProvider.updateToken()
                         }
                         return response.request.newBuilder()
                             .header("Authorization", "Bearer $newAuthorization")
@@ -77,8 +74,8 @@ class TokenAuthenticator @Inject constructor(
     private fun clearToken() {
         runBlocking {
             authDataStoreSource.clear()
-            authTokenProvider.clearToken()
         }
+        authTokenProvider.clearToken()
         runBlocking { AuthEvent.notify(DataAuthEvent.LOGIN_REQUIRED) }
     }
 }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -38,7 +37,6 @@ import project.side.ui.R
 import project.side.ui.component.HomeBookItem
 import project.side.ui.component.PixelShadowButton
 import project.side.ui.theme.BackgroundDefault
-import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.DungGeunMoEtc
 import project.side.ui.theme.DungGeunMoHomeTitle

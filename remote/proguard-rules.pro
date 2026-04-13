@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Moshi DTO classes - prevent obfuscation of field names used for JSON serialization
+-keep class project.side.remote.model.** { *; }

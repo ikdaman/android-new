@@ -25,9 +25,7 @@ import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.viewmodel.SearchBookViewModel
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import android.net.Uri
+import project.side.ui.auth.SignupDataHolder
 import project.side.ui.screen.AddBookScreen
 import project.side.ui.screen.BarcodeScreen
 import project.side.ui.screen.LoginScreen
@@ -57,6 +55,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var getLoginStateUseCase: GetLoginStateUseCase
+
+    @Inject
+    lateinit var signupDataHolder: SignupDataHolder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,27 +137,17 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             navigateToSignup = { socialToken, provider, providerId ->
-                                navController.navigate(
-                                    "Signup/${Uri.encode(socialToken)}/${Uri.encode(provider)}/${Uri.encode(providerId)}"
-                                )
+                                signupDataHolder.set(socialToken, provider, providerId)
+                                navController.navigate("Signup")
                             }
                         )
                     }
-                    composable(
-                        route = SIGNUP_ROUTE,
-                        arguments = listOf(
-                            navArgument("socialToken") { type = NavType.StringType },
-                            navArgument("provider") { type = NavType.StringType },
-                            navArgument("providerId") { type = NavType.StringType }
-                        )
-                    ) { backStackEntry ->
-                        val socialToken = backStackEntry.arguments?.getString("socialToken") ?: ""
-                        val provider = backStackEntry.arguments?.getString("provider") ?: ""
-                        val providerId = backStackEntry.arguments?.getString("providerId") ?: ""
+                    composable(SIGNUP_ROUTE) {
+                        val signupData = remember { signupDataHolder.consume() }
                         SignupScreen(
-                            socialToken = socialToken,
-                            provider = provider,
-                            providerId = providerId,
+                            socialToken = signupData?.socialToken ?: "",
+                            provider = signupData?.provider ?: "",
+                            providerId = signupData?.providerId ?: "",
                             signupUseCase = signupUseCase,
                             onBackClick = { navController.popBackStack() },
                             onSignupComplete = {
