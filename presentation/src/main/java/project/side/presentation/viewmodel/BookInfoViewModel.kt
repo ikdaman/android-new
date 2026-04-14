@@ -30,6 +30,8 @@ class BookInfoViewModel @Inject constructor(
     val deleteSuccess = _deleteSuccess.asStateFlow()
 
     private val mybookId: Int = savedStateHandle["mybookId"] ?: -1
+
+    fun getMybookId(): Int = mybookId
     private val fallbackDescription: String? = savedStateHandle["description"]
 
     init {

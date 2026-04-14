@@ -64,7 +64,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import project.side.domain.model.DomainResult
+import project.side.domain.DataResource
 import project.side.presentation.viewmodel.SearchBookViewModel
 
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
@@ -112,7 +112,7 @@ fun BarcodeScreen(
 
     LaunchedEffect(searchResult) {
         when (searchResult) {
-            is DomainResult.Success -> {
+            is DataResource.Success -> {
                 onNavigateToAddBookScreen()
             }
             else -> {}

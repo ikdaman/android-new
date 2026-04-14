@@ -16,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
-    private val checkNicknameUseCase: CheckNicknameUseCase
+    private val checkNicknameUseCase: CheckNicknameUseCase,
+    private val signupUseCase: SignupUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SignupUIState>(SignupUIState.Init)
@@ -35,7 +36,7 @@ class SignupViewModel @Inject constructor(
         }
     }
 
-    fun signup(signupUseCase: SignupUseCase, socialToken: String, provider: String, providerId: String, nickname: String) {
+    fun signup(socialToken: String, provider: String, providerId: String, nickname: String) {
         viewModelScope.launch {
             _uiState.value = SignupUIState.Loading
             checkNicknameUseCase(nickname).collect { result ->

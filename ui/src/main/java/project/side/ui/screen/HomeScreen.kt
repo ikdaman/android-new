@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import project.side.domain.model.StoreBookItem
 import project.side.ui.R
 import project.side.ui.component.HomeBookItem
+import androidx.compose.material3.TextButton
 import project.side.ui.component.PixelShadowButton
 import project.side.ui.theme.BackgroundDefault
 import project.side.ui.theme.BackgroundGray
@@ -48,9 +49,11 @@ import project.side.ui.theme.TextPrimary
 fun HomeScreen(
     nickname: String = "",
     storeBooks: List<StoreBookItem> = emptyList(),
+    errorMessage: String? = null,
     sortDescending: Boolean = true,
     onToggleSort: () -> Unit = {},
     onLoadMore: () -> Unit = {},
+    onRetry: () -> Unit = {},
     onBookClick: (Int) -> Unit = {},
     onStartReading: (Int, String) -> Unit = { _, _ -> },
     onDelete: (Int) -> Unit = {},
@@ -88,7 +91,24 @@ fun HomeScreen(
             )
         }
 
-        if (storeBooks.isEmpty()) {
+        if (errorMessage != null && storeBooks.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxHeight(0.5f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = errorMessage, style = DungGeunMoSubtitle, color = TextPrimary.copy(alpha = 0.5f))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        TextButton(onClick = onRetry) {
+                            Text("다시 시도", style = DungGeunMoSubtitle)
+                        }
+                    }
+                }
+            }
+        } else if (storeBooks.isEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(60.dp))
                 Image(

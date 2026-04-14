@@ -39,8 +39,6 @@ import project.side.ui.MAIN_ROUTE
 import project.side.ui.SETTING_ROUTE
 import androidx.compose.runtime.mutableIntStateOf
 import project.side.domain.model.StoreBookItem
-import project.side.domain.usecase.auth.GetProviderUseCase
-import project.side.domain.usecase.auth.LogoutUseCase
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -72,9 +70,6 @@ import project.side.ui.util.navigateIfLoggedIn
 @Composable
 fun MainScreen(
     appNavController: NavController,
-    searchBookViewModel: SearchBookViewModel? = null,
-    logoutUseCase: LogoutUseCase? = null,
-    getProviderUseCase: GetProviderUseCase? = null,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
@@ -83,6 +78,7 @@ fun MainScreen(
     val isLoggedIn = mainViewModel.isLoggedIn.collectAsState()
     val nickname by mainViewModel.nickname.collectAsState()
     val storeBooks by mainViewModel.storeBooks.collectAsState()
+    val storeBooksError by mainViewModel.storeBooksError.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val showReadingStartSheet = remember { mutableStateOf(false) }
@@ -216,9 +212,11 @@ fun MainScreen(
                     HomeScreen(
                         nickname = nickname,
                         storeBooks = storeBooks,
+                        errorMessage = storeBooksError,
                         sortDescending = sortDescending,
                         onToggleSort = { mainViewModel.toggleSort() },
                         onLoadMore = { mainViewModel.loadMore() },
+                        onRetry = { mainViewModel.refreshStoreBooks() },
                         onBookClick = { mybookId ->
                             val desc = storeBooks.find { it.mybookId == mybookId }?.description
                             val encodedDesc = desc?.let { android.net.Uri.encode(it) } ?: ""
@@ -247,6 +245,9 @@ fun MainScreen(
                     )
                 }
                 composable(SEARCH_BOOK_ROUTE) {
+                    val searchBookViewModel: SearchBookViewModel = hiltViewModel(
+                        remember(it) { appNavController.getBackStackEntry(MAIN_ROUTE) }
+                    )
                     SearchBookScreen(
                         appNavController,
                         onNavigateToAddBookScreen = {
@@ -283,8 +284,6 @@ fun MainScreen(
                 }
                 composable(SETTING_ROUTE) {
                     SettingScreen(
-                        logoutUseCase = logoutUseCase,
-                        getProviderUseCase = getProviderUseCase,
                         onBack = { navController.popBackStack() },
                         onLogoutComplete = {
                             appNavController.navigate(LOGIN_ROUTE) {

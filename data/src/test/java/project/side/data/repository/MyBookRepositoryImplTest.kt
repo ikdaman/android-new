@@ -257,7 +257,8 @@ class MyBookRepositoryImplTest {
                     title = "보관함 책",
                     author = listOf("저자"),
                     coverImage = "http://example.com/cover.jpg",
-                    description = "설명"
+                    description = "설명",
+                    reason = null
                 )
             ),
             totalPages = 3,

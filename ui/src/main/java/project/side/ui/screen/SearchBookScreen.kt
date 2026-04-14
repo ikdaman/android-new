@@ -48,7 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import project.side.domain.model.BookItem
-import project.side.domain.model.DomainResult
+import project.side.domain.DataResource
 import project.side.presentation.model.SearchBookState
 import project.side.presentation.viewmodel.SearchBookViewModel
 import project.side.ui.BARCODE_ROUTE
@@ -72,14 +72,14 @@ fun SearchBookScreen(
     onNavigateToAddBookScreen: () -> Unit = {},
     onNavigateToManualInputScreen: () -> Unit = {},
     viewModel: SearchBookViewModel? = hiltViewModel(),
-    state: DomainResult<List<BookItem>>? = null
+    state: DataResource<List<BookItem>>? = null
 ) {
     val searchState = viewModel?.searchState?.collectAsStateWithLifecycle()?.value ?: SearchBookState()
     val searchResult = viewModel?.bookDetail?.collectAsStateWithLifecycle()?.value
 
     LaunchedEffect(searchResult) {
         when (searchResult) {
-            is DomainResult.Success -> onNavigateToAddBookScreen()
+            is DataResource.Success -> onNavigateToAddBookScreen()
             else -> {}
         }
     }
@@ -291,7 +291,7 @@ fun SearchBookScreenPreview() {
     IkdamanTheme {
         SearchBookScreen(
             viewModel = null,
-            state = DomainResult.Success(
+            state = DataResource.success(
                 listOf(
                     BookItem(
                         title = "책 제목1",

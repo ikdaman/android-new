@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import project.side.domain.usecase.SignupUseCase
 import project.side.presentation.model.SignupUIState
 import project.side.presentation.viewmodel.SignupViewModel
 import project.side.ui.component.PixelShadowBox
@@ -44,7 +43,6 @@ fun SignupScreen(
     socialToken: String,
     provider: String,
     providerId: String,
-    signupUseCase: SignupUseCase,
     viewModel: SignupViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onSignupComplete: () -> Unit = {}
@@ -69,7 +67,7 @@ fun SignupScreen(
                 onBackButtonClicked = onBackClick,
                 rightText = "완료",
                 onRightClick = {
-                    viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
+                    viewModel.signup(socialToken, provider, providerId, nickname)
                 }
             )
 

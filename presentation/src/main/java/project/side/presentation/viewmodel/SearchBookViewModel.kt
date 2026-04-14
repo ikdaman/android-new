@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import project.side.domain.DataResource
 import project.side.domain.model.BookItem
 import project.side.domain.model.BookSearchResult
-import project.side.domain.model.DomainResult
 import project.side.domain.model.ManualBookInfo
 import project.side.domain.usecase.SaveManualBookInfoUseCase
 import project.side.domain.usecase.search.SearchBookWithIsbnUseCase
@@ -33,8 +32,8 @@ class SearchBookViewModel @Inject constructor(
     private val _searchState = MutableStateFlow(SearchBookState())
     val searchState: StateFlow<SearchBookState> = _searchState.asStateFlow()
 
-    private val _searchedBookDetail = MutableStateFlow<DomainResult<BookItem>>(DomainResult.Init)
-    val bookDetail: StateFlow<DomainResult<BookItem>> = _searchedBookDetail.asStateFlow()
+    private val _searchedBookDetail = MutableStateFlow<DataResource<BookItem>?>(null)
+    val bookDetail: StateFlow<DataResource<BookItem>?> = _searchedBookDetail.asStateFlow()
 
     // selected book item shared between BarcodeScreen and AddBookScreen
     private val _selectedBookItem = MutableStateFlow<BookItem?>(null)
@@ -96,26 +95,26 @@ class SearchBookViewModel @Inject constructor(
 
     fun searchBookByIsbn(isbn: String) {
         viewModelScope.launch {
-            _searchedBookDetail.value = DomainResult.Loading
+            _searchedBookDetail.value = DataResource.loading()
             try {
                 val result: BookSearchResult = searchBookWithIsbnUseCase(isbn)
                 if (result.books.isNotEmpty()) {
                     val bookItem = result.books.first()
-                    _searchedBookDetail.value = DomainResult.Success(bookItem)
+                    _searchedBookDetail.value = DataResource.success(bookItem)
                     _selectedBookItem.value = bookItem
                 } else {
-                    _searchedBookDetail.value = DomainResult.Error(message = "책을 찾을 수 없습니다.")
+                    _searchedBookDetail.value = DataResource.error("책을 찾을 수 없습니다.")
                 }
             } catch (e: java.io.IOException) {
-                _searchedBookDetail.value = DomainResult.Error(message = "네트워크 연결을 확인해주세요.")
+                _searchedBookDetail.value = DataResource.error("네트워크 연결을 확인해주세요.")
             } catch (e: Exception) {
-                _searchedBookDetail.value = DomainResult.Error(message = "책 정보를 불러오지 못했습니다.")
+                _searchedBookDetail.value = DataResource.error("책 정보를 불러오지 못했습니다.")
             }
         }
     }
 
     fun clearSearchedBook() {
-        _searchedBookDetail.value = DomainResult.Init
+        _searchedBookDetail.value = null
     }
 
     fun saveSelectedBook(reason: String? = null, startDate: java.time.LocalDate? = null, endDate: java.time.LocalDate? = null) {

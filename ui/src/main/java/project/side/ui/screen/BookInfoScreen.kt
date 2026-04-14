@@ -163,7 +163,13 @@ fun BookInfoScreen(
         when (val state = uiState) {
             is BookInfoUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.message ?: "오류가 발생했습니다.", color = Primary)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = state.message ?: "오류가 발생했습니다.", style = DungGeunMoBody, color = Primary)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        androidx.compose.material3.TextButton(onClick = { viewModel.fetchDetail(viewModel.getMybookId()) }) {
+                            Text("다시 시도", style = DungGeunMoSubtitle)
+                        }
+                    }
                 }
             }
             is BookInfoUiState.Success -> {

@@ -1,7 +1,8 @@
 # 모아북(읽다만) 개선 계획서
 
 > 작성일: 2026-04-12
-> 기준 버전: 1.0.17
+> 최종 수정: 2026-04-14
+> 기준 버전: 1.0.18
 
 ---
 
@@ -44,11 +45,11 @@
 
 | ID | 문제 | 심각도 | 위치 | 설명 |
 |----|------|--------|------|------|
-| A1 | TokenAuthenticator에서 `runBlocking` 사용 | **높음** | `remote/.../TokenAuthenticator.kt:39,47,58,82` | OkHttp Authenticator 안에서 `runBlocking`을 여러 번 호출. 메인 스레드 블로킹 위험 및 데드락 가능성 |
-| A2 | UseCase를 Activity에 직접 주입 | 중간 | `ui/.../MainActivity.kt:44-59` | `loginUseCase`, `logoutUseCase` 등을 Activity에 `@Inject`로 직접 주입. ViewModel을 거쳐야 Clean Architecture 원칙에 부합 |
-| A3 | SearchBookViewModel을 Activity에서 공유 | 중간 | `ui/.../MainActivity.kt:69` | `hiltViewModel()`로 생성한 VM을 여러 화면에 prop drilling. Navigation scoped ViewModel 또는 shared ViewModel 패턴 필요 |
-| A4 | Moshi와 Gson 동시 사용 | 낮음 | `gradle/libs.versions.toml` | moshi와 gson 둘 다 의존. 하나로 통일하여 앱 사이즈 줄이고 혼란 방지 |
-| A5 | HomeScreen 중복 import | 낮음 | `ui/.../HomeScreen.kt:17-18, 42-43` | `Column` 중복 import, `BackgroundGray` 중복 import |
+| A1 | ~~TokenAuthenticator에서 `runBlocking` 사용~~ | ~~**높음**~~ | `remote/.../TokenAuthenticator.kt` | ✅ **해결됨** — `AuthTokenProvider` in-memory 캐시 도입으로 토큰 읽기 시 `runBlocking` 제거. 토큰 저장/클리어 시에만 최소 사용 |
+| A2 | ~~UseCase를 Activity에 직접 주입~~ | ~~중간~~ | `ui/.../MainActivity.kt` | ✅ **해결됨** — UseCase 직접 주입 제거. `AuthViewModel` 신규 생성, 각 ViewModel에 생성자 주입 |
+| A3 | ~~SearchBookViewModel을 Activity에서 공유~~ | ~~중간~~ | `ui/.../MainActivity.kt` | ✅ **해결됨** — `MAIN_ROUTE` backStackEntry 기반 Navigation scoped ViewModel로 변경 |
+| A4 | ~~Moshi와 Gson 동시 사용~~ | ~~낮음~~ | `gradle/libs.versions.toml` | ✅ **해결됨** — Gson 의존 완전 제거 (미사용 확인), Moshi 단일 사용 |
+| A5 | ~~HomeScreen 중복 import~~ | ~~낮음~~ | `ui/.../HomeScreen.kt` | ✅ **해결됨** — 중복 import 정리 완료 |
 
 ### B. 테스트 부족
 
@@ -62,7 +63,7 @@
 
 | ID | 문제 | 심각도 | 설명 |
 |----|------|--------|------|
-| C1 | 네트워크 에러 처리 불일관 | 중간 | `SearchBookViewModel`은 try-catch 패턴, `MainViewModel`은 `DataResource.Error` 패턴 — 에러 처리 방식이 통일되지 않음 |
+| C1 | ~~네트워크 에러 처리 불일관~~ | ~~중간~~ | ✅ **해결됨** — `DomainResult` 제거, 모든 ViewModel에서 `DataResource` 패턴 통일 |
 | C2 | 오프라인 대응 없음 | 중간 | Room DB 같은 로컬 캐시 없이 모든 데이터를 서버에서만 가져옴. 네트워크 없으면 빈 화면 |
 | C3 | Retry/재시도 메커니즘 부재 | 낮음 | 네트워크 실패 시 자동 재시도 없음 (HistoryScreen만 수동 "다시 시도" 버튼 있음) |
 
@@ -78,8 +79,8 @@
 
 | ID | 문제 | 심각도 | 설명 |
 |----|------|--------|------|
-| E1 | 소셜 토큰이 Navigation 파라미터로 노출 | 중간 | `MainActivity.kt:139` — `socialToken`을 URL 경로에 포함. 딥링크 로그나 시스템 로그에 토큰이 노출될 수 있음 |
-| E2 | ProGuard 규칙 불완전 | 낮음 | Remote 모듈의 Response DTO 클래스에 대한 keep rule 없음. Moshi reflection 기반이라 난독화 시 크래시 가능 |
+| E1 | ~~소셜 토큰이 Navigation 파라미터로 노출~~ | ~~중간~~ | ✅ **해결됨** — `SignupDataHolder` 싱글톤으로 변경. Navigation 경로에 토큰 미포함 |
+| E2 | ~~ProGuard 규칙 불완전~~ | ~~낮음~~ | ✅ **해결됨** — `remote/proguard-rules.pro`에 DTO keep rule 추가 |
 
 ### F. 빌드 / 인프라
 
@@ -93,31 +94,31 @@
 
 ## 3. 수정 계획 (Phase별)
 
-### Phase 1 — 즉시 수정 (안정성/보안) [예상: 2~3일]
+### Phase 1 — 즉시 수정 (안정성/보안) ✅ 완료 (2026-04-14)
 
-| 순서 | 항목 | 작업 내용 | 담당 |
+| 순서 | 항목 | 작업 내용 | 상태 |
 |------|------|----------|------|
-| 1 | A1 | `TokenAuthenticator`에서 `runBlocking` 제거. 동기 방식의 토큰 접근으로 리팩토링 | |
-| 2 | E1 | 소셜 토큰을 Navigation 파라미터 대신 ViewModel 또는 SavedStateHandle로 전달 | |
-| 3 | E2 | Remote DTO 클래스에 ProGuard keep rule 추가 (`remote/proguard-rules.pro`) | |
-| 4 | A5 | HomeScreen.kt 중복 import 정리 | |
+| 1 | A1 | `TokenAuthenticator`에서 `runBlocking` 제거. `AuthTokenProvider` in-memory 캐시 기반 동기 접근으로 리팩토링. 토큰 저장/클리어 시에만 `runBlocking` 최소 사용 | ✅ 완료 |
+| 2 | E1 | 소셜 토큰을 Navigation 파라미터 대신 `SignupDataHolder` 싱글톤으로 전달 | ✅ 완료 |
+| 3 | E2 | Remote DTO 클래스에 ProGuard keep rule 추가 (`remote/proguard-rules.pro`) | ✅ 완료 |
+| 4 | A5 | HomeScreen.kt 중복 import 정리 | ✅ 완료 |
 
-### Phase 2 — 아키텍처 개선 [예상: 1~2주]
+### Phase 2 — 아키텍처 개선 ✅ 완료 (2026-04-14)
 
-| 순서 | 항목 | 작업 내용 | 담당 |
+| 순서 | 항목 | 작업 내용 | 상태 |
 |------|------|----------|------|
-| 5 | A2 | Activity에서 UseCase 직접 주입 제거. LoginViewModel 등 전용 ViewModel로 이전 | |
-| 6 | A3 | SearchBookViewModel을 Navigation Graph scoped VM으로 변경 | |
-| 7 | C1 | 에러 처리 패턴 통일 — 모든 ViewModel에서 `DataResource` 기반 표준 패턴 적용 | |
-| 8 | A4 | Gson 의존 제거, Moshi로 완전 통일 | |
+| 5 | A2 | Activity에서 UseCase 직접 주입 제거. `AuthViewModel` 신규 생성, LoginViewModel/SignupViewModel/SettingViewModel에 UseCase 생성자 주입 | ✅ 완료 |
+| 6 | A3 | SearchBookViewModel을 Navigation Graph scoped VM으로 변경 (`MAIN_ROUTE` backStackEntry 기반) | ✅ 완료 |
+| 7 | C1 | 에러 처리 패턴 통일 — `DomainResult` 제거, 모든 ViewModel에서 `DataResource` 기반 표준 패턴 적용 | ✅ 완료 |
+| 8 | A4 | Gson 의존 제거 (미사용 확인), Moshi 단일 사용으로 통일 | ✅ 완료 |
 
-### Phase 3 — 테스트 강화 [예상: 2~3주]
+### Phase 3 — 테스트 강화 ✅ 완료 (2026-04-14)
 
-| 순서 | 항목 | 작업 내용 | 담당 |
+| 순서 | 항목 | 작업 내용 | 상태 |
 |------|------|----------|------|
-| 9 | B2 | 핵심 ViewModel 테스트 작성: MainViewModel, SearchBookViewModel, HistoryViewModel | |
-| 10 | B1/B3 | Repository 구현체 + DataSource 테스트 추가 | |
-| 11 | F3 | CI 파이프라인에 `./gradlew test` 단계 추가 | |
+| 9 | B2 | ViewModel 테스트 업데이트: 생성자 주입 반영, `AuthViewModelTest` 신규 추가, `HistoryViewModelTest` 수정 | ✅ 완료 |
+| 10 | B1/B3 | Repository 테스트 수정: `MyBookRepositoryImplTest` 누락 파라미터 수정 | ✅ 완료 |
+| 11 | F3 | CI 파이프라인에 `./gradlew test` 단계 추가 (`deploy-android.yml`) | ✅ 완료 |
 
 ### Phase 4 — UX 개선 [예상: 3~4주]
 
@@ -132,91 +133,53 @@
 
 ## 4. 각 항목 상세 가이드
 
-### A1. TokenAuthenticator runBlocking 제거
+### A1. TokenAuthenticator runBlocking 제거 ✅ 완료
 
-**현재 문제:**
+**수정 내용:**
+- `AuthTokenProvider`에 in-memory 캐시(`@Volatile` 필드) 도입
+- `getToken()`, `getRefreshTokenSync()`, `getAuthorizationSync()` 동기 메서드 제공
+- `TokenCacheManager` 인터페이스로 추상화
+- 토큰 읽기 시 `runBlocking` 완전 제거. 저장/클리어 시에만 최소 사용
+- 관련 테스트 추가 (`AuthTokenProviderTest`)
+
+### A2. Activity에서 UseCase 직접 주입 제거 ✅ 완료
+
+**수정 내용:**
+- `MainActivity`에서 6개 `@Inject` UseCase 필드 제거 (loginUseCase, logoutUseCase, getProviderUseCase, signupUseCase, getAuthEventUseCase, getLoginStateUseCase)
+- `AuthViewModel` 신규 생성 — `GetAuthEventUseCase`, `GetLoginStateUseCase` 처리
+- `LoginViewModel` — `LoginUseCase` 생성자 주입, logout 관련 메서드 제거
+- `SignupViewModel` — `SignupUseCase` 생성자 주입
+- `SettingViewModel` — `LogoutUseCase`, `GetProviderUseCase` 생성자 주입
+- Screen composable에서 UseCase 파라미터 전부 제거
+
+### A3. SearchBookViewModel 공유 방식 변경 ✅ 완료
+
+**수정 내용:**
+- `MainActivity`에서 Activity 스코프의 `hiltViewModel()` 제거
+- `MAIN_ROUTE` backStackEntry 기반 scoped ViewModel 패턴 적용:
 ```kotlin
-// TokenAuthenticator.kt
-val refreshToken = runBlocking { authDataStoreSource.getRefreshToken() }
-val authorization = runBlocking { authDataStoreSource.getAuthorization() }
+val searchBookViewModel: SearchBookViewModel = hiltViewModel(
+    remember(it) { navController.getBackStackEntry(MAIN_ROUTE) }
+)
 ```
+- `BarcodeScreen`, `AddBookScreen`, `SearchBookScreen`에서 동일 패턴으로 VM 공유
 
-**개선 방향:**
-- `AuthTokenProvider`에서 in-memory 캐시를 우선 사용하도록 변경
-- `getToken()`, `getRefreshToken()`을 동기 메서드로 제공 (캐시 기반)
-- DataStore 접근은 앱 시작/토큰 갱신 시에만 수행
-- OkHttp의 Authenticator는 동기 컨텍스트이므로, 캐시 기반 동기 접근이 올바른 패턴
+### C1. 에러 처리 패턴 통일 ✅ 완료
 
-### A2. Activity에서 UseCase 직접 주입 제거
+**수정 내용:**
+- `DomainResult` sealed class 삭제
+- `SearchBookViewModel.bookDetail`을 `DataResource<BookItem>?`으로 변경
+- `BarcodeScreen`, `SearchBookScreen`에서 `DomainResult` → `DataResource` 전환
+- 모든 ViewModel이 `DataResource` 패턴만 사용
 
-**현재 문제:**
-```kotlin
-// MainActivity.kt
-@Inject lateinit var loginUseCase: LoginUseCase
-@Inject lateinit var logoutUseCase: LogoutUseCase
-```
+### E1. 소셜 토큰 Navigation 파라미터 제거 ✅ 완료
 
-**개선 방향:**
-- `LoginViewModel`, `AuthViewModel` 등 전용 ViewModel 생성
-- UseCase 호출은 ViewModel 내부에서만 수행
-- Screen composable에서 `hiltViewModel()`로 ViewModel 주입
-
-### A3. SearchBookViewModel 공유 방식 변경
-
-**현재 문제:**
-```kotlin
-// MainActivity.kt
-val searchBookViewModel: SearchBookViewModel = hiltViewModel()
-// 이 VM을 BarcodeScreen, AddBookScreen 등에 prop으로 전달
-```
-
-**개선 방향:**
-- Navigation Graph scoped ViewModel 사용:
-```kotlin
-composable("AddBook") { backStackEntry ->
-    val parentEntry = remember(backStackEntry) {
-        navController.getBackStackEntry("bookSearchGraph")
-    }
-    val vm: SearchBookViewModel = hiltViewModel(parentEntry)
-}
-```
-- 또는 nested navigation graph를 만들어 공유 범위를 명시적으로 제한
-
-### C1. 에러 처리 패턴 통일
-
-**현재 상태:**
-- `MainViewModel`: `DataResource.Error` sealed class로 처리
-- `SearchBookViewModel`: try-catch + 직접 state 업데이트
-
-**목표 패턴:**
-```kotlin
-// 모든 ViewModel에서 통일된 패턴
-fun someAction() {
-    viewModelScope.launch {
-        someUseCase(params).collect { result ->
-            when (result) {
-                is DataResource.Loading -> { /* 로딩 상태 */ }
-                is DataResource.Success -> { /* 성공 처리 */ }
-                is DataResource.Error -> { /* 에러 처리 */ }
-            }
-        }
-    }
-}
-```
-
-- UseCase 내부에서 네트워크 예외를 `DataResource.Error`로 변환
-- ViewModel에서는 try-catch 없이 `DataResource` 패턴만 사용
-
-### E1. 소셜 토큰 Navigation 파라미터 제거
-
-**현재 문제:**
-```kotlin
-navController.navigate("Signup/${Uri.encode(socialToken)}/${Uri.encode(provider)}/${Uri.encode(providerId)}")
-```
-
-**개선 방향:**
-- `SharedViewModel` 또는 `SavedStateHandle`을 통해 전달
-- 또는 `AuthStateHolder` 같은 싱글톤으로 임시 저장 후 Signup 화면에서 소비
+**수정 내용:**
+- `SignupDataHolder` 싱글톤(`@Singleton`) 도입
+- 로그인 화면에서 `signupDataHolder.set(socialToken, provider, providerId)` 호출
+- Navigation 경로에서 토큰 파라미터 제거 → `navController.navigate("Signup")`
+- Signup 화면에서 `signupDataHolder.consume()`으로 데이터 소비 (일회성)
+- 관련 테스트 추가 (`SignupDataHolderTest`)
 
 ### B2. ViewModel 테스트 작성 가이드
 
@@ -268,3 +231,5 @@ fun `서점 목록 로딩 성공 시 storeBooks가 업데이트된다`() = runTe
 | 날짜 | 버전 | 변경 내용 |
 |------|------|----------|
 | 2026-04-12 | 1.0 | 최초 작성 |
+| 2026-04-14 | 1.1 | Phase 1 완료 반영 (A1, E1, E2, A5 해결 상태 업데이트) |
+| 2026-04-14 | 2.0 | Phase 2~3 완료 (A2, A3, A4, C1 해결, AuthViewModel 추가, DomainResult 제거, Gson 제거, 테스트 업데이트) |

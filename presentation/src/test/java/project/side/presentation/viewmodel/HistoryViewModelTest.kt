@@ -54,7 +54,7 @@ class HistoryViewModelTest {
         )
 
     @Test
-    fun `init loads history books successfully`() = runTest {
+    fun `getBooks loads history books successfully`() = runTest {
         // Given
         val books = listOf(createHistoryBookInfo(mybookId = 1), createHistoryBookInfo(mybookId = 2))
         coEvery { getHistoryBooksUseCase(any(), any(), any(), any()) } returns flowOf(
@@ -63,6 +63,7 @@ class HistoryViewModelTest {
 
         // When
         viewModel = HistoryViewModel(getHistoryBooksUseCase)
+        viewModel.getBooks()
 
         // Then
         assertEquals(2, viewModel.uiState.value.books.size)
@@ -78,6 +79,7 @@ class HistoryViewModelTest {
 
         // When
         viewModel = HistoryViewModel(getHistoryBooksUseCase)
+        viewModel.getBooks()
 
         // Then
         assertEquals("네트워크 오류", viewModel.uiState.value.errorMessage)
@@ -98,6 +100,7 @@ class HistoryViewModelTest {
 
         // When
         viewModel = HistoryViewModel(getHistoryBooksUseCase)
+        viewModel.getBooks()
         viewModel.loadMore()
 
         // Then
@@ -114,6 +117,7 @@ class HistoryViewModelTest {
 
         // When
         viewModel = HistoryViewModel(getHistoryBooksUseCase)
+        viewModel.getBooks()
         val sizeBeforeLoadMore = viewModel.uiState.value.books.size
         viewModel.loadMore()
 

@@ -15,15 +15,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import project.side.domain.model.DomainAuthEvent
-import project.side.domain.usecase.GetAuthEventUseCase
-import project.side.domain.usecase.GetLoginStateUseCase
-import project.side.domain.usecase.SignupUseCase
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import project.side.domain.usecase.auth.GetProviderUseCase
-import project.side.domain.usecase.auth.LoginUseCase
-import project.side.domain.usecase.auth.LogoutUseCase
+import project.side.presentation.viewmodel.AuthViewModel
 import project.side.presentation.viewmodel.SearchBookViewModel
 import project.side.ui.auth.SignupDataHolder
 import project.side.ui.screen.AddBookScreen
@@ -39,24 +34,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
-    lateinit var loginUseCase: LoginUseCase
-
-    @Inject
-    lateinit var logoutUseCase: LogoutUseCase
-
-    @Inject
-    lateinit var getProviderUseCase: GetProviderUseCase
-
-    @Inject
-    lateinit var signupUseCase: SignupUseCase
-
-    @Inject
-    lateinit var getAuthEventUseCase: GetAuthEventUseCase
-
-    @Inject
-    lateinit var getLoginStateUseCase: GetLoginStateUseCase
-
-    @Inject
     lateinit var signupDataHolder: SignupDataHolder
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,13 +44,11 @@ class MainActivity : ComponentActivity() {
             IkdamanTheme {
                 val navController = rememberNavController()
 
-                val searchBookViewModel: SearchBookViewModel = hiltViewModel()
-
-                val loginFlow = remember { getLoginStateUseCase() }
-                val isLoggedIn by loginFlow.collectAsState(initial = false)
+                val authViewModel: AuthViewModel = hiltViewModel()
+                val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
                 LaunchedEffect(Unit) {
-                    getAuthEventUseCase()
+                    authViewModel.authEvent
                         .onEach {
                             when (it) {
                                 DomainAuthEvent.LOGIN_REQUIRED -> {
@@ -104,14 +79,12 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(MAIN_ROUTE) {
-                        MainScreen(
-                            navController,
-                            searchBookViewModel,
-                            logoutUseCase = logoutUseCase,
-                            getProviderUseCase = getProviderUseCase
-                        )
+                        MainScreen(navController)
                     }
                     composable(BARCODE_ROUTE) {
+                        val searchBookViewModel: SearchBookViewModel = hiltViewModel(
+                            remember(it) { navController.getBackStackEntry(MAIN_ROUTE) }
+                        )
                         BarcodeScreen(
                             viewModel = searchBookViewModel,
                             onBack = { navController.popBackStack() },
@@ -124,7 +97,6 @@ class MainActivity : ComponentActivity() {
                     composable(LOGIN_ROUTE) {
                         val canGoBack = remember { navController.previousBackStackEntry != null }
                         LoginScreen(
-                            loginUseCase = loginUseCase,
                             onBackClick = if (canGoBack) { { navController.popBackStack() } } else null,
                             infoMessage = if (canGoBack) "로그인 후 사용이 가능합니다" else null,
                             navigateToHome = {
@@ -148,7 +120,6 @@ class MainActivity : ComponentActivity() {
                             socialToken = signupData?.socialToken ?: "",
                             provider = signupData?.provider ?: "",
                             providerId = signupData?.providerId ?: "",
-                            signupUseCase = signupUseCase,
                             onBackClick = { navController.popBackStack() },
                             onSignupComplete = {
                                 navController.navigate(MAIN_ROUTE) {
@@ -158,6 +129,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(ADD_BOOK_ROUTE) {
+                        val searchBookViewModel: SearchBookViewModel = hiltViewModel(
+                            remember(it) { navController.getBackStackEntry(MAIN_ROUTE) }
+                        )
                         AddBookScreen(
                             appNavController = navController,
                             viewModel = searchBookViewModel,

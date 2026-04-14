@@ -45,6 +45,9 @@ class MainViewModel @Inject constructor(
     private val _storeBooks = MutableStateFlow<List<StoreBookItem>>(emptyList())
     val storeBooks: StateFlow<List<StoreBookItem>> = _storeBooks.asStateFlow()
 
+    private val _storeBooksError = MutableStateFlow<String?>(null)
+    val storeBooksError: StateFlow<String?> = _storeBooksError.asStateFlow()
+
     private val _snackbarEvents = MutableSharedFlow<String>()
     val snackbarEvents = _snackbarEvents.asSharedFlow()
 
@@ -89,9 +92,11 @@ class MainViewModel @Inject constructor(
                         storeBooksLastPage = result.data.last
                         storeBooksPage++
                         storeBooksLoading = false
+                        _storeBooksError.value = null
                     }
                     is DataResource.Error -> {
                         storeBooksLoading = false
+                        _storeBooksError.value = result.message ?: "책 목록을 불러오지 못했어요."
                     }
                     is DataResource.Loading -> {}
                 }

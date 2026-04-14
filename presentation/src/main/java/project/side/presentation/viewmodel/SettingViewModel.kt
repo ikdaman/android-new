@@ -23,7 +23,9 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor(
     private val getMyInfoUseCase: GetMyInfoUseCase,
     private val updateNicknameUseCase: UpdateNicknameUseCase,
-    private val withdrawUseCase: WithdrawUseCase
+    private val withdrawUseCase: WithdrawUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val getProviderUseCase: GetProviderUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingUIState>(SettingUIState.Init)
@@ -115,7 +117,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun logout(logoutUseCase: LogoutUseCase, getProviderUseCase: GetProviderUseCase) {
+    fun logout() {
         viewModelScope.launch {
             _uiState.value = SettingUIState.Loading
             val provider = getProviderUseCase()

@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
-import project.side.domain.usecase.auth.LoginUseCase
 import project.side.presentation.model.LoginUIState
 import project.side.presentation.viewmodel.LoginViewModel
 import project.side.ui.R
@@ -61,7 +60,6 @@ private const val PRIVACY_URL = "https://scientific-ferryboat-eb1.notion.site/33
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
-    loginUseCase: LoginUseCase? = null,
     viewModel: LoginViewModel? = hiltViewModel(),
     onBackClick: (() -> Unit)? = null,
     infoMessage: String? = null,
@@ -168,19 +166,19 @@ fun LoginScreen(
                     SocialLoginButton(
                         iconRes = R.drawable.google_logo,
                         text = "구글 로그인",
-                        onClick = { if (loginUseCase != null) viewModel?.googleLogin(loginUseCase) }
+                        onClick = { viewModel?.googleLogin() }
                     )
                     Spacer(Modifier.height(12.dp))
                     SocialLoginButton(
                         iconRes = R.drawable.naver_logo,
                         text = "네이버 로그인",
-                        onClick = { if (loginUseCase != null) viewModel?.naverLogin(loginUseCase) }
+                        onClick = { viewModel?.naverLogin() }
                     )
                     Spacer(Modifier.height(12.dp))
                     SocialLoginButton(
                         iconRes = R.drawable.kakao_logo,
                         text = "카카오 로그인",
-                        onClick = { if (loginUseCase != null) viewModel?.kakaoLogin(loginUseCase) }
+                        onClick = { viewModel?.kakaoLogin() }
                     )
                 }
 
@@ -261,6 +259,6 @@ private fun TermText(text: String, onClick: () -> Unit = {}) {
 @Composable
 fun LoginScreenPreview() {
     IkdamanTheme {
-        LoginScreen(viewModel = null, loginUseCase = null)
+        LoginScreen(viewModel = null)
     }
 }

@@ -16,10 +16,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import project.side.domain.model.LoginState
-import project.side.domain.model.LogoutState
 import project.side.domain.model.SocialAuthType
 import project.side.domain.usecase.auth.LoginUseCase
-import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.model.LoginUIState
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -27,9 +25,6 @@ class LoginViewModelTest {
 
     @MockK
     private lateinit var loginUseCase: LoginUseCase
-
-    @MockK
-    private lateinit var logoutUseCase: LogoutUseCase
 
     private lateinit var viewModel: LoginViewModel
 
@@ -39,7 +34,7 @@ class LoginViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         MockKAnnotations.init(this)
-        viewModel = LoginViewModel()
+        viewModel = LoginViewModel(loginUseCase)
     }
 
     @After
@@ -65,7 +60,7 @@ class LoginViewModelTest {
         )
 
         // When
-        viewModel.googleLogin(loginUseCase)
+        viewModel.googleLogin()
 
         // Then
         assertEquals(LoginUIState.Success("로그인 성공"), viewModel.uiState.value)
@@ -77,7 +72,7 @@ class LoginViewModelTest {
         every { loginUseCase(SocialAuthType.GOOGLE) } returns flowOf(LoginState.Loading)
 
         // When
-        viewModel.googleLogin(loginUseCase)
+        viewModel.googleLogin()
 
         // Then
         assertEquals(LoginUIState.Loading, viewModel.uiState.value)
@@ -92,7 +87,7 @@ class LoginViewModelTest {
         )
 
         // When
-        viewModel.googleLogin(loginUseCase)
+        viewModel.googleLogin()
 
         // Then
         val state = viewModel.uiState.value
@@ -112,7 +107,7 @@ class LoginViewModelTest {
         )
 
         // When
-        viewModel.googleLogin(loginUseCase)
+        viewModel.googleLogin()
 
         // Then
         val state = viewModel.uiState.value
@@ -132,7 +127,7 @@ class LoginViewModelTest {
         every { loginUseCase(SocialAuthType.NAVER) } returns flowOf(LoginState.Success)
 
         // When
-        viewModel.naverLogin(loginUseCase)
+        viewModel.naverLogin()
 
         // Then
         assertEquals(LoginUIState.Success("로그인 성공"), viewModel.uiState.value)
@@ -145,7 +140,7 @@ class LoginViewModelTest {
         every { loginUseCase(SocialAuthType.NAVER) } returns flowOf(LoginState.Error(errorMessage))
 
         // When
-        viewModel.naverLogin(loginUseCase)
+        viewModel.naverLogin()
 
         // Then
         val state = viewModel.uiState.value
@@ -161,7 +156,7 @@ class LoginViewModelTest {
         every { loginUseCase(SocialAuthType.KAKAO) } returns flowOf(LoginState.Success)
 
         // When
-        viewModel.kakaoLogin(loginUseCase)
+        viewModel.kakaoLogin()
 
         // Then
         assertEquals(LoginUIState.Success("로그인 성공"), viewModel.uiState.value)
@@ -174,7 +169,7 @@ class LoginViewModelTest {
         every { loginUseCase(SocialAuthType.KAKAO) } returns flowOf(LoginState.Error(errorMessage))
 
         // When
-        viewModel.kakaoLogin(loginUseCase)
+        viewModel.kakaoLogin()
 
         // Then
         val state = viewModel.uiState.value
@@ -182,102 +177,18 @@ class LoginViewModelTest {
         assertEquals(errorMessage, (state as LoginUIState.Error).message)
     }
 
-    // ── googleLogout ───────────────────────────────────────────────────────────
+    // ── resetState ─────────────────────────────────────────────────────────────
 
     @Test
-    fun `googleLogout success sets uiState to Success`() = runTest {
+    fun `resetState sets uiState back to Init`() = runTest {
         // Given
-        every { logoutUseCase(SocialAuthType.GOOGLE) } returns flowOf(LogoutState.Success)
+        every { loginUseCase(SocialAuthType.GOOGLE) } returns flowOf(LoginState.Success)
+        viewModel.googleLogin()
 
         // When
-        viewModel.googleLogout(logoutUseCase)
+        viewModel.resetState()
 
         // Then
-        assertEquals(LoginUIState.Success("로그아웃 성공"), viewModel.uiState.value)
-    }
-
-    @Test
-    fun `googleLogout loading sets uiState to Loading`() = runTest {
-        // Given
-        every { logoutUseCase(SocialAuthType.GOOGLE) } returns flowOf(LogoutState.Loading)
-
-        // When
-        viewModel.googleLogout(logoutUseCase)
-
-        // Then
-        assertEquals(LoginUIState.Loading, viewModel.uiState.value)
-    }
-
-    @Test
-    fun `googleLogout error sets uiState to Error`() = runTest {
-        // Given
-        val errorMessage = "구글 로그아웃 실패"
-        every { logoutUseCase(SocialAuthType.GOOGLE) } returns flowOf(LogoutState.Error(errorMessage))
-
-        // When
-        viewModel.googleLogout(logoutUseCase)
-
-        // Then
-        val state = viewModel.uiState.value
-        assertTrue(state is LoginUIState.Error)
-        assertEquals(errorMessage, (state as LoginUIState.Error).message)
-    }
-
-    // ── naverLogout ────────────────────────────────────────────────────────────
-
-    @Test
-    fun `naverLogout success sets uiState to Success`() = runTest {
-        // Given
-        every { logoutUseCase(SocialAuthType.NAVER) } returns flowOf(LogoutState.Success)
-
-        // When
-        viewModel.naverLogout(logoutUseCase)
-
-        // Then
-        assertEquals(LoginUIState.Success("로그아웃 성공"), viewModel.uiState.value)
-    }
-
-    @Test
-    fun `naverLogout error sets uiState to Error`() = runTest {
-        // Given
-        val errorMessage = "네이버 로그아웃 실패"
-        every { logoutUseCase(SocialAuthType.NAVER) } returns flowOf(LogoutState.Error(errorMessage))
-
-        // When
-        viewModel.naverLogout(logoutUseCase)
-
-        // Then
-        val state = viewModel.uiState.value
-        assertTrue(state is LoginUIState.Error)
-        assertEquals(errorMessage, (state as LoginUIState.Error).message)
-    }
-
-    // ── kakaoLogout ────────────────────────────────────────────────────────────
-
-    @Test
-    fun `kakaoLogout success sets uiState to Success`() = runTest {
-        // Given
-        every { logoutUseCase(SocialAuthType.KAKAO) } returns flowOf(LogoutState.Success)
-
-        // When
-        viewModel.kakaoLogout(logoutUseCase)
-
-        // Then
-        assertEquals(LoginUIState.Success("로그아웃 성공"), viewModel.uiState.value)
-    }
-
-    @Test
-    fun `kakaoLogout error sets uiState to Error`() = runTest {
-        // Given
-        val errorMessage = "카카오 로그아웃 실패"
-        every { logoutUseCase(SocialAuthType.KAKAO) } returns flowOf(LogoutState.Error(errorMessage))
-
-        // When
-        viewModel.kakaoLogout(logoutUseCase)
-
-        // Then
-        val state = viewModel.uiState.value
-        assertTrue(state is LoginUIState.Error)
-        assertEquals(errorMessage, (state as LoginUIState.Error).message)
+        assertEquals(LoginUIState.Init, viewModel.uiState.value)
     }
 }

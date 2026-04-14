@@ -34,8 +34,6 @@ import project.side.ui.util.noEffectClick
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import project.side.domain.usecase.auth.GetProviderUseCase
-import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.model.SettingUIState
 import project.side.presentation.viewmodel.SettingViewModel
 import project.side.ui.component.PixelShadowBox
@@ -58,8 +56,6 @@ private const val PRIVACY_URL = "https://scientific-ferryboat-eb1.notion.site/33
 
 @Composable
 fun SettingScreen(
-    logoutUseCase: LogoutUseCase? = null,
-    getProviderUseCase: GetProviderUseCase? = null,
     viewModel: SettingViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
     onLogoutComplete: () -> Unit = {}
@@ -83,7 +79,7 @@ fun SettingScreen(
         onStartEditing = viewModel::startEditingNickname,
         onCancelEditing = viewModel::cancelEditingNickname,
         onSaveNickname = viewModel::updateNickname,
-        onLogout = { if (logoutUseCase != null && getProviderUseCase != null) viewModel.logout(logoutUseCase, getProviderUseCase) },
+        onLogout = { viewModel.logout() },
         onWithdraw = viewModel::withdraw
     )
 }

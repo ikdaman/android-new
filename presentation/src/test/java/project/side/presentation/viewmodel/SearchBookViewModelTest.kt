@@ -23,7 +23,6 @@ import org.junit.Test
 import project.side.domain.DataResource
 import project.side.domain.model.BookItem
 import project.side.domain.model.BookSearchResult
-import project.side.domain.model.DomainResult
 import project.side.domain.usecase.SaveManualBookInfoUseCase
 import project.side.domain.usecase.search.SearchBookWithIsbnUseCase
 import project.side.domain.usecase.search.SearchBookWithTitleUseCase
@@ -81,8 +80,8 @@ class SearchBookViewModelTest {
     }
 
     @Test
-    fun `initial bookDetail is Init`() {
-        assertEquals(DomainResult.Init, viewModel.bookDetail.value)
+    fun `initial bookDetail is null`() {
+        assertNull(viewModel.bookDetail.value)
     }
 
     @Test
@@ -294,8 +293,8 @@ class SearchBookViewModelTest {
 
         // Then
         val detail = viewModel.bookDetail.value
-        assertTrue(detail is DomainResult.Success)
-        assertEquals(book, (detail as DomainResult.Success).data)
+        assertTrue(detail is DataResource.Success)
+        assertEquals(book, (detail as DataResource.Success).data)
         assertEquals(book, viewModel.selectedBookItem.value)
     }
 
@@ -312,8 +311,8 @@ class SearchBookViewModelTest {
 
         // Then
         val detail = viewModel.bookDetail.value
-        assertTrue(detail is DomainResult.Error)
-        assertEquals("책을 찾을 수 없습니다.", (detail as DomainResult.Error).message)
+        assertTrue(detail is DataResource.Error)
+        assertEquals("책을 찾을 수 없습니다.", (detail as DataResource.Error).message)
     }
 
     @Test
@@ -326,8 +325,8 @@ class SearchBookViewModelTest {
 
         // Then
         val detail = viewModel.bookDetail.value
-        assertTrue(detail is DomainResult.Error)
-        assertEquals("네트워크 연결을 확인해주세요.", (detail as DomainResult.Error).message)
+        assertTrue(detail is DataResource.Error)
+        assertEquals("네트워크 연결을 확인해주세요.", (detail as DataResource.Error).message)
     }
 
     @Test
@@ -340,27 +339,26 @@ class SearchBookViewModelTest {
 
         // Then
         val detail = viewModel.bookDetail.value
-        assertTrue(detail is DomainResult.Error)
-        assertEquals("책 정보를 불러오지 못했습니다.", (detail as DomainResult.Error).message)
+        assertTrue(detail is DataResource.Error)
+        assertEquals("책 정보를 불러오지 못했습니다.", (detail as DataResource.Error).message)
     }
 
     @Test
     fun `searchBookByIsbn sets bookDetail to Loading initially`() = runTest {
-        // Given – suspend but never returns in this test (we inspect intermediate state)
-        // Use a real result here since UnconfinedTestDispatcher runs eagerly
+        // Given – use a real result since UnconfinedTestDispatcher runs eagerly
         coEvery { searchBookWithIsbnUseCase(any()) } returns BookSearchResult(books = emptyList())
 
         // When
         viewModel.searchBookByIsbn("1234")
 
         // Then – after completion it should not be Loading
-        assertTrue(viewModel.bookDetail.value !is DomainResult.Loading)
+        assertTrue(viewModel.bookDetail.value !is DataResource.Loading)
     }
 
     // ── clearSearchedBook ──────────────────────────────────────────────────────
 
     @Test
-    fun `clearSearchedBook resets bookDetail to Init`() = runTest {
+    fun `clearSearchedBook resets bookDetail to null`() = runTest {
         // Given – set some state first
         coEvery { searchBookWithIsbnUseCase(any()) } returns BookSearchResult(
             books = listOf(makeBookItem())
@@ -371,7 +369,7 @@ class SearchBookViewModelTest {
         viewModel.clearSearchedBook()
 
         // Then
-        assertEquals(DomainResult.Init, viewModel.bookDetail.value)
+        assertNull(viewModel.bookDetail.value)
     }
 
     // ── saveSelectedBook ───────────────────────────────────────────────────────

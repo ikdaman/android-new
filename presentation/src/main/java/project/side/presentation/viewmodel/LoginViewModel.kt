@@ -8,16 +8,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import project.side.domain.model.LoginState
-import project.side.domain.model.LogoutState
-import project.side.domain.model.SocialAuthType
 import project.side.domain.usecase.auth.LoginUseCase
-import project.side.domain.usecase.auth.LogoutUseCase
 import project.side.presentation.model.AuthType
 import project.side.presentation.model.LoginUIState
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(): ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase
+): ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUIState>(LoginUIState.Init)
     val uiState: StateFlow<LoginUIState> = _uiState.asStateFlow()
@@ -26,31 +25,11 @@ class LoginViewModel @Inject constructor(): ViewModel() {
         _uiState.value = LoginUIState.Init
     }
 
-    fun googleLogin(loginUseCase: LoginUseCase) = login(AuthType.GOOGLE, loginUseCase)
-    fun naverLogin(loginUseCase: LoginUseCase) = login(AuthType.NAVER, loginUseCase)
-    fun kakaoLogin(loginUseCase: LoginUseCase) = login(AuthType.KAKAO, loginUseCase)
+    fun googleLogin() = login(AuthType.GOOGLE)
+    fun naverLogin() = login(AuthType.NAVER)
+    fun kakaoLogin() = login(AuthType.KAKAO)
 
-    fun googleLogout(logoutUseCase: LogoutUseCase) = logout(AuthType.GOOGLE, logoutUseCase)
-    fun naverLogout(logoutUseCase: LogoutUseCase) = logout(AuthType.NAVER, logoutUseCase)
-    fun kakaoLogout(logoutUseCase: LogoutUseCase) = logout(AuthType.KAKAO, logoutUseCase)
-
-
-    private fun logout(authType: AuthType, logoutUseCase: LogoutUseCase) {
-        viewModelScope.launch {
-            _uiState.value = LoginUIState.Loading
-
-            logoutUseCase(authType.toDomainAuthType()).collect { logoutState ->
-                when (logoutState) {
-                    LogoutState.Loading -> _uiState.value = LoginUIState.Loading
-                    LogoutState.Success -> _uiState.value = LoginUIState.Success("로그아웃 성공")
-                    is LogoutState.Error -> _uiState.value = LoginUIState.Error(logoutState.message)
-                }
-            }
-        }
-    }
-
-
-    private fun login(authType: AuthType, loginUseCase: LoginUseCase) {
+    private fun login(authType: AuthType) {
         viewModelScope.launch {
             _uiState.value = LoginUIState.Loading
 

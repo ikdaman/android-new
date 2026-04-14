@@ -50,6 +50,16 @@ jobs:
           sed -i "s/versionCode = [0-9]*/versionCode = ${{ steps.version.outputs.version_code }}/" app/build.gradle.kts
           sed -i "s/versionName = \"[^\"]*\"/versionName = \"${{ steps.version.outputs.version_name }}\"/" app/build.gradle.kts
 
+      - name: Run Unit Tests
+        run: ./gradlew test --no-daemon
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/build/reports/tests/'
+
       - name: Build Release AAB
         run: ./gradlew bundleRelease
 

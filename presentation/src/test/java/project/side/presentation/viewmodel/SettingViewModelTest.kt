@@ -60,7 +60,7 @@ class SettingViewModelTest {
         every { getMyInfoUseCase() } returns flowOf(
             DataResource.Success(Member(nickname = "테스트"))
         )
-        viewModel = SettingViewModel(getMyInfoUseCase, updateNicknameUseCase, withdrawUseCase)
+        viewModel = SettingViewModel(getMyInfoUseCase, updateNicknameUseCase, withdrawUseCase, logoutUseCase, getProviderUseCase)
     }
 
     @After
@@ -83,7 +83,7 @@ class SettingViewModelTest {
         )
 
         // When
-        viewModel.logout(logoutUseCase, getProviderUseCase)
+        viewModel.logout()
 
         // Then
         assertEquals(SettingUIState.LogoutSuccess, viewModel.uiState.value)
@@ -101,7 +101,7 @@ class SettingViewModelTest {
         )
 
         // When
-        viewModel.logout(logoutUseCase, getProviderUseCase)
+        viewModel.logout()
 
         // Then
         assertEquals(SettingUIState.LogoutSuccess, viewModel.uiState.value)
@@ -119,7 +119,7 @@ class SettingViewModelTest {
         )
 
         // When
-        viewModel.logout(logoutUseCase, getProviderUseCase)
+        viewModel.logout()
 
         // Then
         assertEquals(SettingUIState.LogoutSuccess, viewModel.uiState.value)
@@ -133,7 +133,7 @@ class SettingViewModelTest {
         coEvery { getProviderUseCase() } returns null
 
         // When
-        viewModel.logout(logoutUseCase, getProviderUseCase)
+        viewModel.logout()
 
         // Then
         assertEquals(SettingUIState.Error("로그인 정보를 찾을 수 없습니다."), viewModel.uiState.value)
@@ -146,7 +146,7 @@ class SettingViewModelTest {
         coEvery { getProviderUseCase() } returns "UNKNOWN"
 
         // When
-        viewModel.logout(logoutUseCase, getProviderUseCase)
+        viewModel.logout()
 
         // Then
         assertEquals(SettingUIState.Error("로그인 정보를 찾을 수 없습니다."), viewModel.uiState.value)
@@ -164,7 +164,7 @@ class SettingViewModelTest {
         )
 
         // When
-        viewModel.logout(logoutUseCase, getProviderUseCase)
+        viewModel.logout()
 
         // Then
         assertEquals(SettingUIState.Error(errorMessage), viewModel.uiState.value)

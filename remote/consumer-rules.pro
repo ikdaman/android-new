@@ -23,11 +23,6 @@
 -keep @com.squareup.moshi.JsonQualifier @interface *
 -keepnames @com.squareup.moshi.JsonClass class *
 
-# ---- Gson (@SerializedName) ----
--keepclassmembers,allowobfuscation class * {
-    @com.google.gson.annotations.SerializedName <fields>;
-}
-
 # ---- Remote model classes ----
 -keep class project.side.remote.model.** { *; }
 

@@ -38,7 +38,7 @@ class SignupViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         MockKAnnotations.init(this)
-        viewModel = SignupViewModel(checkNicknameUseCase)
+        viewModel = SignupViewModel(checkNicknameUseCase, signupUseCase)
     }
 
     @After
@@ -122,7 +122,7 @@ class SignupViewModelTest {
         )
 
         // When
-        viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
+        viewModel.signup(socialToken, provider, providerId, nickname)
 
         // Then
         assertEquals(SignupUIState.Success, viewModel.uiState.value)
@@ -142,7 +142,7 @@ class SignupViewModelTest {
         )
 
         // When
-        viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
+        viewModel.signup(socialToken, provider, providerId, nickname)
 
         // Then
         assertEquals(SignupUIState.NicknameDuplicate, viewModel.uiState.value)
@@ -167,7 +167,7 @@ class SignupViewModelTest {
         )
 
         // When
-        viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
+        viewModel.signup(socialToken, provider, providerId, nickname)
 
         // Then
         assertEquals(SignupUIState.Error(errorMessage), viewModel.uiState.value)
@@ -187,7 +187,7 @@ class SignupViewModelTest {
         )
 
         // When
-        viewModel.signup(signupUseCase, socialToken, provider, providerId, nickname)
+        viewModel.signup(socialToken, provider, providerId, nickname)
 
         // Then
         assertEquals(SignupUIState.Error("닉네임 확인 중 오류가 발생했습니다"), viewModel.uiState.value)
