@@ -1,20 +1,20 @@
 package project.side.remote.di
 
-import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.components.SingletonComponent
 import project.side.data.datasource.SocialAuthDataSource
 import project.side.remote.datasource.SocialAuthDataSourceImpl
+import project.side.remote.login.CurrentActivityHolder
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 object SocialAuthModule {
 
     @Provides
-    @ActivityScoped
-    fun provideSocialAuthDataSource(@ActivityContext context: Context): SocialAuthDataSource = SocialAuthDataSourceImpl(context)
+    @Singleton
+    fun provideSocialAuthDataSource(activityHolder: CurrentActivityHolder): SocialAuthDataSource =
+        SocialAuthDataSourceImpl(activityHolder)
 }

@@ -3,8 +3,7 @@ package project.side.ikdaman.di
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.components.SingletonComponent
 import project.side.data.auth.TokenCacheManager
 import project.side.data.datasource.AuthDataSource
 import project.side.data.datasource.AuthDataStoreSource
@@ -15,13 +14,14 @@ import project.side.domain.usecase.SignupUseCase
 import project.side.domain.usecase.auth.GetProviderUseCase
 import project.side.domain.usecase.auth.LoginUseCase
 import project.side.domain.usecase.auth.LogoutUseCase
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 object ActivityModule {
 
     @Provides
-    @ActivityScoped
+    @Singleton
     fun provideAuthRepository(
         authDataSource: AuthDataSource,
         socialAuthDataSource: SocialAuthDataSource,
@@ -30,18 +30,18 @@ object ActivityModule {
     ): AuthRepository = AuthRepositoryImpl(authDataSource, socialAuthDataSource, authDataStoreSource, tokenCacheManager)
 
     @Provides
-    @ActivityScoped
+    @Singleton
     fun provideLoginUseCase(authRepository: AuthRepository) = LoginUseCase(authRepository)
 
     @Provides
-    @ActivityScoped
+    @Singleton
     fun provideLogoutUseCase(authRepository: AuthRepository) = LogoutUseCase(authRepository)
 
     @Provides
-    @ActivityScoped
+    @Singleton
     fun provideSignupUseCase(authRepository: AuthRepository) = SignupUseCase(authRepository)
 
     @Provides
-    @ActivityScoped
+    @Singleton
     fun provideGetProviderUseCase(authRepository: AuthRepository) = GetProviderUseCase(authRepository)
 }
