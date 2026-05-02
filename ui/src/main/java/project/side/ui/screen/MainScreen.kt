@@ -63,9 +63,15 @@ import project.side.ui.theme.BorderBlack
 import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoPopupTitle
 import project.side.ui.theme.TextPrimary
+import project.side.ui.theme.TextWhite
+import project.side.ui.theme.DangerAccent
 import project.side.ui.theme.WantedSansBody
 import project.side.ui.util.noEffectClick
 import project.side.ui.util.navigateIfLoggedIn
+import project.side.ui.util.UiPreferences
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 @Composable
 fun MainScreen(
@@ -86,6 +92,8 @@ fun MainScreen(
     val readingStartBookTitle = remember { mutableStateOf("") }
     val showDeleteDialog = remember { mutableStateOf(false) }
     val deleteMybookId = remember { mutableIntStateOf(-1) }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     if (showDeleteDialog.value) {
         Dialog(onDismissRequest = { showDeleteDialog.value = false }) {
@@ -113,7 +121,7 @@ fun MainScreen(
                                 .noEffectClick { showDeleteDialog.value = false },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("X", style = DungGeunMoBody, color = TextPrimary)
+                            Text("✕", style = DungGeunMoBody, color = TextPrimary)
                         }
                     }
                     Column(
@@ -139,7 +147,7 @@ fun MainScreen(
                                 backgroundColor = BackgroundGray
                             ) {
                                 Text(
-                                    "NO", style = DungGeunMoBody, color = TextPrimary,
+                                    "취소", style = DungGeunMoBody, color = TextPrimary,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                                 )
                             }
@@ -149,10 +157,10 @@ fun MainScreen(
                                     showDeleteDialog.value = false
                                     mainViewModel.deleteBook(deleteMybookId.intValue)
                                 },
-                                backgroundColor = BackgroundGray
+                                backgroundColor = DangerAccent
                             ) {
                                 Text(
-                                    "YES", style = DungGeunMoBody, color = TextPrimary,
+                                    "삭제", style = DungGeunMoBody, color = TextWhite,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                                 )
                             }
@@ -170,6 +178,12 @@ fun MainScreen(
         onConfirm = {
             showReadingStartSheet.value = false
             mainViewModel.startReading(readingStartMybookId.intValue)
+            if (!UiPreferences.isReadingStartHintShown(context)) {
+                UiPreferences.markReadingStartHintShown(context)
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar("읽기 시작! '읽는 중' 탭에서 볼 수 있어요")
+                }
+            }
         }
     )
 
@@ -209,11 +223,14 @@ fun MainScreen(
                         mainViewModel.refreshStoreBooks()
                     }
                     val sortDescending by mainViewModel.sortDescending.collectAsState()
+                    val storeBooksLoaded by mainViewModel.storeBooksLoaded.collectAsState()
                     HomeScreen(
                         nickname = nickname,
                         storeBooks = storeBooks,
                         errorMessage = storeBooksError,
                         sortDescending = sortDescending,
+                        isLoggedIn = isLoggedIn.value,
+                        storeBooksLoaded = storeBooksLoaded,
                         onToggleSort = { mainViewModel.toggleSort() },
                         onLoadMore = { mainViewModel.loadMore() },
                         onRetry = { mainViewModel.refreshStoreBooks() },
@@ -233,7 +250,12 @@ fun MainScreen(
                             }
                         },
                         navigateToSearchBook = {
-                            navController.navigate(SEARCH_BOOK_ROUTE)
+                            appNavController.navigateIfLoggedIn(isLoggedIn.value) {
+                                navController.navigate(SEARCH_BOOK_ROUTE)
+                            }
+                        },
+                        navigateToLogin = {
+                            appNavController.navigateIfLoggedIn(isLoggedIn.value) { }
                         },
                         navigateToMyBookSearch = {
                             navController.navigate(SEARCH_MY_BOOK_ROUTE)

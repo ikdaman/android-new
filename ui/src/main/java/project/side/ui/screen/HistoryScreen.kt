@@ -57,6 +57,7 @@ import project.side.ui.theme.DungGeunMoSubtitle
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.TextPrimary
 import project.side.ui.theme.WantedSansBodySmall
+import project.side.ui.util.DateFormatter
 
 @Composable
 fun HistoryScreen(
@@ -186,10 +187,12 @@ fun HistoryScreenUI(
                     }
                     LaunchedEffect(shouldLoadMore.value) { if (shouldLoadMore.value) onLoadMore() }
                     val bookCount = uiState.books.size
-                    val emptyCount = if (bookCount < 12) {
-                        12 - bookCount
-                    } else {
-                        (3 - bookCount % 3) % 3
+                    // 빈 셀: 12칸 강제(과거)는 "목표 12권"이라는 잘못된 프레이밍을 만들었음.
+                    // 책 수에 맞춰 마지막 행만 3칸 단위로 채우고, 책이 0~2권일 때만 첫 행을 3칸으로 유지.
+                    val emptyCount = when {
+                        bookCount == 0 -> 3
+                        bookCount < 3 -> 3 - bookCount
+                        else -> (3 - bookCount % 3) % 3
                     }
                     LazyVerticalGrid(
                         state = gridState,
@@ -211,12 +214,14 @@ fun HistoryScreenUI(
                             )
                         }
                         items(count = emptyCount) {
-                            Box(modifier = Modifier.height(140.dp).padding(end = 1.dp, bottom = 1.dp)) {
-                                PixelShadowBox(
-                                    modifier = Modifier.fillMaxSize(),
-                                    backgroundColor = Color(0xFFD4D4D4),
-                                ) {}
-                            }
+                            // 빈 칸: 실제 책 셀과 시각적으로 명확히 구별되도록 그림자 제거 + 배경 톤 약하게
+                            Box(
+                                modifier = Modifier
+                                    .height(140.dp)
+                                    .padding(end = 1.dp, bottom = 1.dp)
+                                    .fillMaxSize()
+                                    .background(BackgroundDefault)
+                            )
                         }
                     }
                 }
@@ -251,20 +256,20 @@ fun HistoryScreenUI(
                             ) {
                                 Text(
                                     modifier = Modifier.weight(1f).padding(start = 10.dp),
-                                    text = "START",
-                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
+                                    text = "시작",
+                                    style = DungGeunMoBody,
                                     color = TextPrimary
                                 )
                                 Text(
                                     modifier = Modifier.weight(1f).padding(start = 10.dp),
-                                    text = "FINISH",
-                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
+                                    text = "완독",
+                                    style = DungGeunMoBody,
                                     color = TextPrimary
                                 )
                                 Text(
-                                    modifier = Modifier.weight(2f).padding(start = 10.dp),
-                                    text = "BOOK NAME",
-                                    style = DungGeunMoBody.copy(letterSpacing = 3.2.sp),
+                                    modifier = Modifier.weight(3f).padding(start = 10.dp),
+                                    text = "책 이름",
+                                    style = DungGeunMoBody,
                                     color = TextPrimary
                                 )
                             }
@@ -283,7 +288,7 @@ fun HistoryScreenUI(
                                             modifier = Modifier
                                                 .weight(2f)
                                                 .padding(start = 10.dp),
-                                            text = "읽고 있는 책을 추가해주세요.",
+                                            text = "아직 읽기 시작한 책이 없어요.",
                                             style = WantedSansBodySmall,
                                             color = TextPrimary
                                         )
@@ -313,8 +318,8 @@ fun HistoryScreenUI(
 
 @Composable
 fun HistoryListBookItem(book: HistoryBookInfo, isOdd: Boolean = false, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
-    val startDateFormatted = book.startedDate.take(10).replace("-", "").drop(2)
-    val finishDateFormatted = book.finishedDate?.take(10)?.replace("-", "")?.drop(2) ?: "-"
+    val startDateFormatted = DateFormatter.toShortDate(book.startedDate)
+    val finishDateFormatted = DateFormatter.toShortDate(book.finishedDate).ifBlank { "-" }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -336,7 +341,7 @@ fun HistoryListBookItem(book: HistoryBookInfo, isOdd: Boolean = false, onClick: 
             color = TextPrimary
         )
         Text(
-            modifier = Modifier.weight(2f).padding(start = 10.dp, end = 8.dp),
+            modifier = Modifier.weight(3f).padding(start = 10.dp, end = 8.dp),
             text = book.title,
             style = WantedSansBodySmall,
             color = TextPrimary,
@@ -348,20 +353,55 @@ fun HistoryListBookItem(book: HistoryBookInfo, isOdd: Boolean = false, onClick: 
 
 @Composable
 fun HistoryDataSetBookItem(book: HistoryBookInfo, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
+    val hasCover = !book.coverImage.isNullOrBlank()
     Box(modifier = modifier.height(140.dp).padding(end = 1.dp, bottom = 1.dp)) {
         PixelShadowButton(
             onClick = onClick,
             backgroundColor = Color(0xFFD4D4D4),
             modifier = Modifier.fillMaxSize(),
         ) {
-            AsyncImage(
-                model = book.coverImage,
-                contentDescription = book.title,
-                modifier = Modifier
-                    .width(75.dp)
-                    .height(105.dp),
-                contentScale = ContentScale.Crop
-            )
+            if (hasCover) {
+                AsyncImage(
+                    model = book.coverImage,
+                    contentDescription = book.title,
+                    modifier = Modifier
+                        .width(75.dp)
+                        .height(105.dp),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.book_default),
+                    error = painterResource(R.drawable.book_default),
+                    fallback = painterResource(R.drawable.book_default)
+                )
+            } else {
+                // 표지 정보가 없는 실제 책: 큰 일러스트로 영역을 충분히 차지 + 하단 띠에 제목
+                Column(
+                    modifier = Modifier
+                        .width(75.dp)
+                        .height(105.dp)
+                        .background(BackgroundDefault),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.book_default),
+                        contentDescription = book.title,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(72.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                    Text(
+                        text = book.title,
+                        style = WantedSansBodySmall,
+                        color = TextPrimary,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                    )
+                }
+            }
         }
     }
 }

@@ -40,6 +40,8 @@ import coil.compose.AsyncImage
 import project.side.domain.model.MyBookDetail
 import project.side.domain.model.MyBookDetailBookInfo
 import project.side.domain.model.MyBookDetailHistoryInfo
+import project.side.domain.model.ReadingStatus
+import project.side.ui.util.DateFormatter
 import project.side.presentation.viewmodel.BookInfoUiState
 import project.side.presentation.viewmodel.BookInfoViewModel
 import androidx.compose.ui.window.Dialog
@@ -53,6 +55,7 @@ import project.side.ui.theme.BackgroundDefault
 import project.side.ui.theme.BackgroundGray
 import project.side.ui.theme.BackgroundWhite
 import project.side.ui.theme.BorderBlack
+import project.side.ui.theme.DangerAccent
 import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoHomeTitle
 import project.side.ui.theme.DungGeunMoPopupTitle
@@ -108,7 +111,7 @@ fun BookInfoScreen(
                                 .noEffectClick { showDeleteDialog = false },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("X", style = DungGeunMoBody, color = TextPrimary)
+                            Text("✕", style = DungGeunMoBody, color = TextPrimary)
                         }
                     }
 
@@ -135,7 +138,7 @@ fun BookInfoScreen(
                                 backgroundColor = BackgroundGray
                             ) {
                                 Text(
-                                    "NO", style = DungGeunMoBody, color = TextPrimary,
+                                    "취소", style = DungGeunMoBody, color = TextPrimary,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                                 )
                             }
@@ -145,10 +148,10 @@ fun BookInfoScreen(
                                     showDeleteDialog = false
                                     viewModel.deleteBook()
                                 },
-                                backgroundColor = BackgroundGray
+                                backgroundColor = DangerAccent
                             ) {
                                 Text(
-                                    "YES", style = DungGeunMoBody, color = TextPrimary,
+                                    "삭제", style = DungGeunMoBody, color = TextWhite,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                                 )
                             }
@@ -227,12 +230,7 @@ private fun BookInfoContent(
     val scrollState = rememberScrollState()
     val isHistory = detail.shelfType == "HISTORY"
     val oneClickHandler = rememberOneClickHandler()
-    val tagText = when (detail.readingStatus) {
-        "TODO" -> "읽고 싶은 책"
-        "INPROGRESS" -> "읽는 중"
-        "DONE" -> "완독"
-        else -> "읽고 싶은 책"
-    }
+    val tagText = ReadingStatus.displayNameOf(detail.readingStatus)
 
     Column(
         modifier = Modifier
@@ -310,16 +308,16 @@ private fun BookInfoContent(
                 onEditClick = onEditHistory
             ) {
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
-                    InfoRow("SAVE", detail.createdDate.take(10).replace("-", " - "))
+                    InfoRow("저장", DateFormatter.toShortDate(detail.createdDate))
                     Spacer(Modifier.height(8.dp))
-                    InfoRow("START", detail.historyInfo.startedDate?.take(10)?.replace("-", " - ") ?: "")
+                    InfoRow("시작", DateFormatter.toShortDate(detail.historyInfo.startedDate).ifBlank { "-" })
                     Spacer(Modifier.height(8.dp))
                     val finishText = when {
-                        detail.historyInfo.finishedDate != null -> detail.historyInfo.finishedDate!!.take(10).replace("-", " - ")
+                        detail.historyInfo.finishedDate != null -> DateFormatter.toShortDate(detail.historyInfo.finishedDate)
                         detail.historyInfo.startedDate != null -> "읽는 중"
-                        else -> ""
+                        else -> "-"
                     }
-                    InfoRow("FINISH", finishText)
+                    InfoRow("완독", finishText)
                 }
             }
 
@@ -344,7 +342,7 @@ private fun BookInfoContent(
             // Book detail fields with shadow
             ShadowInfoField("페이지 수", if (detail.bookInfo.totalPage != null) "${detail.bookInfo.totalPage}" else "-")
             Spacer(Modifier.height(20.dp))
-            ShadowInfoField("출간일", detail.bookInfo.publishDate?.take(10)?.replace("-", " - ") ?: "-")
+            ShadowInfoField("출간일", DateFormatter.toShortDate(detail.bookInfo.publishDate).ifBlank { "-" })
             Spacer(Modifier.height(20.dp))
             ShadowInfoField("ISBN", detail.bookInfo.isbn ?: "-")
             Spacer(Modifier.height(20.dp))
@@ -366,7 +364,7 @@ private fun BookInfoContent(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("알라딘에서 더보기", style = WantedSansBody, color = TextPrimary, textAlign = TextAlign.Center)
+                        Text("책 정보 더보기", style = WantedSansBody, color = TextPrimary, textAlign = TextAlign.Center)
                     }
                 }
             }

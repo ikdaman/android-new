@@ -110,7 +110,7 @@ internal fun ReadingStartBottomSheetContent(
                             .noEffectClick { onDismiss() },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("X", style = DungGeunMoBody, color = TextPrimary)
+                        Text("✕", style = DungGeunMoBody, color = TextPrimary)
                     }
                 }
 
@@ -139,7 +139,7 @@ internal fun ReadingStartBottomSheetContent(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("START", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
+                        Text("시작", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
                         PixelShadowButton(
                             onClick = { showCalendar = true },
                             backgroundColor = BackgroundWhite,
@@ -178,7 +178,7 @@ internal fun ReadingStartBottomSheetContent(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("FINISH", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
+                        Text("완독", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
                         PixelShadowBox(
                             backgroundColor = BackgroundWhite,
                             modifier = Modifier.weight(1f)
@@ -221,7 +221,7 @@ internal fun ReadingStartBottomSheetContent(
                             backgroundColor = BackgroundGray,
                         ) {
                             Text(
-                                "NO",
+                                "취소",
                                 style = DungGeunMoBody,
                                 color = TextPrimary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
@@ -233,7 +233,7 @@ internal fun ReadingStartBottomSheetContent(
                             backgroundColor = BackgroundGray,
                         ) {
                             Text(
-                                "YES",
+                                "확인",
                                 style = DungGeunMoBody,
                                 color = TextPrimary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)

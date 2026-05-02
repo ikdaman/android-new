@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import project.side.domain.DataResource
@@ -48,6 +49,13 @@ class MainViewModel @Inject constructor(
     private val _storeBooksError = MutableStateFlow<String?>(null)
     val storeBooksError: StateFlow<String?> = _storeBooksError.asStateFlow()
 
+    /**
+     * `false` = 첫 fetch 완료 전(로딩 중) — UI는 빈 CTA 대신 로딩을 표시해야 한다.
+     * `true`  = 한 번 이상 응답을 받음(성공·실패 무관) — 빈 결과면 진짜 빈 상태.
+     */
+    private val _storeBooksLoaded = MutableStateFlow(false)
+    val storeBooksLoaded: StateFlow<Boolean> = _storeBooksLoaded.asStateFlow()
+
     private val _snackbarEvents = MutableSharedFlow<String>()
     val snackbarEvents = _snackbarEvents.asSharedFlow()
 
@@ -65,12 +73,37 @@ class MainViewModel @Inject constructor(
 
     init {
         validateToken()
+        observeLoginStateForRefresh()
+    }
+
+    /**
+     * 로그인 상태 전이를 감시. true 가 되는 순간 자동으로 storeBooks 를 refresh 해
+     * 로그인 직후 빈 UI 가 잠깐 노출되는 깜빡임을 방지한다.
+     * false 가 되면 storeBooks/loaded 상태를 초기화.
+     */
+    private fun observeLoginStateForRefresh() {
+        viewModelScope.launch {
+            isLoggedIn.collectLatest { loggedIn ->
+                if (loggedIn) {
+                    refreshStoreBooks()
+                } else {
+                    _storeBooks.value = emptyList()
+                    _storeBooksError.value = null
+                    _storeBooksLoaded.value = false
+                    storeBooksPage = 0
+                    storeBooksLastPage = false
+                }
+            }
+        }
     }
 
     private fun validateToken() {
         viewModelScope.launch {
             val loggedIn = isLoggedIn.first { it }
             if (loggedIn) {
+                // 토큰 검증 실패는 OkHttp 단의 FiveXxAsUnauthorizedInterceptor + TokenAuthenticator 가
+                // 자동 reissue 시도 후 실패 시 AuthEvent.LOGIN_REQUIRED 발행 → MainActivity가 LOGIN 이동.
+                // 여기서는 성공 응답으로 닉네임만 갱신.
                 getMyInfoUseCase().collect { result ->
                     if (result is DataResource.Success) {
                         _nickname.value = result.data.nickname
@@ -81,6 +114,15 @@ class MainViewModel @Inject constructor(
     }
 
     private fun fetchStoreBooks(isRefresh: Boolean = false) {
+        // 로그아웃 상태에서는 /mybooks/store 호출하지 않음 — 401 유발/인증 실패 메시지 노출 방지
+        if (!isLoggedIn.value) {
+            _storeBooks.value = emptyList()
+            _storeBooksError.value = null
+            storeBooksLoading = false
+            storeBooksLastPage = true
+            _storeBooksLoaded.value = false
+            return
+        }
         if (storeBooksLoading || storeBooksLastPage) return
         storeBooksLoading = true
         fetchJob = viewModelScope.launch {
@@ -93,10 +135,12 @@ class MainViewModel @Inject constructor(
                         storeBooksPage++
                         storeBooksLoading = false
                         _storeBooksError.value = null
+                        _storeBooksLoaded.value = true
                     }
                     is DataResource.Error -> {
                         storeBooksLoading = false
                         _storeBooksError.value = result.message ?: "책 목록을 불러오지 못했어요."
+                        _storeBooksLoaded.value = true
                     }
                     is DataResource.Loading -> {}
                 }

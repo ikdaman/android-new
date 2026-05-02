@@ -106,7 +106,7 @@ internal fun BookEditBottomSheetContent(
     val selectedTab = remember { mutableStateOf(defaultTab) }
     val reason = remember { mutableStateOf(detail.reason ?: "") }
 
-    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val dateFormatter = DateTimeFormatter.ofPattern("yy.MM.dd")
     val startDate = remember {
         mutableStateOf(
             detail.historyInfo.startedDate?.let {
@@ -199,7 +199,7 @@ internal fun BookEditBottomSheetContent(
                             .noEffectClick { onDismiss() },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("X", style = DungGeunMoBody, color = TextPrimary)
+                        Text("✕", style = DungGeunMoBody, color = TextPrimary)
                     }
                 }
 
@@ -375,7 +375,7 @@ internal fun BookEditBottomSheetContent(
                             backgroundColor = BackgroundGray,
                         ) {
                             Text(
-                                "NO",
+                                "취소",
                                 style = DungGeunMoBody,
                                 color = TextPrimary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
@@ -417,7 +417,7 @@ internal fun BookEditBottomSheetContent(
                             backgroundColor = BackgroundGray,
                         ) {
                             Text(
-                                "YES",
+                                "확인",
                                 style = DungGeunMoBody,
                                 color = TextPrimary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)

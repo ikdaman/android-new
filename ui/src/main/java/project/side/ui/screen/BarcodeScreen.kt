@@ -16,6 +16,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -167,6 +168,58 @@ private fun BarcodeScreenUI(
                 lifecycleOwner = lifecycleOwner,
                 cameraProvider = cameraProvider,
                 barcodeScanner = barcodeScanner
+            )
+        } else {
+            CameraPermissionDeniedView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
+        }
+    }
+}
+
+@Composable
+private fun CameraPermissionDeniedView(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    Column(
+        modifier = modifier
+            .background(BackgroundDefault)
+            .padding(horizontal = 32.dp),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "카메라 권한이 필요해요",
+            style = TextStyle(fontFamily = DungGeunMo, fontSize = 20.sp),
+            color = Color.Black,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = "바코드 스캔 기능을 사용하려면\n카메라 권한을 허용해 주세요.",
+            style = TextStyle(fontFamily = DungGeunMo, fontSize = 14.sp),
+            color = Color.DarkGray,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(24.dp))
+        Box(
+            modifier = Modifier
+                .border(1.dp, Color.Black)
+                .background(Color(0xFFD4D4D4))
+                .clickable {
+                    val intent = android.content.Intent(
+                        android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        android.net.Uri.fromParts("package", context.packageName, null)
+                    )
+                    context.startActivity(intent)
+                }
+                .padding(horizontal = 20.dp, vertical = 10.dp)
+        ) {
+            Text(
+                text = "설정에서 허용하기",
+                style = TextStyle(fontFamily = DungGeunMo, fontSize = 16.sp),
+                color = Color.Black
             )
         }
     }

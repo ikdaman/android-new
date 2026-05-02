@@ -18,7 +18,7 @@ class MemberRepositoryImpl @Inject constructor(
         emit(DataResource.Loading())
         when (val result = memberDataSource.getMyInfo()) {
             is DataApiResult.Success -> emit(DataResource.Success(result.data.toDomain()))
-            is DataApiResult.Error -> emit(DataResource.Error(result.message))
+            is DataApiResult.Error -> emit(DataResource.Error(result.message, result.code))
             is DataApiResult.Loading -> {}
         }
     }.catch { emit(DataResource.Error(it.message ?: "네트워크 오류")) }

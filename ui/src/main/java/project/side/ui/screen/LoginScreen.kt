@@ -7,6 +7,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,6 +59,7 @@ import project.side.ui.theme.WantedSansBodySmall
 private const val TERMS_URL = "https://scientific-ferryboat-eb1.notion.site/3354710961a98025a529d8e3bb765d2a"
 private const val PRIVACY_URL = "https://scientific-ferryboat-eb1.notion.site/3354710961a9809caafdf17937d5dc80"
 
+@OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
@@ -164,9 +167,9 @@ fun LoginScreen(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     SocialLoginButton(
-                        iconRes = R.drawable.google_logo,
-                        text = "구글 로그인",
-                        onClick = { viewModel?.googleLogin() }
+                        iconRes = R.drawable.kakao_logo,
+                        text = "카카오 로그인",
+                        onClick = { viewModel?.kakaoLogin() }
                     )
                     Spacer(Modifier.height(12.dp))
                     SocialLoginButton(
@@ -176,15 +179,18 @@ fun LoginScreen(
                     )
                     Spacer(Modifier.height(12.dp))
                     SocialLoginButton(
-                        iconRes = R.drawable.kakao_logo,
-                        text = "카카오 로그인",
-                        onClick = { viewModel?.kakaoLogin() }
+                        iconRes = R.drawable.google_logo,
+                        text = "구글 로그인",
+                        onClick = { viewModel?.googleLogin() }
                     )
                 }
 
-                // Terms
+                // Terms — 좁은 폰에서도 줄바꿈이 안전하도록 FlowRow
                 Spacer(Modifier.height(16.dp))
-                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                FlowRow(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     Text(text = "가입시 ", style = WantedSansBodySmall, color = TextPrimary)
                     TermText("이용약관") {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_URL)))

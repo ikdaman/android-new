@@ -172,7 +172,7 @@ fun AddBookScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "알라딘에서 더보기",
+                            text = "책 정보 더보기",
                             style = WantedSansBody,
                             color = TextPrimary,
                             textAlign = TextAlign.Center,

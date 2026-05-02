@@ -25,6 +25,7 @@ import project.side.remote.api.TestApiService
 import project.side.remote.api.UserService
 import project.side.remote.auth.AuthInterceptor
 import project.side.remote.auth.AuthTokenProvider
+import project.side.remote.auth.FiveXxAsUnauthorizedInterceptor
 import project.side.remote.auth.TokenAuthenticator
 import project.side.remote.datasource.AladinBookSearchSourceImpl
 import project.side.remote.datasource.AuthDataSourceImpl
@@ -78,6 +79,7 @@ object RemoteModule {
     @AuthOkHttpClient
     fun provideAuthOkHttpClient(
         authInterceptor: AuthInterceptor,
+        fiveXxAsUnauthorizedInterceptor: FiveXxAsUnauthorizedInterceptor,
         tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient =
         OkHttpClient.Builder()
@@ -86,6 +88,8 @@ object RemoteModule {
             .writeTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(CompactLoggingInterceptor())
             .addInterceptor(authInterceptor)
+            // 토큰 만료 시 서버가 401 대신 5xx를 던지는 케이스를 보정
+            .addInterceptor(fiveXxAsUnauthorizedInterceptor)
             .authenticator(tokenAuthenticator)
             .build()
 

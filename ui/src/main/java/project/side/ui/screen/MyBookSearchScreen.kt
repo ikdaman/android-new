@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import project.side.domain.model.MyBookSearchItem
+import project.side.domain.model.ReadingStatus
 import project.side.presentation.viewmodel.MyBookSearchViewModel
 import project.side.ui.R
 import project.side.ui.theme.BackgroundDefault
@@ -48,6 +49,9 @@ import project.side.ui.theme.BackgroundWhite
 import project.side.ui.theme.BorderBlack
 import project.side.ui.theme.DungGeunMoBody
 import project.side.ui.theme.DungGeunMoSubtitle
+import project.side.ui.theme.StatusDone
+import project.side.ui.theme.StatusReading
+import project.side.ui.theme.StatusWish
 import project.side.ui.theme.DungGeunMoTag
 import project.side.ui.theme.Primary
 import project.side.ui.theme.TextHint
@@ -164,10 +168,12 @@ fun MyBookSearchScreen(
 
 @Composable
 private fun MyBookSearchResultItem(item: MyBookSearchItem, onClick: () -> Unit = {}) {
-    val (tag, tagColor) = when (item.readingStatus) {
-        "TODO" -> "읽다만" to Primary
-        "COMPLETED" -> "완독" to TextPrimary
-        else -> "읽는 중" to TextPrimary
+    val status = ReadingStatus.from(item.readingStatus)
+    val tag = status.displayName
+    val tagColor = when (status) {
+        ReadingStatus.TODO -> StatusWish
+        ReadingStatus.INPROGRESS -> StatusReading
+        ReadingStatus.DONE -> StatusDone
     }
     Row(
         modifier = Modifier

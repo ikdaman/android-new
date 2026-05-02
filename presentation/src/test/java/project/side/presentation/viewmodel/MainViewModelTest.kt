@@ -123,7 +123,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `fetchBooks loads store books successfully`() = runTest {
+    fun `fetchBooks loads store books successfully when logged in`() = runTest {
         // Given
         val storeBookItems = listOf(
             StoreBookItem(
@@ -131,7 +131,8 @@ class MainViewModelTest {
                 author = listOf("저자1"), coverImage = null, description = "설명", reason = null
             )
         )
-        every { getLoginStateUseCase() } returns flowOf(false)
+        every { getLoginStateUseCase() } returns flowOf(true)
+        every { getMyInfoUseCase() } returns flowOf(DataResource.success(Member(nickname = "tester")))
         every { getStoreBooksUseCase(any(), any(), any(), any()) } returns flowOf(
             DataResource.success(
                 StoreBook(
@@ -149,6 +150,21 @@ class MainViewModelTest {
         // Then
         assertEquals(1, viewModel.storeBooks.value.size)
         assertEquals("테스트 책", viewModel.storeBooks.value[0].title)
+    }
+
+    @Test
+    fun `fetchBooks does not call use case when logged out`() = runTest {
+        // Given
+        every { getLoginStateUseCase() } returns flowOf(false)
+        stubDefaultBooks()
+
+        // When
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel.refreshStoreBooks()
+
+        // Then
+        verify(exactly = 0) { getStoreBooksUseCase(any(), any(), any(), any()) }
+        assertEquals(0, viewModel.storeBooks.value.size)
     }
 
     @Test

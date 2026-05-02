@@ -178,7 +178,23 @@ fun SearchBookScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // SEARCH-2: 직접 입력 링크는 항상 노출 (에러 후에만 보이지 않도록)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = { onNavigateToManualInputScreen() }) {
+                    Text(
+                        text = "직접 입력하기 >",
+                        style = DungGeunMoSubtitle,
+                        color = TextPrimary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             when {
                 searchState.isLoading -> {
@@ -197,13 +213,6 @@ fun SearchBookScreen(
                             style = DungGeunMoBody,
                             color = Color.Gray
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        TextButton(onClick = { onNavigateToManualInputScreen() }) {
-                            Text(
-                                text = "책 직접 입력하기",
-                                style = DungGeunMoSubtitle
-                            )
-                        }
                     }
                 }
                 searchState.books.isNotEmpty() -> {

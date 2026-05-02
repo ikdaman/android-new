@@ -74,7 +74,7 @@ fun CalendarBottomSheet(
                             .noEffectClick { onDismiss() },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("X", style = DungGeunMoBody, color = TextPrimary)
+                        Text("✕", style = DungGeunMoBody, color = TextPrimary)
                     }
                 }
 
@@ -106,7 +106,7 @@ fun CalendarBottomSheet(
                             backgroundColor = BackgroundGray
                         ) {
                             Text(
-                                "NO", style = DungGeunMoBody, color = TextPrimary,
+                                "취소", style = DungGeunMoBody, color = TextPrimary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                             )
                         }
@@ -116,7 +116,7 @@ fun CalendarBottomSheet(
                             backgroundColor = BackgroundGray
                         ) {
                             Text(
-                                "YES", style = DungGeunMoBody, color = TextPrimary,
+                                "확인", style = DungGeunMoBody, color = TextPrimary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                             )
                         }
@@ -156,7 +156,7 @@ fun CalendarBottomSheetContentPreview() {
                             .border(1.dp, BorderBlack),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("X", style = DungGeunMoBody, color = TextPrimary)
+                        Text("✕", style = DungGeunMoBody, color = TextPrimary)
                     }
                 }
                 Column(
@@ -176,7 +176,7 @@ fun CalendarBottomSheetContentPreview() {
                             backgroundColor = BackgroundGray
                         ) {
                             Text(
-                                "NO", style = DungGeunMoBody, color = TextPrimary,
+                                "취소", style = DungGeunMoBody, color = TextPrimary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                             )
                         }
@@ -186,7 +186,7 @@ fun CalendarBottomSheetContentPreview() {
                             backgroundColor = BackgroundGray
                         ) {
                             Text(
-                                "YES", style = DungGeunMoBody, color = TextPrimary,
+                                "확인", style = DungGeunMoBody, color = TextPrimary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                             )
                         }

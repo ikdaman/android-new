@@ -47,6 +47,7 @@ import project.side.ui.theme.DungGeunMoHomeTitle
 import project.side.ui.theme.DungGeunMoTag
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.Primary
+import project.side.ui.theme.DangerAccent
 import project.side.ui.theme.TextPrimary
 import project.side.ui.theme.TextWhite
 import project.side.ui.theme.WantedSansBody
@@ -128,7 +129,7 @@ fun SettingScreenUI(
                                 .noEffectClick { showWithdrawDialog = false },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("X", style = DungGeunMoBody, color = TextPrimary)
+                            Text("✕", style = DungGeunMoBody, color = TextPrimary)
                         }
                     }
                     Column(
@@ -154,7 +155,7 @@ fun SettingScreenUI(
                                 backgroundColor = BackgroundGray
                             ) {
                                 Text(
-                                    "NO", style = DungGeunMoBody, color = TextPrimary,
+                                    "취소", style = DungGeunMoBody, color = TextPrimary,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                                 )
                             }
@@ -164,10 +165,10 @@ fun SettingScreenUI(
                                     showWithdrawDialog = false
                                     onWithdraw()
                                 },
-                                backgroundColor = BackgroundGray
+                                backgroundColor = DangerAccent
                             ) {
                                 Text(
-                                    "YES", style = DungGeunMoBody, color = TextPrimary,
+                                    "탈퇴", style = DungGeunMoBody, color = TextWhite,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                                 )
                             }
@@ -315,8 +316,7 @@ fun SettingScreenUI(
             Spacer(modifier = Modifier.height(60.dp))
 
             // Menu items - DungGeunMo 16px, 32dp touch area each
-            SettingMenuItem(text = "공지사항") { /* disabled */ }
-            Spacer(Modifier.height(10.dp))
+            // 공지사항: 기능 미구현 — 노출하면 disabled처럼 동작해 사용자 혼란을 부르므로 숨김
             SettingMenuItem(text = "서비스 이용약관") {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_URL)))
             }

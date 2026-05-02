@@ -4,4 +4,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
     fun isLoggedIn(): Flow<Boolean>
+    suspend fun clearAuth()
 }

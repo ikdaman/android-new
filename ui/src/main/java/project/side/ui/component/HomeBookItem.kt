@@ -59,7 +59,7 @@ fun HomeBookItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "NO.${index} ($date)",
+                    text = "#${"%03d".format(index)}  ($date)",
                     style = DungGeunMoSubtitle,
                     color = TextPrimary
                 )

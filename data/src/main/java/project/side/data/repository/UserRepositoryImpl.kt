@@ -11,4 +11,8 @@ class UserRepositoryImpl @Inject constructor(
     override fun isLoggedIn(): Flow<Boolean> {
         return authDataStoreSource.isLoggedIn()
     }
+
+    override suspend fun clearAuth() {
+        authDataStoreSource.clear()
+    }
 }

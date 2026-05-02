@@ -137,7 +137,7 @@ private fun RegisterBottomSheetUI(
                         .noEffectClick { onDismiss() },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("X", style = DungGeunMoBody, color = TextPrimary)
+                    Text("✕", style = DungGeunMoBody, color = TextPrimary)
                 }
             }
 
@@ -249,10 +249,10 @@ private fun RegisterBottomSheetUI(
 
                     Spacer(Modifier.height(12.dp))
 
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy - MM - dd")
+                    val dateFormatter = DateTimeFormatter.ofPattern("yy.MM.dd")
 
                     DatePickerRow(
-                        label = "START",
+                        label = "시작",
                         dateText = selectedDate.value.format(dateFormatter),
                         onClick = { showStartCalendar.value = true }
                     )
@@ -260,7 +260,7 @@ private fun RegisterBottomSheetUI(
                     Spacer(Modifier.height(20.dp))
 
                     DatePickerRow(
-                        label = "FINISH",
+                        label = "완독",
                         dateText = selectedEndDate.value?.format(dateFormatter) ?: "읽는 중",
                         onClick = { showEndCalendar.value = true }
                     )
@@ -268,7 +268,7 @@ private fun RegisterBottomSheetUI(
 
                 Spacer(Modifier.height(20.dp))
 
-                // NO / YES 버튼
+                // 취소 / 확인 버튼
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
@@ -278,7 +278,7 @@ private fun RegisterBottomSheetUI(
                         backgroundColor = BackgroundGray,
                     ) {
                         Text(
-                            "NO",
+                            "취소",
                             style = DungGeunMoBody,
                             color = TextPrimary,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
@@ -305,7 +305,7 @@ private fun RegisterBottomSheetUI(
                         backgroundColor = BackgroundGray,
                     ) {
                         Text(
-                            "YES",
+                            "확인",
                             style = DungGeunMoBody,
                             color = TextPrimary,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)

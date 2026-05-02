@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import project.side.domain.model.StoreBookItem
 import project.side.ui.R
 import project.side.ui.component.HomeBookItem
+import project.side.ui.component.RetroLoading
 import androidx.compose.material3.TextButton
 import project.side.ui.component.PixelShadowButton
 import project.side.ui.theme.BackgroundDefault
@@ -44,6 +45,7 @@ import project.side.ui.theme.DungGeunMoHomeTitle
 import project.side.ui.theme.DungGeunMoSubtitle
 import project.side.ui.theme.IkdamanTheme
 import project.side.ui.theme.TextPrimary
+import project.side.ui.util.DateFormatter
 
 @Composable
 fun HomeScreen(
@@ -51,6 +53,8 @@ fun HomeScreen(
     storeBooks: List<StoreBookItem> = emptyList(),
     errorMessage: String? = null,
     sortDescending: Boolean = true,
+    isLoggedIn: Boolean = true,
+    storeBooksLoaded: Boolean = true,
     onToggleSort: () -> Unit = {},
     onLoadMore: () -> Unit = {},
     onRetry: () -> Unit = {},
@@ -60,6 +64,7 @@ fun HomeScreen(
     navigateToSetting: () -> Unit = {},
     navigateToSearchBook: () -> Unit = {},
     navigateToMyBookSearch: () -> Unit = {},
+    navigateToLogin: () -> Unit = {},
 ) {
     val listState = rememberLazyListState()
 
@@ -91,7 +96,42 @@ fun HomeScreen(
             )
         }
 
-        if (errorMessage != null && storeBooks.isEmpty()) {
+        if (!isLoggedIn) {
+            item {
+                Spacer(modifier = Modifier.height(40.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "로그인 후 책을 추가해 보세요",
+                        style = DungGeunMoSubtitle,
+                        color = TextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Image(
+                        painter = painterResource(R.drawable.default_image),
+                        contentDescription = "로그인하고 책 추가하기",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { navigateToLogin() },
+                        contentScale = ContentScale.FillWidth
+                    )
+                }
+            }
+        } else if (!storeBooksLoaded && storeBooks.isEmpty()) {
+            // 로그인 직후 첫 fetch 가 아직 안 끝났을 때 — 빈 CTA 깜빡임 방지
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxHeight(0.5f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    RetroLoading()
+                }
+            }
+        } else if (errorMessage != null && storeBooks.isEmpty()) {
             item {
                 Box(
                     modifier = Modifier
@@ -165,10 +205,10 @@ fun HomeScreen(
                 val book = storeBooks[index]
                 Column(modifier = Modifier.animateItem()) {
                     HomeBookItem(
-                        index = if (sortDescending) storeBooks.size - index else index + 1,
+                        index = book.mybookId,
                         title = book.title,
                         coverImage = book.coverImage,
-                        date = book.createdDate.take(10).replace("-", "."),
+                        date = DateFormatter.toShortDate(book.createdDate),
                         description = book.reason,
                         onClick = { onBookClick(book.mybookId) },
                         onStartReading = { onStartReading(book.mybookId, book.title) },
@@ -229,7 +269,7 @@ private fun HomeHeader(
                 backgroundColor = BackgroundGray
             ) {
                 Text(
-                    text = "[+] ADD BOOK",
+                    text = "[+] 책 추가",
                     style = DungGeunMoEtc,
                     color = TextPrimary,
                     modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)

@@ -28,6 +28,7 @@ import project.side.domain.repository.UserRepository
 import project.side.domain.usecase.GetHistoryBooksUseCase
 import project.side.domain.usecase.GetAuthEventUseCase
 import project.side.domain.usecase.GetLoginStateUseCase
+import project.side.domain.usecase.auth.ClearAuthUseCase
 import project.side.domain.usecase.TestUseCase
 import project.side.domain.usecase.member.CheckNicknameUseCase
 import project.side.domain.usecase.member.GetMyInfoUseCase
@@ -73,6 +74,11 @@ object AppModule {
     @Singleton
     fun provideGetLoginStateUseCase(userRepository: UserRepository) =
         GetLoginStateUseCase(userRepository)
+
+    @Provides
+    @Singleton
+    fun provideClearAuthUseCase(userRepository: UserRepository) =
+        ClearAuthUseCase(userRepository)
 
     @Provides
     @Singleton
