@@ -181,7 +181,7 @@ fun MainScreen(
             if (!UiPreferences.isReadingStartHintShown(context)) {
                 UiPreferences.markReadingStartHintShown(context)
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar("읽기 시작! '읽는 중' 탭에서 볼 수 있어요")
+                    snackbarHostState.showSnackbar("읽기 시작! '히스토리' 탭에서 볼 수 있어요")
                 }
             }
         }
