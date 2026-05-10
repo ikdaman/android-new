@@ -286,19 +286,70 @@ git log --oneline 7a30a55..HEAD
 
 ---
 
-## 11. 다음 작업자에게
+## 11. 새 세션에서 이어받기
 
-이 작업은 `superpowers:brainstorming` → `writing-plans` → `subagent-driven-development` 사이클로 진행됐습니다. 같은 사이클을 이어가려면:
+이 작업은 `superpowers:brainstorming` → `writing-plans` → `subagent-driven-development` 사이클로 진행됐습니다.
 
-1. 수동 테스트 후 발견된 회귀를 별도 spec/plan 없이 직접 fix하거나
-2. 큰 변경(예: 폰트 등록)이라면 작은 spec/plan을 새로 만들어 같은 사이클 반복
+### 11.1 새 세션 시작 prompt 예시
 
-**메모리**: `~/.claude/projects/-Users-kangmin-dev-moabook/memory/widget_brainstorm_in_progress.md`에 진행 상태가 기록되어 있습니다. 다음 세션에서 그 메모리가 자동 로드됩니다.
+세션 clear 후 다음 중 하나로 시작하세요:
 
-**참고 자료 우선순위**:
-1. 이 handoff 문서 (전체 입구)
-2. `docs/superpowers/specs/2026-05-10-widget-design.md` (사용자 결정 + UX 명세)
-3. `docs/superpowers/plans/2026-05-10-widget-implementation.md` (왜 이렇게 코드를 짰는지의 근거)
-4. 코드 자체
+**케이스 A: 수동 테스트 결과를 가지고 와서 회귀 fix**
+```
+위젯 작업 이어서 한다. docs/superpowers/handoff/2026-05-11-widget-handoff.md 먼저 읽어.
+실기기 테스트 결과:
+  - [성공/실패한 항목 나열]
+  - 이슈: [구체적 증상]
+이 이슈 fix해줘.
+```
 
-**막힐 때**: spec §14 미해결 항목 + 이 문서 §6 follow-up 우선순위 참조.
+**케이스 B: 폰트 등록 follow-up**
+```
+위젯 폰트 등록 작업. docs/superpowers/handoff/2026-05-11-widget-handoff.md §6.1 참고.
+ui 모듈에 Wanted Sans / DungGeunMo 폰트 자원이 있는지 먼저 확인하고,
+없으면 어떻게 할지 물어봐.
+```
+
+**케이스 C: 다른 follow-up (WidgetIntentParser 정리, 401 가드 등)**
+```
+위젯 follow-up. docs/superpowers/handoff/2026-05-11-widget-handoff.md §6 읽고,
+[6.2 / 6.3 / 6.4 중 선택] 항목 처리해줘.
+```
+
+**케이스 D: 단순히 컨텍스트만 로드하고 다음 단계를 같이 정하기**
+```
+위젯 작업 어디까지 됐는지 docs/superpowers/handoff/2026-05-11-widget-handoff.md 읽고 요약해줘.
+```
+
+### 11.2 자동 로드되는 컨텍스트
+
+새 세션 시작 시 다음이 자동 로드됩니다 (별도 명령 불필요):
+- `~/.claude/projects/-Users-kangmin-dev-moabook/memory/MEMORY.md` 인덱스
+- `~/.claude/projects/-Users-kangmin-dev-moabook/memory/widget_brainstorm_in_progress.md` 진행 상태 요약
+- `~/.claude/CLAUDE.md` (OMC orchestration 가이드)
+
+따라서 사용자가 "위젯"이라고만 해도 어떤 작업인지 식별 가능. 다만 이 handoff 문서를 명시적으로 읽으라고 시키면 더 정확한 컨텍스트를 가집니다.
+
+### 11.3 참고 자료 우선순위
+
+1. **이 handoff 문서** — 전체 입구, 가장 먼저 읽기
+2. `docs/superpowers/specs/2026-05-10-widget-design.md` — 사용자 결정 + UX 명세 (왜 이런 결정인지)
+3. `docs/superpowers/plans/2026-05-10-widget-implementation.md` — 왜 이렇게 코드를 짰는지의 근거
+4. 코드 자체 — `widget/`, `ui/src/main/.../MainActivity.kt`, `ui/src/main/.../MainScreen.kt`, `presentation/.../viewmodel/`
+5. Git history — `git log --oneline 7a30a55..HEAD` (작업 흐름 추적)
+
+### 11.4 같은 사이클을 이어가려면
+
+- 수동 테스트 후 **작은 회귀**: 별도 spec/plan 없이 직접 fix → commit
+- **큰 변경**(예: 폰트 등록 시스템): 작은 spec/plan을 새로 만들어 brainstorming → writing-plans → subagent-driven-development 다시 반복
+- **새 위젯 사이즈 추가** 같은 큰 기능: 새 brainstorm 세션 권장 (이번 spec/plan을 reference로)
+
+### 11.5 막힐 때
+
+- spec §14 미해결 항목 + 이 문서 §6 follow-up 우선순위 먼저 확인
+- 사용자 결정 변경이 필요하면 §10 표 갱신 후 spec/plan/handoff 모두 동기화
+- Glance API 1.1.1 컴파일 오류는 §10 commit 흐름 또는 implementer 보고에서 보정 사례 검색 (`actionStartActivity`, `ColorProvider`, `updateAll` import 위치 등)
+
+### 11.6 Branch 정책 재확인
+
+이번 작업은 사용자 명시 동의로 master에 직접 커밋했습니다. **다음 작업은 기본적으로 새 branch + worktree를 권장합니다** — superpowers의 red flag(`Start implementation on main/master branch without explicit user consent`)에 따라 매번 사용자 동의 필요. handoff 문서를 봤다고 해서 자동 master 푸시 권한이 이어지지 않습니다.
