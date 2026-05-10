@@ -422,3 +422,4 @@ dependencies {
 2. L 위젯 파란 변형의 헤더 바 색상 — Figma에 명시 없으므로 디자이너 확인
 3. `MainActivity` 현재 `launchMode` 확인. `singleTask` 아니라면 변경 영향 검토
 4. `images/` 디렉토리(현재 untracked) 정리 — SVG 자산은 widget 모듈 res/drawable로 이동
+5. **폰트 자원 등록** — spec §7에 명시한 `Wanted Sans` / `DungGeunMo` 폰트가 widget 모듈 res/font/에 등록되지 않음. 현재 위젯들은 fontFamily 지정 없이 시스템 기본 폰트로 폴백. ui 모듈에 같은 폰트가 있다면 거기서 가져오거나 widget 모듈에 별도 등록. 별도 follow-up task로 처리.
