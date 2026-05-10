@@ -4,7 +4,7 @@
 
 **Goal:** Spec(`docs/superpowers/specs/2026-05-10-widget-design.md`)대로 모아북 홈화면 위젯 S/M/L 3종을 신규 `widget` 모듈로 구현한다.
 
-**Architecture:** Jetpack Glance 단일 스택. `widget` 모듈은 `domain`/`data`만 의존. 위젯→앱 진입은 PendingIntent + Intent extras + ui 모듈 `MainActivity` 핸들러. 데이터는 `MyBookRepository.getStoreBooks()` → DataStore 기반 `WidgetCache` (stale-while-revalidate). 갱신은 앱 내 데이터 변경 이벤트 + S 위젯 수동 새로고침만 (백그라운드 주기 갱신 X).
+**Architecture:** Jetpack Glance 단일 스택. `widget` 모듈은 `domain`만 의존. `RepositoryImpl` 바인딩은 `:data`에 있으며 `app` 모듈의 SingletonComponent에서 이미 처리됨. 위젯→앱 진입은 PendingIntent + Intent extras + ui 모듈 `MainActivity` 핸들러. 데이터는 `MyBookRepository.getStoreBooks()` → DataStore 기반 `WidgetCache` (stale-while-revalidate). 갱신은 앱 내 데이터 변경 이벤트 + S 위젯 수동 새로고침만 (백그라운드 주기 갱신 X).
 
 **Tech Stack:** Jetpack Glance 1.1+, Kotlin 2.2, Hilt 2.57, kotlinx.serialization, AndroidX DataStore Preferences 1.1, Compose 기반 Configuration Activity.
 
@@ -140,7 +140,6 @@ kotlin {
 
 dependencies {
     implementation(project(":domain"))
-    implementation(project(":data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.hilt.android)
