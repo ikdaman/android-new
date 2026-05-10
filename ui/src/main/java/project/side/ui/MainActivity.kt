@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
     lateinit var signupDataHolder: SignupDataHolder
 
     private val pendingTarget = mutableStateOf<WidgetTarget?>(null)
+    private val pendingSeq = mutableStateOf(0)
 
     private fun extractWidgetTarget(intent: Intent?): WidgetTarget? {
         if (intent == null) return null
@@ -50,15 +51,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun setPending(target: WidgetTarget?) {
+        pendingTarget.value = target
+        if (target != null) pendingSeq.value = pendingSeq.value + 1
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        extractWidgetTarget(intent)?.let { pendingTarget.value = it }
+        extractWidgetTarget(intent)?.let { setPending(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pendingTarget.value = extractWidgetTarget(intent)
+        setPending(extractWidgetTarget(intent))
         enableEdgeToEdge()
 
         setContent {
@@ -83,7 +89,8 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val target by pendingTarget
-                LaunchedEffect(target) {
+                val seq by pendingSeq
+                LaunchedEffect(seq) {
                     val t = target ?: return@LaunchedEffect
                     when (t) {
                         is WidgetTarget.Book -> {
@@ -127,6 +134,7 @@ class MainActivity : ComponentActivity() {
                         MainScreen(
                             appNavController = navController,
                             widgetTarget = pendingTarget.value,
+                            widgetSeq = pendingSeq.value,
                             onWidgetTargetConsumed = { pendingTarget.value = null }
                         )
                     }

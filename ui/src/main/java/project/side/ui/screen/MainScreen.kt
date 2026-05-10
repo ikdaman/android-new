@@ -78,12 +78,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 fun MainScreen(
     appNavController: NavController,
     widgetTarget: WidgetTarget? = null,
+    widgetSeq: Int = 0,
     onWidgetTargetConsumed: () -> Unit = {},
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
 
-    LaunchedEffect(widgetTarget) {
+    LaunchedEffect(widgetSeq) {
         val t = widgetTarget ?: return@LaunchedEffect
         when (t) {
             is WidgetTarget.Book -> if (t.mybookId != -1) {
