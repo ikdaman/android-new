@@ -32,15 +32,10 @@ class RefreshSmallAction : ActionCallback {
         val deps = EntryPointAccessors.fromApplication(context, RefreshDeps::class.java)
         deps.updater().refreshAll()  // server + cache + notify
         val books = deps.cache().read()
-        var currentIndex = 0
         updateAppWidgetState(context, glanceId) { prefs ->
-            currentIndex = prefs[WidgetStateKeys.SMALL_CURRENT_INDEX] ?: 0
-        }
-        val next = RefreshLogic.pickNextIndex(books, currentIndex) { Random.nextInt(it) }
-        if (next >= 0) {
-            updateAppWidgetState(context, glanceId) { prefs ->
-                prefs[WidgetStateKeys.SMALL_CURRENT_INDEX] = next
-            }
+            val current = prefs[WidgetStateKeys.SMALL_CURRENT_INDEX] ?: 0
+            val next = RefreshLogic.pickNextIndex(books, current) { kotlin.random.Random.nextInt(it) }
+            if (next >= 0) prefs[WidgetStateKeys.SMALL_CURRENT_INDEX] = next
         }
         SmallWidget().update(context, glanceId)
     }
