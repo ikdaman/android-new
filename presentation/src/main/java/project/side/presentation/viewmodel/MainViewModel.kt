@@ -22,6 +22,7 @@ import project.side.domain.usecase.mybook.GetStoreBooksUseCase
 import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.UpdateReadingStatusUseCase
 import project.side.presentation.util.SnackbarManager
+import project.side.widget.data.WidgetUpdater
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -32,7 +33,8 @@ class MainViewModel @Inject constructor(
     private val getMyInfoUseCase: GetMyInfoUseCase,
     private val getStoreBooksUseCase: GetStoreBooksUseCase,
     private val updateReadingStatusUseCase: UpdateReadingStatusUseCase,
-    private val deleteMyBookUseCase: DeleteMyBookUseCase
+    private val deleteMyBookUseCase: DeleteMyBookUseCase,
+    private val widgetUpdater: WidgetUpdater
 ): ViewModel() {
     val isLoggedIn: StateFlow<Boolean> = getLoginStateUseCase().stateIn(
         scope = viewModelScope,
@@ -175,6 +177,7 @@ class MainViewModel @Inject constructor(
                 when (result) {
                     is DataResource.Success -> {
                         refreshStoreBooks()
+                        widgetUpdater.refreshAll()
                         SnackbarManager.show("책이 삭제되었어요.")
                     }
                     is DataResource.Error -> {
@@ -192,6 +195,7 @@ class MainViewModel @Inject constructor(
             updateReadingStatusUseCase(mybookId, startedDate = today).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
+                        widgetUpdater.refreshAll()
                         SnackbarManager.show("시작한 책은 히스토리에서 볼 수 있어요.")
                     }
                     is DataResource.Error -> {

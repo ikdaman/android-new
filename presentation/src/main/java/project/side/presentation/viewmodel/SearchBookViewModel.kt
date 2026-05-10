@@ -18,6 +18,7 @@ import project.side.domain.usecase.SaveManualBookInfoUseCase
 import project.side.domain.usecase.search.SearchBookWithIsbnUseCase
 import project.side.domain.usecase.search.SearchBookWithTitleUseCase
 import project.side.presentation.model.SearchBookState
+import project.side.widget.data.WidgetUpdater
 import javax.inject.Inject
 
 private const val PAGE_SIZE = 50
@@ -26,7 +27,8 @@ private const val PAGE_SIZE = 50
 class SearchBookViewModel @Inject constructor(
     private val searchBookWithTitleUseCase: SearchBookWithTitleUseCase,
     private val searchBookWithIsbnUseCase: SearchBookWithIsbnUseCase,
-    private val saveManualBookInfoUseCase: SaveManualBookInfoUseCase
+    private val saveManualBookInfoUseCase: SaveManualBookInfoUseCase,
+    private val widgetUpdater: WidgetUpdater
 ) : ViewModel() {
 
     private val _searchState = MutableStateFlow(SearchBookState())
@@ -144,6 +146,7 @@ class SearchBookViewModel @Inject constructor(
             saveManualBookInfoUseCase(manual).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
+                        widgetUpdater.refreshAll()
                         _saveEvent.emit(SaveEvent.Success)
                     }
                     is DataResource.Error -> {

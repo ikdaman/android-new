@@ -13,6 +13,7 @@ import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.GetMyBookDetailUseCase
 import project.side.domain.usecase.mybook.UpdateMyBookUseCase
 import project.side.presentation.util.SnackbarManager
+import project.side.widget.data.WidgetUpdater
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,7 +21,8 @@ class BookInfoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getMyBookDetailUseCase: GetMyBookDetailUseCase,
     private val deleteMyBookUseCase: DeleteMyBookUseCase,
-    private val updateMyBookUseCase: UpdateMyBookUseCase
+    private val updateMyBookUseCase: UpdateMyBookUseCase,
+    private val widgetUpdater: WidgetUpdater
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<BookInfoUiState> = MutableStateFlow(BookInfoUiState.Loading)
@@ -95,6 +97,7 @@ class BookInfoViewModel @Inject constructor(
             ).collect {
                 when (it) {
                     is DataResource.Success -> {
+                        widgetUpdater.refreshAll()
                         SnackbarManager.show("책 정보를 수정했어요")
                         fetchDetail(mybookId)
                     }
@@ -113,6 +116,7 @@ class BookInfoViewModel @Inject constructor(
             deleteMyBookUseCase(mybookId).collect {
                 when (it) {
                     is DataResource.Success -> {
+                        widgetUpdater.refreshAll()
                         SnackbarManager.show("책을 정리했어요!")
                         _deleteSuccess.value = true
                     }

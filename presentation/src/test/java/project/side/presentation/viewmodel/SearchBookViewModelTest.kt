@@ -26,6 +26,7 @@ import project.side.domain.model.BookSearchResult
 import project.side.domain.usecase.SaveManualBookInfoUseCase
 import project.side.domain.usecase.search.SearchBookWithIsbnUseCase
 import project.side.domain.usecase.search.SearchBookWithTitleUseCase
+import project.side.widget.data.WidgetUpdater
 import java.io.IOException
 import java.time.LocalDate
 
@@ -41,6 +42,9 @@ class SearchBookViewModelTest {
     @MockK
     private lateinit var saveManualBookInfoUseCase: SaveManualBookInfoUseCase
 
+    @MockK(relaxed = true)
+    private lateinit var widgetUpdater: WidgetUpdater
+
     private lateinit var viewModel: SearchBookViewModel
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -49,7 +53,7 @@ class SearchBookViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         MockKAnnotations.init(this)
-        viewModel = SearchBookViewModel(searchBookWithTitleUseCase, searchBookWithIsbnUseCase, saveManualBookInfoUseCase)
+        viewModel = SearchBookViewModel(searchBookWithTitleUseCase, searchBookWithIsbnUseCase, saveManualBookInfoUseCase, widgetUpdater)
     }
 
     @After

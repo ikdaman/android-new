@@ -20,6 +20,7 @@ import org.junit.Test
 import project.side.domain.DataResource
 import project.side.domain.model.ManualBookInfo
 import project.side.domain.usecase.SaveManualBookInfoUseCase
+import project.side.widget.data.WidgetUpdater
 import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -27,6 +28,9 @@ class ManualInputViewModelTest {
 
     @MockK
     private lateinit var saveManualBookInfoUseCase: SaveManualBookInfoUseCase
+
+    @MockK(relaxed = true)
+    private lateinit var widgetUpdater: WidgetUpdater
 
     private lateinit var viewModel: ManualInputViewModel
 
@@ -36,7 +40,7 @@ class ManualInputViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         MockKAnnotations.init(this)
-        viewModel = ManualInputViewModel(saveManualBookInfoUseCase)
+        viewModel = ManualInputViewModel(saveManualBookInfoUseCase, widgetUpdater)
     }
 
     @After

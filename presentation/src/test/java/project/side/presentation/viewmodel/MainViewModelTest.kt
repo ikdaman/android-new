@@ -31,6 +31,7 @@ import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.GetStoreBooksUseCase
 import project.side.domain.usecase.mybook.UpdateReadingStatusUseCase
 import project.side.presentation.util.SnackbarManager
+import project.side.widget.data.WidgetUpdater
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
@@ -48,6 +49,9 @@ class MainViewModelTest {
 
     @MockK
     private lateinit var deleteMyBookUseCase: DeleteMyBookUseCase
+
+    @MockK(relaxed = true)
+    private lateinit var widgetUpdater: WidgetUpdater
 
     private lateinit var viewModel: MainViewModel
 
@@ -87,7 +91,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
 
         // Then
         verify(exactly = 1) { getMyInfoUseCase() }
@@ -103,7 +107,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
 
         // Then
         assertEquals("홍길동", viewModel.nickname.value)
@@ -116,7 +120,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
 
         // Then
         verify(exactly = 0) { getMyInfoUseCase() }
@@ -144,7 +148,7 @@ class MainViewModelTest {
         )
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
         viewModel.refreshStoreBooks()
 
         // Then
@@ -159,7 +163,7 @@ class MainViewModelTest {
         stubDefaultBooks()
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
         viewModel.refreshStoreBooks()
 
         // Then
@@ -177,7 +181,7 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
         viewModel.startReading(mybookId = 123)
 
         // Then
@@ -200,7 +204,7 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
         viewModel.startReading(mybookId = 123)
 
         // Then
@@ -219,7 +223,7 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
         viewModel.startReading(mybookId = 123)
 
         // Then
@@ -236,7 +240,7 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
         viewModel.deleteBook(mybookId = 42)
 
         // Then
@@ -254,7 +258,7 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
         viewModel.deleteBook(mybookId = 42)
 
         // Then
@@ -271,7 +275,7 @@ class MainViewModelTest {
         coEvery { SnackbarManager.show(any()) } just Runs
 
         // When
-        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase)
+        viewModel = MainViewModel(getLoginStateUseCase, getMyInfoUseCase, getStoreBooksUseCase, updateReadingStatusUseCase, deleteMyBookUseCase, widgetUpdater)
         viewModel.deleteBook(mybookId = 99)
 
         // Then

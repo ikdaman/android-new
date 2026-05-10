@@ -12,11 +12,13 @@ import java.time.LocalDate
 import project.side.domain.DataResource
 import project.side.domain.model.ManualBookInfo
 import project.side.domain.usecase.SaveManualBookInfoUseCase
+import project.side.widget.data.WidgetUpdater
 import javax.inject.Inject
 
 @HiltViewModel
 class ManualInputViewModel @Inject constructor(
-    private val saveManualBookInfoUseCase: SaveManualBookInfoUseCase
+    private val saveManualBookInfoUseCase: SaveManualBookInfoUseCase,
+    private val widgetUpdater: WidgetUpdater
 ) : ViewModel() {
     private val _saveEvent = MutableSharedFlow<SaveEvent>()
     val saveEvent: SharedFlow<SaveEvent> = _saveEvent.asSharedFlow()
@@ -26,6 +28,7 @@ class ManualInputViewModel @Inject constructor(
             saveManualBookInfoUseCase(manual).collect { result ->
                 when (result) {
                     is DataResource.Success -> {
+                        widgetUpdater.refreshAll()
                         _saveEvent.emit(SaveEvent.Success)
                     }
                     is DataResource.Error -> {

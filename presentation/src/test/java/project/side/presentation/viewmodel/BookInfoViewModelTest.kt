@@ -30,6 +30,7 @@ import project.side.domain.usecase.mybook.DeleteMyBookUseCase
 import project.side.domain.usecase.mybook.GetMyBookDetailUseCase
 import project.side.domain.usecase.mybook.UpdateMyBookUseCase
 import project.side.presentation.util.SnackbarManager
+import project.side.widget.data.WidgetUpdater
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookInfoViewModelTest {
@@ -42,6 +43,9 @@ class BookInfoViewModelTest {
 
     @MockK
     private lateinit var updateMyBookUseCase: UpdateMyBookUseCase
+
+    @MockK(relaxed = true)
+    private lateinit var widgetUpdater: WidgetUpdater
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -92,7 +96,7 @@ class BookInfoViewModelTest {
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
 
         // When
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // Then
@@ -110,7 +114,7 @@ class BookInfoViewModelTest {
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
 
         // When
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // Then
@@ -125,7 +129,7 @@ class BookInfoViewModelTest {
         val savedStateHandle = SavedStateHandle()
 
         // When
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // Then
@@ -141,7 +145,7 @@ class BookInfoViewModelTest {
         every { updateMyBookUseCase(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns flowOf(DataResource.Success(123))
 
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // When
@@ -162,7 +166,7 @@ class BookInfoViewModelTest {
         every { updateMyBookUseCase(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns flowOf(DataResource.Error(errorMessage))
 
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // When
@@ -181,7 +185,7 @@ class BookInfoViewModelTest {
         every { updateMyBookUseCase(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns flowOf(DataResource.Success(123))
 
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // When
@@ -221,7 +225,7 @@ class BookInfoViewModelTest {
     fun `updateMyBook does nothing when mybookId is invalid`() = runTest {
         // Given
         val savedStateHandle = SavedStateHandle()
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // When
@@ -240,7 +244,7 @@ class BookInfoViewModelTest {
         coEvery { deleteMyBookUseCase(123) } returns flowOf(DataResource.Success(Unit))
 
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // When
@@ -261,7 +265,7 @@ class BookInfoViewModelTest {
         coEvery { deleteMyBookUseCase(123) } returns flowOf(DataResource.Error(errorMessage))
 
         val savedStateHandle = SavedStateHandle(mapOf("mybookId" to 123))
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // When
@@ -276,7 +280,7 @@ class BookInfoViewModelTest {
     fun `deleteBook does nothing when mybookId is invalid`() = runTest {
         // Given
         val savedStateHandle = SavedStateHandle()
-        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase)
+        val viewModel = BookInfoViewModel(savedStateHandle, getMyBookDetailUseCase, deleteMyBookUseCase, updateMyBookUseCase, widgetUpdater)
         advanceUntilIdle()
 
         // When
