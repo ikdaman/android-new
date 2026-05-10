@@ -83,6 +83,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":remote"))
     implementation(project(":local"))
+    implementation(project(":widget"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.hilt.android)
