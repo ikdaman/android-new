@@ -66,6 +66,17 @@ class SmallWidget : GlanceAppWidget() {
         val books = deps.cache().read()
         val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
         val variant = deps.prefs().colorFor(appWidgetId)
+        // SMALL_CURRENT_MYBOOK_ID 미설정 시 첫 책으로 초기화
+        if (books.isNotEmpty()) {
+            androidx.glance.appwidget.state.updateAppWidgetState(context, id) { prefs ->
+                if (prefs[WidgetStateKeys.SMALL_CURRENT_MYBOOK_ID] == null) {
+                    val safeIndex = (prefs[WidgetStateKeys.SMALL_CURRENT_INDEX] ?: 0)
+                        .coerceIn(0, books.size - 1)
+                    prefs[WidgetStateKeys.SMALL_CURRENT_MYBOOK_ID] = books[safeIndex].mybookId
+                    prefs[WidgetStateKeys.SMALL_CURRENT_INDEX] = safeIndex
+                }
+            }
+        }
         provideContent { SmallContent(books, variant) }
     }
 }
