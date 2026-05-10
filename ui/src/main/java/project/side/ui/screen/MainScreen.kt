@@ -37,6 +37,7 @@ import project.side.ui.SEARCH_MY_BOOK_ROUTE
 import project.side.ui.LOGIN_ROUTE
 import project.side.ui.MAIN_ROUTE
 import project.side.ui.SETTING_ROUTE
+import project.side.ui.WidgetTarget
 import androidx.compose.runtime.mutableIntStateOf
 import project.side.domain.model.StoreBookItem
 import androidx.compose.foundation.background
@@ -76,9 +77,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 @Composable
 fun MainScreen(
     appNavController: NavController,
+    widgetTarget: WidgetTarget? = null,
+    onWidgetTargetConsumed: () -> Unit = {},
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
+
+    LaunchedEffect(widgetTarget) {
+        val t = widgetTarget ?: return@LaunchedEffect
+        when (t) {
+            is WidgetTarget.Book -> if (t.mybookId != -1) {
+                navController.navigate("BookInfo/${t.mybookId}")
+            }
+            WidgetTarget.Home -> { /* MAIN_ROUTE 이동은 root에서 이미 처리됨 */ }
+        }
+        onWidgetTargetConsumed()
+    }
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val isLoggedIn = mainViewModel.isLoggedIn.collectAsState()

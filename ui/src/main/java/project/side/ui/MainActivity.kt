@@ -1,5 +1,6 @@
 package project.side.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,8 +38,27 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var signupDataHolder: SignupDataHolder
 
+    private val pendingTarget = mutableStateOf<WidgetTarget?>(null)
+
+    private fun extractWidgetTarget(intent: Intent?): WidgetTarget? {
+        if (intent == null) return null
+        val target = intent.getStringExtra("widget_target") ?: return null
+        return when (target) {
+            "book" -> WidgetTarget.Book(intent.getIntExtra("mybook_id", -1))
+            "home" -> WidgetTarget.Home
+            else -> null
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        extractWidgetTarget(intent)?.let { pendingTarget.value = it }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pendingTarget.value = extractWidgetTarget(intent)
         enableEdgeToEdge()
 
         setContent {
@@ -61,6 +82,30 @@ class MainActivity : ComponentActivity() {
                         .launchIn(this)
                 }
 
+                val target by pendingTarget
+                LaunchedEffect(target) {
+                    val t = target ?: return@LaunchedEffect
+                    when (t) {
+                        is WidgetTarget.Book -> {
+                            // BookInfo는 MainScreen 내부 sub-NavHost에 있으므로
+                            // MAIN_ROUTE로 먼저 이동시키고 MainScreen이 widgetTarget을 처리.
+                            if (t.mybookId != -1) {
+                                navController.navigate(MAIN_ROUTE) {
+                                    popUpTo(MAIN_ROUTE) { inclusive = true }
+                                }
+                            } else {
+                                pendingTarget.value = null
+                            }
+                        }
+                        WidgetTarget.Home -> {
+                            navController.navigate(MAIN_ROUTE) {
+                                popUpTo(MAIN_ROUTE) { inclusive = true }
+                            }
+                            pendingTarget.value = null
+                        }
+                    }
+                }
+
                 NavHost(
                     navController = navController,
                     startDestination = SPLASH_ROUTE,
@@ -79,7 +124,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(MAIN_ROUTE) {
-                        MainScreen(navController)
+                        MainScreen(
+                            appNavController = navController,
+                            widgetTarget = pendingTarget.value,
+                            onWidgetTargetConsumed = { pendingTarget.value = null }
+                        )
                     }
                     composable(BARCODE_ROUTE) {
                         val searchBookViewModel: SearchBookViewModel = hiltViewModel(
