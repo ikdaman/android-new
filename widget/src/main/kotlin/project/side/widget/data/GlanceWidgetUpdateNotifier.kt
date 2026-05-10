@@ -5,6 +5,7 @@ import androidx.glance.appwidget.updateAll
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import project.side.widget.glance.MediumWidget
 import project.side.widget.glance.SmallWidget
 
 @Singleton
@@ -13,6 +14,7 @@ class GlanceWidgetUpdateNotifier @Inject constructor(
 ) : WidgetUpdateNotifier {
     override suspend fun notifyAllWidgets() {
         SmallWidget().updateAll(context)
-        // MediumWidget / LargeWidget will be added in Tasks 13/14.
+        MediumWidget().updateAll(context)
+        // LargeWidget will be added in Task 14.
     }
 }
