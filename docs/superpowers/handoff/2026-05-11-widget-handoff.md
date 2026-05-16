@@ -33,9 +33,11 @@
 
 | 사이즈 | 셀 | 콘텐츠 | 인터랙션 |
 |---|---|---|---|
-| S (158×158) | 2×2 | 책아이콘 + 새로고침 + 책 제목 + 날짜 라벨 | 전체 탭 = 책 상세 / 새로고침 = 다른 책 |
-| M (338×158) | 4×2 | 책아이콘 + 제목 + 이유 + YYYY.MM.DD + 5점 인디케이터 + ◀▶ | 본문 탭 = 책 상세 / 화살표 = 페이지 이동 (스와이프 X) |
-| L (338×354) | 4×4 | "BOOK NAME" 헤더 + 9권 리스트 | 어디 탭해도 앱 홈 |
+| S (110×110) | 2×2 | 책아이콘 + 새로고침 + 책 제목 + 날짜 라벨 | 전체 탭 = 책 상세 / 새로고침 = 다른 책 |
+| M (250×110) | 4×2 | 책아이콘 + 제목 + 이유 + YYYY.MM.DD + 5점 인디케이터 + ◀▶ | 본문 탭 = 책 상세 / 화살표 = 페이지 이동 (스와이프 X) |
+| L (250×250) | 4×4 | "BOOK NAME" 헤더 + 9권 리스트 | 어디 탭해도 앱 홈 |
+
+> dp 값은 Android Widget 셀 산정 공식 `70 × n − 30` 기준(2셀=110, 4셀=250). 초기 spec은 Figma 픽셀(158/338/354)이었으나 일부 런처에서 의도한 셀 수와 어긋나는 문제가 있어 2026-05-16에 정정 (§6.7 참고).
 
 각 사이즈에 **흰색(#F6F9FF) / 파란색(#010196)** 두 변형. 위젯 추가 시 Configuration Activity에서 색상 선택.
 
@@ -183,7 +185,19 @@ LargeWidget().updateAll(context)
 - §14.2 L 위젯 파란 변형 헤더 색 — Figma 명시 없음, 잠정 #FFFFFF (LargeWidget.kt:131)
 - §14.4 `images/` 디렉토리(untracked) 정리
 
-### 6.6 [INFO] background revalidate 미구현
+### 6.7 [DONE] 2026-05-16 위젯 dp 산정 정정
+
+- **문제**: 초기 spec의 dp 값(158/338/354)은 Figma 디자인 픽셀 사이즈를 그대로 옮긴 것으로, Android Widget 셀 산정 공식 `cells = round((dp + 30) / 70)` 과 어긋남. `targetCellWidth/Height` 는 API 31+ 에서만 우선 동작하므로 일부 런처(Android 11 이하 + 일부 Android 12+ 런처)에서 S 가 2×2 가 아닌 2×3 으로, M 이 4×2 가 아닌 4×3 으로 보이는 문제 발생.
+- **정정**: `70 × n − 30` 공식 기준으로 모든 `widget_*_info.xml` (S/M/L + 새 white/blue 변형) dp 값을 110/250 으로 통일.
+- **영향 파일**:
+  - `widget/src/main/res/xml/widget_small_info.xml` → `minWidth/Height=110dp`
+  - `widget/src/main/res/xml/widget_medium_info.xml` → `minWidth=250dp, minHeight=110dp`
+  - `widget/src/main/res/xml/widget_large_info.xml` → `minWidth/Height=250dp`
+  - `widget/src/main/res/xml/widget_small_white_info.xml` (untracked) → 동일
+  - `widget/src/main/res/xml/widget_small_blue_info.xml` (untracked) → 동일
+- **spec 갱신**: `docs/superpowers/specs/2026-05-10-widget-design.md` §1, §3, §3.1~3.3 모두 정정. 셀 산정 공식 메모 §3 시작에 추가.
+
+### 6.8 [INFO] background revalidate 미구현
 spec §6.2 stale-while-revalidate 두 번째 단계("같은 composition에서 백그라운드 fetch")는 미구현. 현재 fetch는 receiver `onUpdate` + 사용자 액션에서만. 사용자 결정 정책("백그라운드 주기 갱신 없음")과 부합하므로 의도된 trade-off로 봐도 OK.
 
 ---

@@ -11,11 +11,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import project.side.widget.data.WidgetUpdater
-import project.side.widget.glance.MediumWidget
+import project.side.widget.glance.SmallWidget
 
 @AndroidEntryPoint
-class MediumWidgetReceiver : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = MediumWidget()
+class SmallWidgetBlueReceiver : GlanceAppWidgetReceiver() {
+    override val glanceAppWidget: GlanceAppWidget = SmallWidget()
 
     @Inject lateinit var updater: WidgetUpdater
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

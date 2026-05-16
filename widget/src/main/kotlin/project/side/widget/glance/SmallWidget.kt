@@ -1,6 +1,7 @@
 package project.side.widget.glance
 
 import android.content.Context
+import android.appwidget.AppWidgetManager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +48,8 @@ import project.side.widget.glance.components.EmptyState
 import project.side.widget.glance.components.RefreshIcon
 import project.side.widget.glance.theme.colorsFor
 import project.side.widget.intent.WidgetIntents
+import project.side.widget.receiver.SmallWidgetBlueReceiver
+import project.side.widget.receiver.SmallWidgetWhiteReceiver
 import project.side.widget.state.WidgetStateKeys
 import project.side.widget.theme.ColorVariant
 
@@ -64,8 +67,9 @@ class SmallWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val deps = EntryPointAccessors.fromApplication(context, SmallDeps::class.java)
         val books = deps.cache().read()
-        val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-        val variant = deps.prefs().colorFor(appWidgetId)
+        val manager = GlanceAppWidgetManager(context)
+        val appWidgetId = manager.getAppWidgetId(id)
+        val variant = resolveVariant(context, appWidgetId, deps.prefs())
         // SMALL_CURRENT_MYBOOK_ID 미설정 시 첫 책으로 초기화
         if (books.isNotEmpty()) {
             androidx.glance.appwidget.state.updateAppWidgetState(context, id) { prefs ->
@@ -78,6 +82,22 @@ class SmallWidget : GlanceAppWidget() {
             }
         }
         provideContent { SmallContent(books, variant) }
+    }
+
+    private suspend fun resolveVariant(
+        context: Context,
+        appWidgetId: Int,
+        prefs: WidgetPreferences,
+    ): ColorVariant {
+        val providerClass = AppWidgetManager.getInstance(context)
+            .getAppWidgetInfo(appWidgetId)
+            ?.provider
+            ?.className
+        return when (providerClass) {
+            SmallWidgetWhiteReceiver::class.java.name -> ColorVariant.WHITE
+            SmallWidgetBlueReceiver::class.java.name -> ColorVariant.BLUE
+            else -> prefs.colorFor(appWidgetId)
+        }
     }
 }
 

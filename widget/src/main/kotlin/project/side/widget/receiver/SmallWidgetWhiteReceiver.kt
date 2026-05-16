@@ -14,7 +14,7 @@ import project.side.widget.data.WidgetUpdater
 import project.side.widget.glance.SmallWidget
 
 @AndroidEntryPoint
-class SmallWidgetReceiver : GlanceAppWidgetReceiver() {
+class SmallWidgetWhiteReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = SmallWidget()
 
     @Inject lateinit var updater: WidgetUpdater

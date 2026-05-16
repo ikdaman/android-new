@@ -9,7 +9,6 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
@@ -36,11 +35,13 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import project.side.widget.action.OpenAppAction
 import project.side.widget.data.WidgetCache
-import project.side.widget.data.WidgetPreferences
 import project.side.widget.data.WidgetUiBook
 import project.side.widget.glance.components.BookHeartIcon
 import project.side.widget.glance.theme.colorsFor
 import project.side.widget.theme.ColorVariant
+
+private val HEADER_BAR_COLOR = Color(0xFFD4D4D4)
+private val HEADER_TEXT_COLOR = Color(0xFF333333)
 
 class LargeWidget : GlanceAppWidget() {
 
@@ -48,21 +49,18 @@ class LargeWidget : GlanceAppWidget() {
     @InstallIn(SingletonComponent::class)
     interface LargeDeps {
         fun cache(): WidgetCache
-        fun prefs(): WidgetPreferences
     }
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val deps = EntryPointAccessors.fromApplication(context, LargeDeps::class.java)
         val books = deps.cache().read().take(9)
-        val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-        val variant = deps.prefs().colorFor(appWidgetId)
-        provideContent { LargeContent(books, variant) }
+        provideContent { LargeContent(books) }
     }
 }
 
 @Composable
-private fun LargeContent(books: List<WidgetUiBook>, variant: ColorVariant) {
-    val colors = colorsFor(variant)
+private fun LargeContent(books: List<WidgetUiBook>) {
+    val colors = colorsFor(ColorVariant.WHITE)
     val openApp = actionRunCallback<OpenAppAction>()
     Column(
         modifier = GlanceModifier
@@ -71,18 +69,17 @@ private fun LargeContent(books: List<WidgetUiBook>, variant: ColorVariant) {
             .cornerRadius(22.dp)
             .clickable(openApp)
     ) {
-        // Header bar
         Box(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .background(ColorProvider(headerBarColor(variant)))
+                .background(ColorProvider(HEADER_BAR_COLOR))
                 .padding(vertical = 10.dp),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = "BOOK NAME",
                 style = TextStyle(
-                    color = ColorProvider(if (variant == ColorVariant.WHITE) Color(0xFF333333) else Color(0xFF010196)),
+                    color = ColorProvider(HEADER_TEXT_COLOR),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center,
@@ -127,10 +124,4 @@ private fun LargeContent(books: List<WidgetUiBook>, variant: ColorVariant) {
             }
         }
     }
-}
-
-private fun headerBarColor(variant: ColorVariant): Color = when (variant) {
-    ColorVariant.WHITE -> Color(0xFFD4D4D4)
-    // L 파란 변형 헤더 색은 spec §14의 미해결 항목. 잠정값 흰색.
-    ColorVariant.BLUE -> Color(0xFFFFFFFF)
 }

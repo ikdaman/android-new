@@ -1,5 +1,6 @@
 package project.side.widget.glance
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,8 @@ import project.side.widget.glance.components.EmptyState
 import project.side.widget.glance.components.PageIndicator
 import project.side.widget.glance.theme.colorsFor
 import project.side.widget.intent.WidgetIntents
+import project.side.widget.receiver.MediumWidgetBlueReceiver
+import project.side.widget.receiver.MediumWidgetWhiteReceiver
 import project.side.widget.state.WidgetStateKeys
 import project.side.widget.theme.ColorVariant
 
@@ -64,9 +67,26 @@ class MediumWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val deps = EntryPointAccessors.fromApplication(context, MediumDeps::class.java)
         val books = deps.cache().read().take(MAX_PAGES)
-        val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-        val variant = deps.prefs().colorFor(appWidgetId)
+        val manager = GlanceAppWidgetManager(context)
+        val appWidgetId = manager.getAppWidgetId(id)
+        val variant = resolveVariant(context, appWidgetId, deps.prefs())
         provideContent { MediumContent(books, variant) }
+    }
+
+    private suspend fun resolveVariant(
+        context: Context,
+        appWidgetId: Int,
+        prefs: WidgetPreferences,
+    ): ColorVariant {
+        val providerClass = AppWidgetManager.getInstance(context)
+            .getAppWidgetInfo(appWidgetId)
+            ?.provider
+            ?.className
+        return when (providerClass) {
+            MediumWidgetWhiteReceiver::class.java.name -> ColorVariant.WHITE
+            MediumWidgetBlueReceiver::class.java.name -> ColorVariant.BLUE
+            else -> prefs.colorFor(appWidgetId)
+        }
     }
 }
 
