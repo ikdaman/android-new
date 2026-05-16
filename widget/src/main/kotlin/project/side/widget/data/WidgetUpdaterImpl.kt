@@ -18,7 +18,7 @@ class WidgetUpdaterImpl @Inject constructor(
         Log.d(TAG, "refreshAll() start")
         try {
             val terminal = runCatching {
-                repository.getStoreBooks(null, 0, 9, "createdDate,desc")
+                repository.getStoreBooks(null, 0, 9, "createdAt,desc")
                     .first { it !is DataResource.Loading }
             }.getOrElse { throwable ->
                 Log.e(TAG, "getStoreBooks threw", throwable)

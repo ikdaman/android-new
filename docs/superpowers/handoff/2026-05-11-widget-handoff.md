@@ -174,8 +174,8 @@ LargeWidget().updateAll(context)
 
 ### 6.3 [MEDIUM] 미로그인 시 401 fetch 가드
 - **문제**: 모든 receiver의 `onUpdate` → `refreshAll()`이 로그인 상태 확인 없이 매번 호출. 미로그인 상태에서 401 노이즈.
-- **현황 (2026-05-16)**: WidgetUpdaterImpl 에 진단 로그 추가. `adb logcat -s WidgetUpdater` 로 fetch 시작 / 성공(N books) / 에러(message) / 종료를 추적 가능. 실기기 결과 보고 가드 추가 여부 결정.
-- **추가 fix (2026-05-16)**: 5개 receiver 모두 `goAsync()` 패턴 적용. 기존에는 receiver의 `scope.launch { refreshAll() }` 가 `onUpdate` 반환 직후 process kill로 cancel될 수 있어 cache 채우기 전에 위젯이 그려져 empty state 보이는 경우 발생. `goAsync()` + `pendingResult.finish()` 로 비동기 작업 끝까지 receiver 살아있도록.
+- **현황 (2026-05-16)**: WidgetUpdaterImpl 에 진단 로그 추가. `adb logcat -s WidgetUpdater` 로 fetch 시작 / 성공(N books) / 에러(message) / 종료를 추적 가능.
+- **추가 fix (2026-05-16)**: 5개 receiver 모두 `goAsync()` 패턴 적용 — receiver의 `scope.launch { refreshAll() }` 가 `onUpdate` 반환 직후 process kill로 cancel될 가능성 차단.
 - **수정안**: WidgetUpdaterImpl에 `isLoggedInUseCase` 또는 AuthTokenProvider 의존 추가 → 미로그인/토큰 없음 시 fetch 스킵, cache만 사용 (그러면 Empty state 자연스럽게).
 
 ### 6.4 [LOW] M 위젯 stale current index UX
@@ -183,8 +183,8 @@ LargeWidget().updateAll(context)
 - **수정 방향**: Prev/Next도 mybookId 기반 추적 (S 위젯과 같은 패턴), 또는 cache 갱신 시 인덱스 reset.
 
 ### 6.5 [LOW] Spec §14 미해결 항목들
-- §14.1 `MyBookRepository.getStoreBooks` `sort` 파라미터 키 — 백엔드 명세 확인. 현재 `"createdDate,desc"` 그대로 사용.
-- §14.2 L 위젯 파란 변형 헤더 색 — Figma 명시 없음, 잠정 #FFFFFF (LargeWidget.kt:131)
+- §14.1 `MyBookRepository.getStoreBooks` `sort` 파라미터 키 — **해결 (2026-05-16)**: 올바른 키는 `createdAt,desc` (앱 UI MainViewModel.kt:131 과 동일). 위젯이 `createdDate,desc` 를 보내고 있어 서버가 HTTP 500 던지는 게 "위젯에 책이 안 보임"의 root cause 였음. WidgetUpdaterImpl.kt 수정 완료.
+- §14.2 L 위젯 파란 변형 헤더 색 — L 흰색 전용화로 N/A.
 - §14.4 `images/` 디렉토리(untracked) 정리
 
 ### 6.7 [DONE] 2026-05-16 위젯 dp 산정 정정
