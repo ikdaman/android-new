@@ -1,7 +1,9 @@
 package project.side.widget.glance
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.content.Intent
 import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -37,6 +39,8 @@ import project.side.widget.receiver.SmallWidgetWhiteReceiver
 import project.side.widget.state.WidgetStateKeys
 import project.side.widget.theme.ColorVariant
 
+const val ACTION_REFRESH_SMALL = "project.side.widget.ACTION_REFRESH_SMALL"
+
 class SmallWidget : GlanceAppWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
@@ -64,7 +68,7 @@ class SmallWidget : GlanceAppWidget() {
                 }
             }
         }
-        provideContent { SmallContent(books, variant) }
+        provideContent { SmallContent(books, variant, appWidgetId) }
     }
 
     private suspend fun resolveVariant(
@@ -85,7 +89,7 @@ class SmallWidget : GlanceAppWidget() {
 }
 
 @Composable
-private fun SmallContent(books: List<WidgetUiBook>, variant: ColorVariant) {
+private fun SmallContent(books: List<WidgetUiBook>, variant: ColorVariant, appWidgetId: Int) {
     val context = LocalContext.current
 
     if (books.isEmpty()) {
@@ -103,8 +107,8 @@ private fun SmallContent(books: List<WidgetUiBook>, variant: ColorVariant) {
     val safeIndex = rawIndex.coerceIn(0, books.size - 1)
     val book = books[safeIndex]
 
-    val remoteViews = remember(book, variant) {
-        buildSmallRemoteViews(context, book, variant)
+    val remoteViews = remember(book, variant, appWidgetId) {
+        buildSmallRemoteViews(context, book, variant, appWidgetId)
     }
     AndroidRemoteViews(
         remoteViews = remoteViews,
@@ -122,6 +126,7 @@ private fun buildSmallRemoteViews(
     context: Context,
     book: WidgetUiBook,
     variant: ColorVariant,
+    appWidgetId: Int,
 ): RemoteViews {
     val isWhite = variant == ColorVariant.WHITE
     val bgRes = if (isWhite) R.drawable.widget_bg_white else R.drawable.widget_bg_blue
@@ -129,6 +134,17 @@ private fun buildSmallRemoteViews(
     val refreshRes = if (isWhite) R.drawable.ic_widget_refresh_dark else R.drawable.ic_widget_refresh_light
     val textColor = if (isWhite) 0xFF333333.toInt() else 0xFFFFFFFF.toInt()
     val accentColor = if (isWhite) 0xFF010196.toInt() else 0xFFFFFFFF.toInt()
+    val receiverClass = if (isWhite) SmallWidgetWhiteReceiver::class.java else SmallWidgetBlueReceiver::class.java
+
+    val refreshIntent = Intent(context, receiverClass).apply {
+        action = ACTION_REFRESH_SMALL
+    }
+    val refreshPendingIntent = PendingIntent.getBroadcast(
+        context,
+        appWidgetId,
+        refreshIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
 
     return RemoteViews(context.packageName, R.layout.widget_small_content).apply {
         setInt(R.id.widget_small_root, "setBackgroundResource", bgRes)
@@ -138,5 +154,6 @@ private fun buildSmallRemoteViews(
         setTextColor(R.id.widget_small_title, textColor)
         setTextViewText(R.id.widget_small_date, DateLabel.format(book.createdDate))
         setTextColor(R.id.widget_small_date, accentColor)
+        setOnClickPendingIntent(R.id.widget_small_refresh, refreshPendingIntent)
     }
 }

@@ -1,7 +1,9 @@
 package project.side.widget.glance
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
@@ -37,6 +39,9 @@ import project.side.widget.receiver.MediumWidgetWhiteReceiver
 import project.side.widget.state.WidgetStateKeys
 import project.side.widget.theme.ColorVariant
 
+const val ACTION_MEDIUM_PAGE = "project.side.widget.ACTION_MEDIUM_PAGE"
+const val EXTRA_TARGET_INDEX = "target_index"
+
 private const val MAX_PAGES = 5
 
 private val MEDIUM_DOT_IDS = intArrayOf(
@@ -59,7 +64,7 @@ class MediumWidget : GlanceAppWidget() {
         val manager = GlanceAppWidgetManager(context)
         val appWidgetId = manager.getAppWidgetId(id)
         val variant = resolveVariant(context, appWidgetId, deps.prefs())
-        provideContent { MediumContent(books, variant) }
+        provideContent { MediumContent(books, variant, appWidgetId) }
     }
 
     private suspend fun resolveVariant(
@@ -80,7 +85,7 @@ class MediumWidget : GlanceAppWidget() {
 }
 
 @Composable
-private fun MediumContent(books: List<WidgetUiBook>, variant: ColorVariant) {
+private fun MediumContent(books: List<WidgetUiBook>, variant: ColorVariant, appWidgetId: Int) {
     val context = LocalContext.current
 
     if (books.isEmpty()) {
@@ -98,8 +103,8 @@ private fun MediumContent(books: List<WidgetUiBook>, variant: ColorVariant) {
     val current = rawIndex.coerceIn(0, books.size - 1)
     val book = books[current]
 
-    val remoteViews = remember(book, variant, current, books.size) {
-        buildMediumRemoteViews(context, book, variant, current, books.size)
+    val remoteViews = remember(book, variant, current, books.size, appWidgetId) {
+        buildMediumRemoteViews(context, book, variant, current, books.size, appWidgetId)
     }
     AndroidRemoteViews(
         remoteViews = remoteViews,
@@ -119,6 +124,7 @@ private fun buildMediumRemoteViews(
     variant: ColorVariant,
     current: Int,
     total: Int,
+    appWidgetId: Int,
 ): RemoteViews {
     val isWhite = variant == ColorVariant.WHITE
     val bgRes = if (isWhite) R.drawable.widget_bg_white else R.drawable.widget_bg_blue
@@ -128,6 +134,7 @@ private fun buildMediumRemoteViews(
     val dummyColor = if (isWhite) 0xFFA7A7A7.toInt() else 0x99FFFFFF.toInt()
     val activeDot = if (isWhite) R.drawable.dot_white_active else R.drawable.dot_blue_active
     val inactiveDot = if (isWhite) R.drawable.dot_white_inactive else R.drawable.dot_blue_inactive
+    val receiverClass = if (isWhite) MediumWidgetWhiteReceiver::class.java else MediumWidgetBlueReceiver::class.java
 
     return RemoteViews(context.packageName, R.layout.widget_medium_content).apply {
         setInt(R.id.widget_medium_root, "setBackgroundResource", bgRes)
@@ -147,6 +154,17 @@ private fun buildMediumRemoteViews(
             if (i < visibleDots) {
                 setViewVisibility(MEDIUM_DOT_IDS[i], View.VISIBLE)
                 setImageViewResource(MEDIUM_DOT_IDS[i], if (i == current) activeDot else inactiveDot)
+                val intent = Intent(context, receiverClass).apply {
+                    action = ACTION_MEDIUM_PAGE
+                    putExtra(EXTRA_TARGET_INDEX, i)
+                }
+                val pi = PendingIntent.getBroadcast(
+                    context,
+                    appWidgetId * 100 + i,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                )
+                setOnClickPendingIntent(MEDIUM_DOT_IDS[i], pi)
             } else {
                 setViewVisibility(MEDIUM_DOT_IDS[i], View.GONE)
             }
