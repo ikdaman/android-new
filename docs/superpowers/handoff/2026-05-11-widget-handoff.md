@@ -174,7 +174,8 @@ LargeWidget().updateAll(context)
 
 ### 6.3 [MEDIUM] 미로그인 시 401 fetch 가드
 - **문제**: 모든 receiver의 `onUpdate` → `refreshAll()`이 로그인 상태 확인 없이 매번 호출. 미로그인 상태에서 401 노이즈.
-- **수정**: WidgetUpdaterImpl에 `isLoggedInUseCase` 의존 추가 → 미로그인 시 fetch 스킵, cache만 사용 (그러면 Empty state 자연스럽게).
+- **현황 (2026-05-16)**: WidgetUpdaterImpl 에 진단 로그 추가. `adb logcat -s WidgetUpdater` 로 fetch 시작 / 성공(N books) / 에러(message) / 종료를 추적 가능. 실기기 결과 보고 가드 추가 여부 결정.
+- **수정안**: WidgetUpdaterImpl에 `isLoggedInUseCase` 또는 AuthTokenProvider 의존 추가 → 미로그인/토큰 없음 시 fetch 스킵, cache만 사용 (그러면 Empty state 자연스럽게).
 
 ### 6.4 [LOW] M 위젯 stale current index UX
 - **문제**: 9권 → 3권으로 줄면 `MEDIUM_CURRENT_INDEX=7`이 stale. coerceIn으로 안전하지만 wrap 직후 사용자에게 점프처럼 보임.
@@ -197,7 +198,23 @@ LargeWidget().updateAll(context)
   - `widget/src/main/res/xml/widget_small_blue_info.xml` (untracked) → 동일
 - **spec 갱신**: `docs/superpowers/specs/2026-05-10-widget-design.md` §1, §3, §3.1~3.3 모두 정정. 셀 산정 공식 메모 §3 시작에 추가.
 
-### 6.8 [INFO] background revalidate 미구현
+### 6.8 [DONE] 2026-05-16 위젯 색상별 별도 위젯화 + L 흰색 전용
+
+- S/M 위젯에 색상 선택 단계를 없애고 White/Blue 변형을 별도 위젯으로 분리. L 위젯은 흰색 전용으로 단순화.
+- 위젯 추가 메뉴에서 "모아북 S (흰색)", "모아북 S (파란색)", "모아북 M (흰색)", "모아북 M (파란색)", "모아북 L" 5개가 보임.
+- WidgetConfigurationActivity / WidgetPreferences.setColor / `widget_small_info.xml` / `widget_medium_info.xml` 모두 dead code 제거.
+- 영향: spec §2 "색상 변형" 결정사항이 변경됨 — Configuration Activity → per-variant receiver로 전환.
+
+### 6.9 [DONE] 2026-05-16 위젯 미리보기 layout 추가
+
+- 모든 receiver xml info 에 `android:previewLayout` 속성 추가. Android 12+ (API 31+) 위젯 추가 메뉴에서 5개 위젯 각자 실제 모습 미리보기 노출.
+- 새 리소스:
+  - `res/layout/widget_preview_{small,medium}_{white,blue}.xml` + `widget_preview_large_white.xml` (5개)
+  - `res/drawable/widget_bg_{white,blue,large_header}.xml` (3개)
+- **Android 11 이하 fallback (`previewImage`)는 미구현**. 정적 PNG 또는 vector drawable 추가 시 옛 기기에서도 미리보기 보임. 디자이너 자산 준비되면 `android:previewImage="@drawable/widget_preview_..."` 형태로 추가.
+- 폰트 미등록 상태(§6.1)이므로 미리보기 layout의 TextView도 시스템 기본 폰트 사용.
+
+### 6.10 [INFO] background revalidate 미구현
 spec §6.2 stale-while-revalidate 두 번째 단계("같은 composition에서 백그라운드 fetch")는 미구현. 현재 fetch는 receiver `onUpdate` + 사용자 액션에서만. 사용자 결정 정책("백그라운드 주기 갱신 없음")과 부합하므로 의도된 trade-off로 봐도 OK.
 
 ---
