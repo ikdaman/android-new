@@ -24,6 +24,7 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
+import androidx.glance.text.FontFamily
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -73,8 +74,8 @@ private fun LargeContent(books: List<WidgetUiBook>) {
             modifier = GlanceModifier
                 .fillMaxWidth()
                 .background(ColorProvider(HEADER_BAR_COLOR))
-                .padding(vertical = 10.dp),
-            contentAlignment = Alignment.Center,
+                .padding(start = 20.dp, top = 10.dp, bottom = 10.dp),
+            contentAlignment = Alignment.CenterStart,
         ) {
             Text(
                 text = "BOOK NAME",
@@ -82,7 +83,8 @@ private fun LargeContent(books: List<WidgetUiBook>) {
                     color = ColorProvider(HEADER_TEXT_COLOR),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Normal,
-                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily("dunggeunmo"),
+                    textAlign = TextAlign.Start,
                 ),
             )
         }
