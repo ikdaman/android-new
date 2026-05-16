@@ -16,7 +16,7 @@
         android:textSize="20sp"
         android:gravity="center" />
 
-    <Space
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="4dp" />
 
@@ -32,10 +32,9 @@
         <ImageView
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:src="@drawable/ic_book_heart"
-            android:tint="#010196"
+            android:src="@drawable/ic_book_heart_navy"
             android:contentDescription="@null" />
-        <Space
+        <LinearLayout
             android:layout_width="8dp"
             android:layout_height="1dp" />
         <TextView
@@ -60,10 +59,9 @@
         <ImageView
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:src="@drawable/ic_book_heart"
-            android:tint="#010196"
+            android:src="@drawable/ic_book_heart_navy"
             android:contentDescription="@null" />
-        <Space
+        <LinearLayout
             android:layout_width="8dp"
             android:layout_height="1dp" />
         <TextView
@@ -88,10 +86,9 @@
         <ImageView
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:src="@drawable/ic_book_heart"
-            android:tint="#010196"
+            android:src="@drawable/ic_book_heart_navy"
             android:contentDescription="@null" />
-        <Space
+        <LinearLayout
             android:layout_width="8dp"
             android:layout_height="1dp" />
         <TextView
@@ -116,10 +113,9 @@
         <ImageView
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:src="@drawable/ic_book_heart"
-            android:tint="#010196"
+            android:src="@drawable/ic_book_heart_navy"
             android:contentDescription="@null" />
-        <Space
+        <LinearLayout
             android:layout_width="8dp"
             android:layout_height="1dp" />
         <TextView
@@ -144,10 +140,9 @@
         <ImageView
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:src="@drawable/ic_book_heart"
-            android:tint="#010196"
+            android:src="@drawable/ic_book_heart_navy"
             android:contentDescription="@null" />
-        <Space
+        <LinearLayout
             android:layout_width="8dp"
             android:layout_height="1dp" />
         <TextView

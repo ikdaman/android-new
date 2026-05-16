@@ -14,10 +14,9 @@
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/ic_book_heart"
-            android:tint="#FFFFFF"
+            android:src="@drawable/ic_book_heart_pure"
             android:contentDescription="@null" />
-        <Space
+        <LinearLayout
             android:layout_width="6dp"
             android:layout_height="1dp" />
         <TextView
@@ -31,7 +30,7 @@
             android:ellipsize="end" />
     </LinearLayout>
 
-    <Space
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="8dp" />
 
@@ -44,7 +43,7 @@
         android:maxLines="3"
         android:ellipsize="end" />
 
-    <Space
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
