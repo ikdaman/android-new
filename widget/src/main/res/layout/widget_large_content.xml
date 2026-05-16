@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg_white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/widget_large_header"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/widget_bg_large_header"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="BOOK NAME"
+        android:textColor="#333333"
+        android:textSize="20sp"
+        android:fontFamily="@font/dunggeunmo"
+        android:gravity="start|center_vertical"
+        android:letterSpacing="0.2" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
+
+    <TextView
+        android:id="@+id/widget_large_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="읽고 싶은 책을 추가해 보세요 !"
+        android:textColor="#333333"
+        android:textSize="14sp"
+        android:fontFamily="@font/wanted_sans_regular"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/widget_large_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_0"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_6"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_7"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_large_row_8"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_book_heart_navy"
+                android:contentDescription="@null" />
+            <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/widget_large_title_8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:fontFamily="@font/wanted_sans_regular"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

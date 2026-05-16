@@ -162,10 +162,10 @@ LargeWidget().updateAll(context)
 
 우선순위 높은 순서:
 
-### 6.1 [HIGH] 폰트 자원 등록
-- **문제**: `Wanted Sans`(본문) / `DungGeunMo`(날짜 라벨, L 헤더)가 widget 모듈에 등록되지 않음. 현재 시스템 기본 폰트로 fallback. 픽셀풍 DungGeunMo가 안 보여 디자인 톤 어긋남.
-- **확인 필요**: ui 모듈 또는 다른 모듈에 같은 폰트 자원이 이미 있는가? 있으면 widget에서 재사용. 없으면 ttf/otf 추가 후 `widget/src/main/res/font/`에 등록.
-- **영향 파일**: SmallWidget.kt, MediumWidget.kt, LargeWidget.kt의 모든 TextStyle, EmptyState.kt, PageIndicator.kt
+### 6.1 [DONE] 2026-05-16 폰트 자원 등록 + 적용
+
+- **해결**: ui 모듈의 `wanted_sans_regular.ttf`, `wanted_sans_semibold.ttf`, `dunggeunmo.ttf`를 widget 모듈 `res/font/`로 복사. 모든 위젯 컨텐츠를 RemoteViews layout 으로 전환하여 `android:fontFamily="@font/..."` 로 직접 적용.
+- **잔여**: Glance Composable 의 `EmptyState`는 여전히 system 폰트 (S/M empty state). 사용 빈도 낮아 후속 처리.
 
 ### 6.2 [MEDIUM] WidgetIntentParser 중복 정리
 - **문제**: `ui/src/main/java/project/side/ui/WidgetIntentParser.kt`가 만들어졌지만 production에서는 MainActivity가 inline으로 같은 로직(`extractWidgetTarget`, `setPending`)을 가짐. 테스트만 parser를 검증 → drift 위험.
@@ -215,7 +215,17 @@ LargeWidget().updateAll(context)
 - **Android 11 이하 fallback (`previewImage`)는 미구현**. 정적 PNG 또는 vector drawable 추가 시 옛 기기에서도 미리보기 보임. 디자이너 자산 준비되면 `android:previewImage="@drawable/widget_preview_..."` 형태로 추가.
 - 폰트 미등록 상태(§6.1)이므로 미리보기 layout의 TextView도 시스템 기본 폰트 사용.
 
-### 6.10 [INFO] background revalidate 미구현
+### 6.10 [DONE] 2026-05-16 위젯을 RemoteViews layout 으로 전환
+
+- S/M/L 모든 위젯의 컨텐츠를 RemoteViews layout XML 으로 변환 (`widget_small_content.xml`, `widget_medium_content.xml`, `widget_large_content.xml`). Glance Composable 안에서 `AndroidRemoteViews` 로 host.
+- 이유: Glance `Text` 의 `fontFamily(FontFamily(...))` 가 res/font 의 ttf 를 못 가리켜서 본문/날짜 폰트가 시스템 기본으로 fallback. Figma 디자인(Wanted Sans + DungGeunMo) 과 어긋남.
+- variant(white/blue) 차이는 코드에서 RemoteViews 의 `setInt(setBackgroundResource)`, `setImageViewResource`, `setTextColor` 로 처리.
+- M 위젯 점 인디케이터는 미리 5개 ImageView 를 정의하고 `setImageViewResource` 로 active/inactive drawable 교체.
+- **잔여 액션 손실**:
+  - S 위젯 새로고침 버튼: RemoteViews 안의 view 에 Glance `actionRunCallback` 못 박음 → 시각만 유지. PendingIntent + custom action receiver 로 복구 가능 (후속).
+  - M 위젯 점 클릭 페이지 이동: 같은 이유. 현재 인덱스 첫 책만 표시 (그러나 prev/next action 호출되면 Glance state 변경되어 위젯 갱신은 동작 — 외부에서 호출 시).
+
+### 6.11 [INFO] background revalidate 미구현
 spec §6.2 stale-while-revalidate 두 번째 단계("같은 composition에서 백그라운드 fetch")는 미구현. 현재 fetch는 receiver `onUpdate` + 사용자 액션에서만. 사용자 결정 정책("백그라운드 주기 갱신 없음")과 부합하므로 의도된 trade-off로 봐도 OK.
 
 ---

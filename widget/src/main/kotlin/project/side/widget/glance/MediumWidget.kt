@@ -2,50 +2,34 @@ package project.side.widget.glance
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.view.View
+import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.remember
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.LocalContext
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
+import androidx.glance.appwidget.AndroidRemoteViews
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionStartActivity
-import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
-import androidx.glance.background
 import androidx.glance.currentState
-import androidx.glance.layout.Alignment
-import androidx.glance.layout.Box
-import androidx.glance.layout.Column
-import androidx.glance.layout.Row
-import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.padding
-import androidx.glance.layout.size
-import androidx.glance.text.FontWeight
-import androidx.glance.text.Text
-import androidx.glance.text.TextAlign
-import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import project.side.widget.action.NextAction
+import project.side.widget.R
 import project.side.widget.action.OpenBookAction
-import project.side.widget.action.PrevAction
 import project.side.widget.data.WidgetCache
 import project.side.widget.data.WidgetPreferences
 import project.side.widget.data.WidgetUiBook
 import project.side.widget.domain.DateLabel
-import project.side.widget.glance.components.BookHeartIcon
 import project.side.widget.glance.components.EmptyState
-import project.side.widget.glance.components.PageIndicator
 import project.side.widget.glance.theme.colorsFor
 import project.side.widget.intent.WidgetIntents
 import project.side.widget.receiver.MediumWidgetBlueReceiver
@@ -54,6 +38,11 @@ import project.side.widget.state.WidgetStateKeys
 import project.side.widget.theme.ColorVariant
 
 private const val MAX_PAGES = 5
+
+private val MEDIUM_DOT_IDS = intArrayOf(
+    R.id.widget_medium_dot_0, R.id.widget_medium_dot_1, R.id.widget_medium_dot_2,
+    R.id.widget_medium_dot_3, R.id.widget_medium_dot_4,
+)
 
 class MediumWidget : GlanceAppWidget() {
 
@@ -92,87 +81,74 @@ class MediumWidget : GlanceAppWidget() {
 
 @Composable
 private fun MediumContent(books: List<WidgetUiBook>, variant: ColorVariant) {
-    val colors = colorsFor(variant)
+    val context = LocalContext.current
+
+    if (books.isEmpty()) {
+        val colors = colorsFor(variant)
+        EmptyState(
+            textColor = colors.text,
+            onClick = actionStartActivity(WidgetIntents.openApp(context)),
+            fontSizeSp = 14,
+        )
+        return
+    }
+
     val state = currentState<androidx.datastore.preferences.core.Preferences>()
     val rawIndex = state[WidgetStateKeys.MEDIUM_CURRENT_INDEX] ?: 0
+    val current = rawIndex.coerceIn(0, books.size - 1)
+    val book = books[current]
 
-    Box(
+    val remoteViews = remember(book, variant, current, books.size) {
+        buildMediumRemoteViews(context, book, variant, current, books.size)
+    }
+    AndroidRemoteViews(
+        remoteViews = remoteViews,
         modifier = GlanceModifier
             .fillMaxSize()
-            .background(ColorProvider(colors.background))
-            .cornerRadius(22.dp)
-    ) {
-        if (books.isEmpty()) {
-            EmptyState(
-                textColor = colors.text,
-                onClick = actionStartActivity(WidgetIntents.openApp(LocalContext.current)),
-                fontSizeSp = 14,
-            )
-        } else {
-            val current = rawIndex.coerceIn(0, books.size - 1)
-            val book = books[current]
-            Column(
-                modifier = GlanceModifier.fillMaxSize().padding(12.dp),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    BookHeartIcon(tint = colors.accent, sizeDp = 16)
-                    Spacer(GlanceModifier.size(6.dp))
-                    Text(
-                        text = book.title,
-                        maxLines = 1,
-                        style = TextStyle(
-                            color = ColorProvider(colors.text),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                        ),
-                        modifier = GlanceModifier.defaultWeight().clickable(
-                            actionRunCallback<OpenBookAction>(
-                                actionParametersOf(OpenBookAction.mybookIdKey to book.mybookId)
-                            )
-                        ),
-                    )
-                }
-                Spacer(GlanceModifier.size(8.dp))
-                val reasonText = book.reason?.takeIf { it.isNotBlank() }
-                Text(
-                    text = reasonText ?: "읽고 싶은 이유를 추가해 주세요.",
-                    maxLines = 3,
-                    style = TextStyle(
-                        color = ColorProvider(if (reasonText == null) colors.dummyText else colors.text),
-                        fontSize = 12.sp,
-                    ),
-                    modifier = GlanceModifier
-                        .fillMaxWidth()
-                        .clickable(
-                            actionRunCallback<OpenBookAction>(
-                                actionParametersOf(OpenBookAction.mybookIdKey to book.mybookId)
-                            )
-                        ),
+            .clickable(
+                actionRunCallback<OpenBookAction>(
+                    actionParametersOf(OpenBookAction.mybookIdKey to book.mybookId)
                 )
-                Spacer(GlanceModifier.defaultWeight())
-                Text(
-                    text = DateLabel.formatDisplay(book.createdDate),
-                    style = TextStyle(
-                        color = ColorProvider(colors.accent),
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.End,
-                    ),
-                    modifier = GlanceModifier.fillMaxWidth(),
-                )
-                Spacer(GlanceModifier.size(6.dp))
-                Box(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    PageIndicator(
-                        total = books.size,
-                        current = current,
-                        activeColor = colors.indicatorActive,
-                        inactiveColor = colors.indicatorInactive,
-                        onPrev = actionRunCallback<PrevAction>(),
-                        onNext = actionRunCallback<NextAction>(),
-                    )
-                }
+            ),
+    )
+}
+
+private fun buildMediumRemoteViews(
+    context: Context,
+    book: WidgetUiBook,
+    variant: ColorVariant,
+    current: Int,
+    total: Int,
+): RemoteViews {
+    val isWhite = variant == ColorVariant.WHITE
+    val bgRes = if (isWhite) R.drawable.widget_bg_white else R.drawable.widget_bg_blue
+    val iconRes = if (isWhite) R.drawable.ic_book_heart_navy else R.drawable.ic_book_heart_pure
+    val textColor = if (isWhite) 0xFF333333.toInt() else 0xFFFFFFFF.toInt()
+    val accentColor = if (isWhite) 0xFF010196.toInt() else 0xFFFFFFFF.toInt()
+    val dummyColor = if (isWhite) 0xFFA7A7A7.toInt() else 0x99FFFFFF.toInt()
+    val activeDot = if (isWhite) R.drawable.dot_white_active else R.drawable.dot_blue_active
+    val inactiveDot = if (isWhite) R.drawable.dot_white_inactive else R.drawable.dot_blue_inactive
+
+    return RemoteViews(context.packageName, R.layout.widget_medium_content).apply {
+        setInt(R.id.widget_medium_root, "setBackgroundResource", bgRes)
+        setImageViewResource(R.id.widget_medium_icon, iconRes)
+        setTextViewText(R.id.widget_medium_title, book.title)
+        setTextColor(R.id.widget_medium_title, textColor)
+
+        val reasonRaw = book.reason?.takeIf { it.isNotBlank() }
+        setTextViewText(R.id.widget_medium_reason, reasonRaw ?: "읽고 싶은 이유를 추가해 주세요.")
+        setTextColor(R.id.widget_medium_reason, if (reasonRaw == null) dummyColor else textColor)
+
+        setTextViewText(R.id.widget_medium_date, DateLabel.formatDisplay(book.createdDate))
+        setTextColor(R.id.widget_medium_date, accentColor)
+
+        val visibleDots = total.coerceAtMost(MEDIUM_DOT_IDS.size)
+        for (i in MEDIUM_DOT_IDS.indices) {
+            if (i < visibleDots) {
+                setViewVisibility(MEDIUM_DOT_IDS[i], View.VISIBLE)
+                setImageViewResource(MEDIUM_DOT_IDS[i], if (i == current) activeDot else inactiveDot)
+            } else {
+                setViewVisibility(MEDIUM_DOT_IDS[i], View.GONE)
             }
         }
     }
