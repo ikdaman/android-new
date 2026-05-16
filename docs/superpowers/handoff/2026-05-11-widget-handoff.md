@@ -175,6 +175,7 @@ LargeWidget().updateAll(context)
 ### 6.3 [MEDIUM] 미로그인 시 401 fetch 가드
 - **문제**: 모든 receiver의 `onUpdate` → `refreshAll()`이 로그인 상태 확인 없이 매번 호출. 미로그인 상태에서 401 노이즈.
 - **현황 (2026-05-16)**: WidgetUpdaterImpl 에 진단 로그 추가. `adb logcat -s WidgetUpdater` 로 fetch 시작 / 성공(N books) / 에러(message) / 종료를 추적 가능. 실기기 결과 보고 가드 추가 여부 결정.
+- **추가 fix (2026-05-16)**: 5개 receiver 모두 `goAsync()` 패턴 적용. 기존에는 receiver의 `scope.launch { refreshAll() }` 가 `onUpdate` 반환 직후 process kill로 cancel될 수 있어 cache 채우기 전에 위젯이 그려져 empty state 보이는 경우 발생. `goAsync()` + `pendingResult.finish()` 로 비동기 작업 끝까지 receiver 살아있도록.
 - **수정안**: WidgetUpdaterImpl에 `isLoggedInUseCase` 또는 AuthTokenProvider 의존 추가 → 미로그인/토큰 없음 시 fetch 스킵, cache만 사용 (그러면 Empty state 자연스럽게).
 
 ### 6.4 [LOW] M 위젯 stale current index UX

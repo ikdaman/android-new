@@ -26,6 +26,13 @@ class MediumWidgetWhiteReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray,
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        scope.launch { updater.refreshAll() }
+        val pendingResult = goAsync()
+        scope.launch {
+            try {
+                updater.refreshAll()
+            } finally {
+                pendingResult.finish()
+            }
+        }
     }
 }
