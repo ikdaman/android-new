@@ -75,6 +75,12 @@ LoginScreen (직접 진입 시 - AUTH_EVENT)
     └─ 앱 어디서든 → LoginScreen (popUpTo MainScreen inclusive, 뒤로가기 X)
 ```
 
+**LOGIN_REQUIRED 트리거 조건** (`TokenAuthenticator`)
+요청이 401 → `auth/reissue` 호출 → reissue 응답이 다음 중 하나면 토큰 클리어 + `LOGIN_REQUIRED` 발행:
+- HTTP 401 / 403 (인증 실패)
+- HTTP 404 (refresh token 무효, 예: 서버 code 4040103 "Refresh Token이 유효하지 않습니다")
+- 5xx 는 서버 일시 장애 가능성으로 토큰 유지 (자동로그인 보존)
+
 ## 상태 (LoginState)
 | 상태 | 설명 |
 |------|------|
