@@ -170,6 +170,9 @@ private fun buildMediumRemoteViews(
             }
         }
 
+        val arrowColor = if (isWhite) 0xFF999999.toInt() else 0x99FFFFFF.toInt()
+        setTextColor(R.id.widget_medium_prev_zone, arrowColor)
+        setTextColor(R.id.widget_medium_next_zone, arrowColor)
         if (visibleDots > 1) {
             val prevIndex = (current - 1 + visibleDots) % visibleDots
             val nextIndex = (current + 1) % visibleDots
@@ -181,6 +184,11 @@ private fun buildMediumRemoteViews(
                 R.id.widget_medium_next_zone,
                 buildPagePendingIntent(context, receiverClass, appWidgetId, nextIndex, code = 51),
             )
+            setViewVisibility(R.id.widget_medium_prev_zone, View.VISIBLE)
+            setViewVisibility(R.id.widget_medium_next_zone, View.VISIBLE)
+        } else {
+            setViewVisibility(R.id.widget_medium_prev_zone, View.INVISIBLE)
+            setViewVisibility(R.id.widget_medium_next_zone, View.INVISIBLE)
         }
     }
 }
