@@ -169,5 +169,37 @@ private fun buildMediumRemoteViews(
                 setViewVisibility(MEDIUM_DOT_IDS[i], View.GONE)
             }
         }
+
+        if (visibleDots > 1) {
+            val prevIndex = (current - 1 + visibleDots) % visibleDots
+            val nextIndex = (current + 1) % visibleDots
+            setOnClickPendingIntent(
+                R.id.widget_medium_prev_zone,
+                buildPagePendingIntent(context, receiverClass, appWidgetId, prevIndex, code = 50),
+            )
+            setOnClickPendingIntent(
+                R.id.widget_medium_next_zone,
+                buildPagePendingIntent(context, receiverClass, appWidgetId, nextIndex, code = 51),
+            )
+        }
     }
+}
+
+private fun buildPagePendingIntent(
+    context: Context,
+    receiverClass: Class<*>,
+    appWidgetId: Int,
+    targetIndex: Int,
+    code: Int,
+): PendingIntent {
+    val intent = Intent(context, receiverClass).apply {
+        action = ACTION_MEDIUM_PAGE
+        putExtra(EXTRA_TARGET_INDEX, targetIndex)
+    }
+    return PendingIntent.getBroadcast(
+        context,
+        appWidgetId * 100 + code,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
 }

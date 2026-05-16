@@ -5,7 +5,10 @@
     android:layout_height="match_parent"
     android:background="@drawable/widget_bg_white"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="14dp"
+    android:paddingBottom="12dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,24 +17,24 @@
         android:gravity="center_vertical">
         <ImageView
             android:id="@+id/widget_medium_icon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_book_heart_navy"
             android:contentDescription="@null" />
-        <LinearLayout android:layout_width="6dp" android:layout_height="1dp" />
+        <LinearLayout android:layout_width="8dp" android:layout_height="1dp" />
         <TextView
             android:id="@+id/widget_medium_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="#333333"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:fontFamily="@font/wanted_sans_semibold"
             android:maxLines="1"
             android:ellipsize="end" />
     </LinearLayout>
 
-    <LinearLayout android:layout_width="match_parent" android:layout_height="8dp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="6dp" />
 
     <TextView
         android:id="@+id/widget_medium_reason"
@@ -40,8 +43,9 @@
         android:textColor="#333333"
         android:textSize="12sp"
         android:fontFamily="@font/wanted_sans_regular"
-        android:maxLines="3"
-        android:ellipsize="end" />
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:lineSpacingExtra="-2sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,17 +57,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#010196"
-        android:textSize="12sp"
+        android:textSize="11sp"
         android:fontFamily="@font/dunggeunmo"
         android:gravity="end" />
 
-    <LinearLayout android:layout_width="match_parent" android:layout_height="6dp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="4dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="20dp"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center_vertical">
+        <LinearLayout
+            android:id="@+id/widget_medium_prev_zone"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
         <ImageView
             android:id="@+id/widget_medium_dot_0"
             android:layout_width="6dp"
@@ -98,5 +107,10 @@
             android:layout_height="6dp"
             android:src="@drawable/dot_white_inactive"
             android:contentDescription="@null" />
+        <LinearLayout
+            android:id="@+id/widget_medium_next_zone"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
     </LinearLayout>
 </LinearLayout>
