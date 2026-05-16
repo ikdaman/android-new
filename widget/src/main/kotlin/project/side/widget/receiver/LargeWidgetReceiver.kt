@@ -31,7 +31,7 @@ class LargeWidgetReceiver : GlanceAppWidgetReceiver() {
             try {
                 updater.refreshAll()
             } finally {
-                pendingResult.finish()
+                pendingResult?.finish()
             }
         }
     }

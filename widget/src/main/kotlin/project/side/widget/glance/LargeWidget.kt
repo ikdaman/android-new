@@ -1,13 +1,15 @@
 package project.side.widget.glance
 
 import android.content.Context
+import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.LocalContext
 import androidx.glance.action.clickable
+import androidx.glance.appwidget.AndroidRemoteViews
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
@@ -24,25 +26,20 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
-import androidx.glance.text.FontFamily
-import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
-import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import project.side.widget.R
 import project.side.widget.action.OpenAppAction
 import project.side.widget.data.WidgetCache
 import project.side.widget.data.WidgetUiBook
 import project.side.widget.glance.components.BookHeartIcon
 import project.side.widget.glance.theme.colorsFor
 import project.side.widget.theme.ColorVariant
-
-private val HEADER_BAR_COLOR = Color(0xFFD4D4D4)
-private val HEADER_TEXT_COLOR = Color(0xFF333333)
 
 class LargeWidget : GlanceAppWidget() {
 
@@ -70,24 +67,13 @@ private fun LargeContent(books: List<WidgetUiBook>) {
             .cornerRadius(22.dp)
             .clickable(openApp)
     ) {
-        Box(
-            modifier = GlanceModifier
-                .fillMaxWidth()
-                .background(ColorProvider(HEADER_BAR_COLOR))
-                .padding(start = 20.dp, top = 10.dp, bottom = 10.dp),
-            contentAlignment = Alignment.CenterStart,
-        ) {
-            Text(
-                text = "BOOK NAME",
-                style = TextStyle(
-                    color = ColorProvider(HEADER_TEXT_COLOR),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = FontFamily("dunggeunmo"),
-                    textAlign = TextAlign.Start,
-                ),
-            )
-        }
+        // 헤더는 RemoteViews layout 으로 — Glance Text 의 fontFamily 는 system font 만 지원하고
+        // res/font/dunggeunmo.ttf 같은 ttf 는 못 가리키기 때문. AndroidRemoteViews 로 우회한다.
+        val context = LocalContext.current
+        AndroidRemoteViews(
+            remoteViews = RemoteViews(context.packageName, R.layout.widget_large_header),
+            modifier = GlanceModifier.fillMaxWidth(),
+        )
         Spacer(GlanceModifier.size(4.dp))
         if (books.isEmpty()) {
             Box(

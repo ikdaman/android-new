@@ -31,7 +31,7 @@ class MediumWidgetWhiteReceiver : GlanceAppWidgetReceiver() {
             try {
                 updater.refreshAll()
             } finally {
-                pendingResult.finish()
+                pendingResult?.finish()
             }
         }
     }

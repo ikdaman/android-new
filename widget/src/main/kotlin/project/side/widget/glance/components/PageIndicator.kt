@@ -40,34 +40,18 @@ fun PageIndicator(
         verticalAlignment = Alignment.Vertical.CenterVertically,
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
     ) {
-        // 이전 화살표
-        Text(
-            text = "◀",
-            modifier = GlanceModifier
-                .clickable(onPrev)
-                .padding(ARROW_PADDING_DP.dp),
-            style = TextStyle(color = ColorProvider(activeColor)),
-        )
-
-        // 점 인디케이터 (Spacer 대신 padding으로 spacing — Glance Row 의 10-element 제한 회피)
+        // 디자인에 화살표가 빠져서 점만 표시. 페이지 이동은 점 자체 탭으로 가능 — 좌측 절반 탭=이전, 우측 절반 탭=다음.
         repeat(total) { index ->
             val dotColor = if (index == current) activeColor else inactiveColor
+            val dotAction = if (index < current) onPrev else onNext
             Box(
                 modifier = GlanceModifier
                     .padding(horizontal = DOT_HALF_SPACING_DP.dp)
                     .size(DOT_SIZE_DP.dp)
-                    .cornerRadius(DOT_SIZE_DP / 2)
-                    .background(ColorProvider(dotColor)),
+                    .cornerRadius((DOT_SIZE_DP / 2).dp)
+                    .background(ColorProvider(dotColor))
+                    .clickable(dotAction),
             ) {}
         }
-
-        // 다음 화살표
-        Text(
-            text = "▶",
-            modifier = GlanceModifier
-                .clickable(onNext)
-                .padding(ARROW_PADDING_DP.dp),
-            style = TextStyle(color = ColorProvider(activeColor)),
-        )
     }
 }
