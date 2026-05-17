@@ -24,7 +24,7 @@ class WidgetUpdaterImplTest {
             StoreBookItem(1, "2026-05-10", "t1", listOf("a"), null, null, "r1"),
             StoreBookItem(2, "2026-05-09", "t2", listOf("a"), null, null, null),
         )
-        coEvery { repo.getStoreBooks(null, 0, 9, "createdDate,desc") } returns
+        coEvery { repo.getStoreBooks(null, 0, 9, "createdAt,desc") } returns
             flowOf(DataResource.Success(StoreBook(items, 1, 2, true, true, 9, 0, 2, false)))
 
         val captured = slot<List<WidgetUiBook>>()
