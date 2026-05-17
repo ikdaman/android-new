@@ -106,7 +106,7 @@ internal fun BookEditBottomSheetContent(
     val selectedTab = remember { mutableStateOf(defaultTab) }
     val reason = remember { mutableStateOf(detail.reason ?: "") }
 
-    val dateFormatter = DateTimeFormatter.ofPattern("yy.MM.dd")
+    val dateFormatter = DateTimeFormatter.ofPattern("yyMMdd")
     val startDate = remember {
         mutableStateOf(
             detail.historyInfo.startedDate?.let {

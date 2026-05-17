@@ -31,7 +31,7 @@ fun RetroLoadingScreen(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    var showOverlay by remember { mutableStateOf(true) }
+    var showOverlay by remember { mutableStateOf(isLoading) }
     val dotCount = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(isLoading) {

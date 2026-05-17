@@ -56,7 +56,8 @@ class SearchBookViewModel @Inject constructor(
                     totalBookCount = result.totalBookCount,
                     isLoading = false,
                     hasMore = hasMore,
-                    errorMessage = if (result.books.isEmpty()) "검색 결과가 없습니다." else null
+                    isEmptyResult = result.books.isEmpty(),
+                    errorMessage = null
                 )
             } catch (e: java.io.IOException) {
                 _searchState.value = _searchState.value.copy(

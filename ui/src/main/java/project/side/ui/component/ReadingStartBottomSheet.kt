@@ -139,7 +139,7 @@ internal fun ReadingStartBottomSheetContent(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("시작", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
+                        Text("START", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
                         PixelShadowButton(
                             onClick = { showCalendar = true },
                             backgroundColor = BackgroundWhite,
@@ -178,7 +178,7 @@ internal fun ReadingStartBottomSheetContent(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("완독", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
+                        Text("FINISH", style = DungGeunMoBody, color = TextPrimary, modifier = Modifier.width(64.dp))
                         PixelShadowBox(
                             backgroundColor = BackgroundWhite,
                             modifier = Modifier.weight(1f)

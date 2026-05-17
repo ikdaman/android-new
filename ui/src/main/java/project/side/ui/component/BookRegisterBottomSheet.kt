@@ -249,10 +249,10 @@ private fun RegisterBottomSheetUI(
 
                     Spacer(Modifier.height(12.dp))
 
-                    val dateFormatter = DateTimeFormatter.ofPattern("yy.MM.dd")
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyMMdd")
 
                     DatePickerRow(
-                        label = "시작",
+                        label = "START",
                         dateText = selectedDate.value.format(dateFormatter),
                         onClick = { showStartCalendar.value = true }
                     )
@@ -260,7 +260,7 @@ private fun RegisterBottomSheetUI(
                     Spacer(Modifier.height(20.dp))
 
                     DatePickerRow(
-                        label = "완독",
+                        label = "FINISH",
                         dateText = selectedEndDate.value?.format(dateFormatter) ?: "읽는 중",
                         onClick = { showEndCalendar.value = true }
                     )

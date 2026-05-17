@@ -92,7 +92,7 @@ fun AddBookScreen(
                 title = "책 추가하기",
                 showBackButton = true,
                 onBackButtonClicked = { oneClickHandler { appNavController.popBackStack() } },
-                rightText = "저장",
+                rightText = "SAVE",
                 onRightClick = {
                     if (isLoggedIn) {
                         showRegister.value = true

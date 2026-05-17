@@ -48,7 +48,7 @@ class ManualBookInputScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("저장").performClick()
+        composeTestRule.onNodeWithText("SAVE").performClick()
         assertTrue("비로그인 시 저장 클릭하면 onLoginRequired 호출", loginRequested)
     }
 }

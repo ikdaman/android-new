@@ -3,6 +3,7 @@ package project.side.ui.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import project.side.ui.component.PixelShadowBox
+import project.side.ui.component.PixelShadowButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +24,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import project.side.ui.component.RetroLoading
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -178,27 +178,35 @@ fun SearchBookScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // SEARCH-2: 직접 입력 링크는 항상 노출 (에러 후에만 보이지 않도록)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = { onNavigateToManualInputScreen() }) {
-                    Text(
-                        text = "직접 입력하기 >",
-                        style = DungGeunMoSubtitle,
-                        color = TextPrimary
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             when {
                 searchState.isLoading -> {
                     RetroLoading()
+                }
+                searchState.isEmptyResult -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 48.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "검색 결과가 없습니다.",
+                            style = DungGeunMoBody,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        PixelShadowButton(onClick = { onNavigateToManualInputScreen() }) {
+                            Text(
+                                text = "직접 입력하기",
+                                style = DungGeunMoSubtitle,
+                                color = TextPrimary,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+                    }
                 }
                 searchState.errorMessage != null -> {
                     Column(

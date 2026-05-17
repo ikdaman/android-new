@@ -112,7 +112,7 @@ fun TitleBarWithActionPreview() {
             title = "책 추가하기",
             showBackButton = true,
             onBackButtonClicked = {},
-            rightText = "저장",
+            rightText = "SAVE",
             onRightClick = {}
         )
     }

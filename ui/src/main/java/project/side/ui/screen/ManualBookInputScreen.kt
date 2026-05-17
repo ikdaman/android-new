@@ -93,7 +93,7 @@ fun ManualBookInputScreen(
                 title = "직접 입력",
                 showBackButton = true,
                 onBackButtonClicked = { oneClickHandler { appNavController.popBackStack() } },
-                rightText = "저장",
+                rightText = "SAVE",
                 onRightClick = {
                     if (!isLoggedIn) {
                         pendingSave.value = true

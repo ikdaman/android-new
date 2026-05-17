@@ -256,13 +256,13 @@ fun HistoryScreenUI(
                             ) {
                                 Text(
                                     modifier = Modifier.weight(1f).padding(start = 10.dp),
-                                    text = "시작",
+                                    text = "START",
                                     style = DungGeunMoBody,
                                     color = TextPrimary
                                 )
                                 Text(
                                     modifier = Modifier.weight(1f).padding(start = 10.dp),
-                                    text = "완독",
+                                    text = "FINISH",
                                     style = DungGeunMoBody,
                                     color = TextPrimary
                                 )

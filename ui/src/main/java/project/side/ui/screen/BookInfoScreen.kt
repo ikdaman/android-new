@@ -308,16 +308,16 @@ private fun BookInfoContent(
                 onEditClick = onEditHistory
             ) {
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
-                    InfoRow("저장", DateFormatter.toShortDate(detail.createdDate))
+                    InfoRow("SAVE", DateFormatter.toShortDate(detail.createdDate))
                     Spacer(Modifier.height(8.dp))
-                    InfoRow("시작", DateFormatter.toShortDate(detail.historyInfo.startedDate).ifBlank { "-" })
+                    InfoRow("START", DateFormatter.toShortDate(detail.historyInfo.startedDate).ifBlank { "-" })
                     Spacer(Modifier.height(8.dp))
                     val finishText = when {
                         detail.historyInfo.finishedDate != null -> DateFormatter.toShortDate(detail.historyInfo.finishedDate)
                         detail.historyInfo.startedDate != null -> "읽는 중"
                         else -> "-"
                     }
-                    InfoRow("완독", finishText)
+                    InfoRow("FINISH", finishText)
                 }
             }
 
@@ -451,6 +451,7 @@ private fun InfoRow(label: String, value: String) {
             color = TextPrimary,
             modifier = Modifier.width(74.dp)
         )
+        Spacer(modifier = Modifier.width(10.dp))
         Text(text = value, style = WantedSansBody, color = TextPrimary)
     }
 }

@@ -10,5 +10,6 @@ data class SearchBookState(
     val isLoading: Boolean = false,
     val isLoadingMore: Boolean = false,
     val hasMore: Boolean = false,
+    val isEmptyResult: Boolean = false,
     val errorMessage: String? = null
 )

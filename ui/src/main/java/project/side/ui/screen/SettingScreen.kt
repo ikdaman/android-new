@@ -276,7 +276,7 @@ fun SettingScreenUI(
                         backgroundColor = Primary
                     ) {
                         Text(
-                            "저장",
+                            "SAVE",
                             style = DungGeunMoBody,
                             color = TextWhite,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)

@@ -58,7 +58,7 @@ class AddBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("저장").performClick()
+        composeTestRule.onNodeWithText("SAVE").performClick()
         assertTrue("비로그인 시 저장 클릭하면 onLoginRequired 호출", loginRequested)
     }
 
@@ -75,7 +75,7 @@ class AddBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("저장").performClick()
+        composeTestRule.onNodeWithText("SAVE").performClick()
 
         // BookRegisterBottomSheet should be visible
         composeTestRule.onNodeWithText("읽고 싶었던 이유").assertIsDisplayed()

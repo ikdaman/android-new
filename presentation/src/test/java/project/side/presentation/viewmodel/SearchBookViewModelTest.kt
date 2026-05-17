@@ -113,11 +113,12 @@ class SearchBookViewModelTest {
         assertEquals(1, state.books.size)
         assertEquals("Kotlin in Action", state.books[0].title)
         assertFalse(state.isLoading)
+        assertFalse(state.isEmptyResult)
         assertNull(state.errorMessage)
     }
 
     @Test
-    fun `searchBook empty result sets errorMessage`() = runTest {
+    fun `searchBook empty result sets isEmptyResult flag and clears errorMessage`() = runTest {
         // Given
         coEvery { searchBookWithTitleUseCase("없는책", 1) } returns BookSearchResult(
             totalBookCount = 0,
@@ -130,8 +131,42 @@ class SearchBookViewModelTest {
         // Then
         val state = viewModel.searchState.value
         assertTrue(state.books.isEmpty())
-        assertEquals("검색 결과가 없습니다.", state.errorMessage)
+        assertTrue(state.isEmptyResult)
+        assertNull(state.errorMessage)
         assertFalse(state.isLoading)
+    }
+
+    @Test
+    fun `searchBook resets isEmptyResult when starting new search`() = runTest {
+        // Given – first search returns empty
+        coEvery { searchBookWithTitleUseCase("없는책", 1) } returns BookSearchResult(
+            totalBookCount = 0,
+            books = emptyList()
+        )
+        viewModel.searchBook("없는책")
+        assertTrue(viewModel.searchState.value.isEmptyResult)
+
+        // When – second search returns results
+        coEvery { searchBookWithTitleUseCase("Kotlin", 1) } returns BookSearchResult(
+            totalBookCount = 1,
+            books = listOf(makeBookItem("Kotlin"))
+        )
+        viewModel.searchBook("Kotlin")
+
+        // Then
+        assertFalse(viewModel.searchState.value.isEmptyResult)
+    }
+
+    @Test
+    fun `searchBook network error does not set isEmptyResult`() = runTest {
+        // Given
+        coEvery { searchBookWithTitleUseCase(any(), any()) } throws IOException("timeout")
+
+        // When
+        viewModel.searchBook("Kotlin")
+
+        // Then – error path keeps the empty-result flag off so UI can distinguish
+        assertFalse(viewModel.searchState.value.isEmptyResult)
     }
 
     @Test
