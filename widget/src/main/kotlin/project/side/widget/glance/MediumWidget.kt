@@ -30,6 +30,7 @@ import project.side.widget.data.WidgetUiBook
 import project.side.widget.domain.DateLabel
 import project.side.widget.glance.components.EmptyState
 import project.side.widget.glance.theme.colorsFor
+import project.side.widget.glance.util.renderDungGeunMoBitmap
 import project.side.widget.intent.WidgetIntents
 import project.side.widget.receiver.MediumWidgetBlueReceiver
 import project.side.widget.receiver.MediumWidgetWhiteReceiver
@@ -40,11 +41,6 @@ const val ACTION_MEDIUM_PAGE = "project.side.widget.ACTION_MEDIUM_PAGE"
 const val EXTRA_TARGET_INDEX = "target_index"
 
 private const val MAX_PAGES = 5
-
-private val MEDIUM_DOT_IDS = intArrayOf(
-    R.id.widget_medium_dot_0, R.id.widget_medium_dot_1, R.id.widget_medium_dot_2,
-    R.id.widget_medium_dot_3, R.id.widget_medium_dot_4,
-)
 
 class MediumWidget : GlanceAppWidget() {
 
@@ -91,6 +87,7 @@ private fun MediumContent(books: List<WidgetUiBook>, variant: ColorVariant, appW
             textColor = colors.text,
             onClick = actionStartActivity(WidgetIntents.openApp(context)),
             fontSizeSp = 14,
+            backgroundColor = colors.background,
         )
         return
     }
@@ -119,10 +116,8 @@ private fun buildMediumRemoteViews(
 ): RemoteViews {
     val isWhite = variant == ColorVariant.WHITE
     val bgRes = if (isWhite) R.drawable.widget_bg_white else R.drawable.widget_bg_blue
-    val activeDot = if (isWhite) R.drawable.dot_white_active else R.drawable.dot_blue_active
-    val inactiveDot = if (isWhite) R.drawable.dot_white_inactive else R.drawable.dot_blue_inactive
     val receiverClass = if (isWhite) MediumWidgetWhiteReceiver::class.java else MediumWidgetBlueReceiver::class.java
-    val arrowColor = if (isWhite) 0xFF999999.toInt() else 0x99FFFFFF.toInt()
+    val paginationColor = if (isWhite) 0xFF010196.toInt() else 0xFFFFFFFF.toInt()
     val total = books.size
 
     return RemoteViews(context.packageName, R.layout.widget_medium_content).apply {
@@ -137,27 +132,22 @@ private fun buildMediumRemoteViews(
         }
         setDisplayedChild(R.id.widget_medium_flipper, current)
 
-        // 점 인디케이터
-        val visibleDots = total.coerceAtMost(MEDIUM_DOT_IDS.size)
-        for (i in MEDIUM_DOT_IDS.indices) {
-            if (i < visibleDots) {
-                setViewVisibility(MEDIUM_DOT_IDS[i], View.VISIBLE)
-                setImageViewResource(MEDIUM_DOT_IDS[i], if (i == current) activeDot else inactiveDot)
-                setOnClickPendingIntent(
-                    MEDIUM_DOT_IDS[i],
-                    buildPagePendingIntent(context, receiverClass, appWidgetId, i, code = i),
-                )
-            } else {
-                setViewVisibility(MEDIUM_DOT_IDS[i], View.GONE)
-            }
-        }
+        setImageViewBitmap(
+            R.id.widget_medium_prev_zone,
+            renderDungGeunMoBitmap(context, "이전", 12f, paginationColor),
+        )
+        setImageViewBitmap(
+            R.id.widget_medium_divider,
+            renderDungGeunMoBitmap(context, "|", 12f, paginationColor),
+        )
+        setImageViewBitmap(
+            R.id.widget_medium_next_zone,
+            renderDungGeunMoBitmap(context, "다음", 12f, paginationColor),
+        )
 
-        // 화살표
-        setTextColor(R.id.widget_medium_prev_zone, arrowColor)
-        setTextColor(R.id.widget_medium_next_zone, arrowColor)
-        if (visibleDots > 1) {
-            val prevIndex = (current - 1 + visibleDots) % visibleDots
-            val nextIndex = (current + 1) % visibleDots
+        if (total > 1) {
+            val prevIndex = (current - 1 + total) % total
+            val nextIndex = (current + 1) % total
             setOnClickPendingIntent(
                 R.id.widget_medium_prev_zone,
                 buildPagePendingIntent(context, receiverClass, appWidgetId, prevIndex, code = 50),
@@ -167,10 +157,12 @@ private fun buildMediumRemoteViews(
                 buildPagePendingIntent(context, receiverClass, appWidgetId, nextIndex, code = 51),
             )
             setViewVisibility(R.id.widget_medium_prev_zone, View.VISIBLE)
+            setViewVisibility(R.id.widget_medium_divider, View.VISIBLE)
             setViewVisibility(R.id.widget_medium_next_zone, View.VISIBLE)
         } else {
-            setViewVisibility(R.id.widget_medium_prev_zone, View.INVISIBLE)
-            setViewVisibility(R.id.widget_medium_next_zone, View.INVISIBLE)
+            setViewVisibility(R.id.widget_medium_prev_zone, View.GONE)
+            setViewVisibility(R.id.widget_medium_divider, View.GONE)
+            setViewVisibility(R.id.widget_medium_next_zone, View.GONE)
         }
     }
 }
@@ -195,8 +187,10 @@ private fun buildMediumPageRemoteViews(
         setTextViewText(R.id.widget_medium_page_reason, reasonRaw ?: "읽고 싶은 이유를 추가해 주세요.")
         setTextColor(R.id.widget_medium_page_reason, if (reasonRaw == null) dummyColor else textColor)
 
-        setTextViewText(R.id.widget_medium_page_date, DateLabel.formatDisplay(book.createdDate))
-        setTextColor(R.id.widget_medium_page_date, accentColor)
+        setImageViewBitmap(
+            R.id.widget_medium_page_date,
+            renderDungGeunMoBitmap(context, DateLabel.formatDisplay(book.createdDate), 12f, accentColor),
+        )
     }
 }
 

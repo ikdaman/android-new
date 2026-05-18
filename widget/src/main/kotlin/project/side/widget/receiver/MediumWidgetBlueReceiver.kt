@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.updateAll
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +33,7 @@ class MediumWidgetBlueReceiver : GlanceAppWidgetReceiver() {
         val pendingResult = goAsync()
         scope.launch {
             try {
+                glanceAppWidget.updateAll(context)
                 updater.refreshAll()
             } finally {
                 pendingResult?.finish()

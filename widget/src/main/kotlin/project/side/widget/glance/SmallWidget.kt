@@ -33,6 +33,7 @@ import project.side.widget.data.WidgetUiBook
 import project.side.widget.domain.DateLabel
 import project.side.widget.glance.components.EmptyState
 import project.side.widget.glance.theme.colorsFor
+import project.side.widget.glance.util.renderDungGeunMoBitmap
 import project.side.widget.intent.WidgetIntents
 import project.side.widget.receiver.SmallWidgetBlueReceiver
 import project.side.widget.receiver.SmallWidgetWhiteReceiver
@@ -98,6 +99,7 @@ private fun SmallContent(books: List<WidgetUiBook>, variant: ColorVariant, appWi
             textColor = colors.text,
             onClick = actionStartActivity(WidgetIntents.openApp(context)),
             fontSizeSp = 14,
+            backgroundColor = colors.background,
         )
         return
     }
@@ -152,8 +154,10 @@ private fun buildSmallRemoteViews(
         setImageViewResource(R.id.widget_small_refresh, refreshRes)
         setTextViewText(R.id.widget_small_title, book.title)
         setTextColor(R.id.widget_small_title, textColor)
-        setTextViewText(R.id.widget_small_date, DateLabel.format(book.createdDate))
-        setTextColor(R.id.widget_small_date, accentColor)
+        setImageViewBitmap(
+            R.id.widget_small_date,
+            renderDungGeunMoBitmap(context, DateLabel.format(book.createdDate), 11f, accentColor),
+        )
         setOnClickPendingIntent(R.id.widget_small_refresh, refreshPendingIntent)
     }
 }

@@ -36,6 +36,7 @@
         android:text="책 제목"
         android:textColor="#333333"
         android:textSize="14sp"
+        android:fontFamily="@font/wanted_sans_semibold"
         android:maxLines="2"
         android:ellipsize="end" />
 
@@ -50,5 +51,6 @@
         android:text="오늘 저장"
         android:textColor="#010196"
         android:textSize="10sp"
+        android:fontFamily="@font/dunggeunmo"
         android:gravity="end" />
 </LinearLayout>
